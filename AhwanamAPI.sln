@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2026
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AhwanamAPI", "AhwanamAPI\AhwanamAPI.csproj", "{69E047E5-3F3A-468E-AD4F-8C70F9D859F9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{69E047E5-3F3A-468E-AD4F-8C70F9D859F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69E047E5-3F3A-468E-AD4F-8C70F9D859F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69E047E5-3F3A-468E-AD4F-8C70F9D859F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69E047E5-3F3A-468E-AD4F-8C70F9D859F9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B78D634C-6E02-4BF5-9A9F-8A2E771EF556}
+	EndGlobalSection
+EndGlobal
