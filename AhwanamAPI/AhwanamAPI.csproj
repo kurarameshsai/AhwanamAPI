@@ -43,6 +43,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MaaAahwanam.Models">
+      <HintPath>..\..\..\ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Models.dll</HintPath>
+    </Reference>
+    <Reference Include="MaaAahwanam.Repository">
+      <HintPath>..\..\..\ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Repository.dll</HintPath>
+    </Reference>
+    <Reference Include="MaaAahwanam.Service">
+      <HintPath>..\..\..\ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Service.dll</HintPath>
+    </Reference>
+    <Reference Include="MaaAahwanam.Utility">
+      <HintPath>..\..\..\ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Utility.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Web.DynamicData" />
@@ -85,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\VendorAuthController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -101,7 +114,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Controllers\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <PropertyGroup>
