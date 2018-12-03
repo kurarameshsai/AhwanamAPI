@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Web.Http;
 using MaaAahwanam.Models;
 using MaaAahwanam.Service;
+using Newtonsoft.Json;
 
 namespace AhwanamAPI.Controllers
 {
@@ -13,11 +14,13 @@ namespace AhwanamAPI.Controllers
     {
         ResultsPageService resultsPageService = new ResultsPageService();
         [HttpGet]
-        public UserLogin Authenticate()
+        public IHttpActionResult Authenticate()
         {
             UserLogin userLogin = new UserLogin();
+            userLogin.UserName = "Sireesh.k@xsilica.com";
+            userLogin.Password = "ksc";
             userLogin = resultsPageService.GetUserLogin(userLogin);
-            return userLogin;
+            return Json(userLogin.UserName);
         }
     }
 }
