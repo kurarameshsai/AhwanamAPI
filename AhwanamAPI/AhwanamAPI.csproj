@@ -106,9 +106,13 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\Cart.cs" />
     <Compile Include="Controllers\customerController.cs" />
+    <Compile Include="Controllers\invoiceController.cs" />
+    <Compile Include="Controllers\ordersController.cs" />
     <Compile Include="Controllers\resellerController.cs" />
     <Compile Include="Controllers\staffController.cs" />
+    <Compile Include="Controllers\suppliersController.cs" />
     <Compile Include="Controllers\UserAuth.cs" />
+    <Compile Include="Controllers\vdbController.cs" />
     <Compile Include="Controllers\VendorAuthController.cs" />
     <Compile Include="Custom\CustomPrincipal.cs" />
     <Compile Include="Global.asax.cs">
