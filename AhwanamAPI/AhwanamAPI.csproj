@@ -51,16 +51,16 @@
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="MaaAahwanam.Models">
-      <HintPath>..\..\..\ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Models.dll</HintPath>
+      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Models.dll</HintPath>
     </Reference>
     <Reference Include="MaaAahwanam.Repository">
-      <HintPath>..\..\..\ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Repository.dll</HintPath>
+      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Repository.dll</HintPath>
     </Reference>
     <Reference Include="MaaAahwanam.Service">
-      <HintPath>..\..\..\ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Service.dll</HintPath>
+      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Service.dll</HintPath>
     </Reference>
     <Reference Include="MaaAahwanam.Utility">
-      <HintPath>..\..\..\ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Utility.dll</HintPath>
+      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Utility.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Net.Http" />
@@ -106,14 +106,17 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\Cart.cs" />
     <Compile Include="Controllers\customerController.cs" />
+    <Compile Include="Controllers\homeController.cs" />
     <Compile Include="Controllers\invoiceController.cs" />
     <Compile Include="Controllers\ordersController.cs" />
     <Compile Include="Controllers\resellerController.cs" />
+    <Compile Include="Controllers\resultsController.cs" />
     <Compile Include="Controllers\staffController.cs" />
     <Compile Include="Controllers\suppliersController.cs" />
     <Compile Include="Controllers\UserAuth.cs" />
     <Compile Include="Controllers\vdbController.cs" />
     <Compile Include="Controllers\VendorAuthController.cs" />
+    <Compile Include="Controllers\viewserviceController.cs" />
     <Compile Include="Custom\CustomPrincipal.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
