@@ -100,18 +100,35 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="mailtemplate\cancelordeleteorder.html" />
+    <Content Include="mailtemplate\change-email.html" />
+    <Content Include="mailtemplate\Contest.html" />
+    <Content Include="mailtemplate\contest1.html" />
+    <Content Include="mailtemplate\getassistance.html" />
+    <Content Include="mailtemplate\kansiris.html" />
+    <Content Include="mailtemplate\kansiris1.html" />
+    <Content Include="mailtemplate\login.html" />
+    <Content Include="mailtemplate\mailer.html" />
+    <Content Include="mailtemplate\order.html" />
+    <Content Include="mailtemplate\QuoteReply.html" />
+    <Content Include="mailtemplate\userorderconfirmation.html" />
+    <Content Include="mailtemplate\vcancelordeleteorder.html" />
+    <Content Include="mailtemplate\vendororderconfirmation.html" />
+    <Content Include="mailtemplate\vorder.html" />
+    <Content Include="mailtemplate\welcome.html" />
+    <Content Include="mailtemplate\WelcomeMessage.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\Cart.cs" />
+    <Compile Include="Controllers\cartController.cs" />
     <Compile Include="Controllers\customerController.cs" />
     <Compile Include="Controllers\invoiceController.cs" />
     <Compile Include="Controllers\ordersController.cs" />
     <Compile Include="Controllers\resellerController.cs" />
     <Compile Include="Controllers\staffController.cs" />
     <Compile Include="Controllers\suppliersController.cs" />
-    <Compile Include="Controllers\UserAuth.cs" />
+    <Compile Include="Controllers\UseAuthController.cs" />
     <Compile Include="Controllers\vdbController.cs" />
     <Compile Include="Controllers\VendorAuthController.cs" />
     <Compile Include="Custom\CustomPrincipal.cs" />
