@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using System.Web.Security;
+using System.Web.Http.Cors;
 
 namespace AhwanamAPI.Controllers
 {
@@ -37,6 +38,8 @@ namespace AhwanamAPI.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("api/UseAuth/login")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
+
         public IHttpActionResult login(string username, string password)
         {
             string msg = "";
@@ -70,6 +73,8 @@ namespace AhwanamAPI.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("api/UseAuth/register")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
+
         public IHttpActionResult register(string customerphoneno, string customername, string password, string email)
         {
             string msg = "";
@@ -103,6 +108,8 @@ namespace AhwanamAPI.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("api/UseAuth/activateemail")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
+
         public IHttpActionResult activateemail(string activatecode, string email)
         {
             string msg = "";
@@ -120,6 +127,8 @@ namespace AhwanamAPI.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("api/UseAuth/ActivateEmail1")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
+
         public IHttpActionResult ActivateEmail1(string ActivationCode, string Email)
         {
             try
@@ -244,6 +253,8 @@ namespace AhwanamAPI.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("api/UseAuth/changepassword")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
+
         public IHttpActionResult changepassword(UserLogin userLogin)
         {
             try
