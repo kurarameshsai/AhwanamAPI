@@ -24,6 +24,16 @@ namespace AhwanamAPI.Controllers
         }
 
         [HttpGet]
+        [Route("api/results/search")]
+        public IHttpActionResult searchvendor(string name, string type)
+        {
+            //need to rewrite logic
+            type = (type == null) ? "Venue" : type;
+            var data = resultsPageService.GetAllVendors(type).Where(m=>m.BusinessName.Contains(name)).FirstOrDefault();
+            return Json(data);
+        }
+
+        [HttpGet]
         [Route("api/results/load")]
         public IHttpActionResult loadmore(string type, string range)
         {
