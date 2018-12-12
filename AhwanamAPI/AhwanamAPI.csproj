@@ -51,19 +51,25 @@
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="MaaAahwanam.Models">
-      <HintPath>..\..\..\ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Models.dll</HintPath>
+      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Models.dll</HintPath>
     </Reference>
     <Reference Include="MaaAahwanam.Repository">
-      <HintPath>..\..\..\ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Repository.dll</HintPath>
+      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Repository.dll</HintPath>
     </Reference>
     <Reference Include="MaaAahwanam.Service">
-      <HintPath>..\..\..\ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Service.dll</HintPath>
+      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Service.dll</HintPath>
     </Reference>
     <Reference Include="MaaAahwanam.Utility">
-      <HintPath>..\..\..\ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Utility.dll</HintPath>
+      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Utility.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Cors, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Cors.5.2.7\lib\net45\System.Web.Cors.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -73,6 +79,12 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Http, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.7\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.Cors, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Cors.5.2.7\lib\net45\System.Web.Http.Cors.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
@@ -85,12 +97,6 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="System.Net.Http.Formatting">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.4\lib\net45\System.Net.Http.Formatting.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Http">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.4\lib\net45\System.Web.Http.dll</HintPath>
-    </Reference>
     <Reference Include="System.Web.Http.WebHost">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.4\lib\net45\System.Web.Http.WebHost.dll</HintPath>
     </Reference>
@@ -100,20 +106,40 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="mailtemplate\cancelordeleteorder.html" />
+    <Content Include="mailtemplate\change-email.html" />
+    <Content Include="mailtemplate\Contest.html" />
+    <Content Include="mailtemplate\contest1.html" />
+    <Content Include="mailtemplate\getassistance.html" />
+    <Content Include="mailtemplate\kansiris.html" />
+    <Content Include="mailtemplate\kansiris1.html" />
+    <Content Include="mailtemplate\login.html" />
+    <Content Include="mailtemplate\mailer.html" />
+    <Content Include="mailtemplate\order.html" />
+    <Content Include="mailtemplate\QuoteReply.html" />
+    <Content Include="mailtemplate\userorderconfirmation.html" />
+    <Content Include="mailtemplate\vcancelordeleteorder.html" />
+    <Content Include="mailtemplate\vendororderconfirmation.html" />
+    <Content Include="mailtemplate\vorder.html" />
+    <Content Include="mailtemplate\welcome.html" />
+    <Content Include="mailtemplate\WelcomeMessage.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\Cart.cs" />
+    <Compile Include="Controllers\cartController.cs" />
     <Compile Include="Controllers\customerController.cs" />
+    <Compile Include="Controllers\homeController.cs" />
     <Compile Include="Controllers\invoiceController.cs" />
     <Compile Include="Controllers\ordersController.cs" />
     <Compile Include="Controllers\resellerController.cs" />
+    <Compile Include="Controllers\resultsController.cs" />
     <Compile Include="Controllers\staffController.cs" />
     <Compile Include="Controllers\suppliersController.cs" />
-    <Compile Include="Controllers\UserAuth.cs" />
+    <Compile Include="Controllers\UseAuthController.cs" />
     <Compile Include="Controllers\vdbController.cs" />
     <Compile Include="Controllers\VendorAuthController.cs" />
+    <Compile Include="Controllers\viewserviceController.cs" />
     <Compile Include="Custom\CustomPrincipal.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
