@@ -8,6 +8,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Cors;
+
 
 namespace AhwanamAPI.Controllers
 {
@@ -26,6 +28,7 @@ namespace AhwanamAPI.Controllers
 
         [HttpGet]
         [Route("api/suppliers/GetAllSuppliers")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         public IHttpActionResult GetAllSuppliers()
         {
            
@@ -75,6 +78,7 @@ namespace AhwanamAPI.Controllers
         //}
         [HttpPost]
         [Route("api/suppliers/Insertsuppliers")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         public IHttpActionResult Insertsuppliers([FromBody] ManageVendor mngvendor)
         {
             userLogin.UserName = "Sireesh.k@xsilica.com";
@@ -95,6 +99,8 @@ namespace AhwanamAPI.Controllers
         }
         [HttpPost]
         [Route("api/suppliers/Getsuppliersbyid")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
+
         public IHttpActionResult Getsuppliersbyid([FromUri] string id)
         {
             var data = mngvendorservice.getvendorbyid(int.Parse(id));
@@ -103,6 +109,8 @@ namespace AhwanamAPI.Controllers
 
         [HttpPost]
         [Route("api/suppliers/updatesuppliers")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
+
         public IHttpActionResult updatesuppliers([FromBody] ManageVendor mngvendor,[FromUri] string id)
         {
             userLogin.UserName = "Sireesh.k@xsilica.com";
@@ -124,6 +132,8 @@ namespace AhwanamAPI.Controllers
         
         [HttpPost]
         [Route("api/suppliers/checkVendoremail")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
+
         public IHttpActionResult checkVendoremail([FromUri] string email, [FromUri] string VendorId)
         {
             int query = mngvendorservice.checkvendoremail(email, VendorId);
@@ -135,6 +145,8 @@ namespace AhwanamAPI.Controllers
 
         [HttpPost]
         [Route("api/suppliers/InsertsuppliersServices")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
+
         public IHttpActionResult InsertsuppliersServices([FromBody] AllSupplierServices supplierservices)
         {
             userLogin.UserName = "Sireesh.k@xsilica.com";
@@ -154,6 +166,7 @@ namespace AhwanamAPI.Controllers
 
         [HttpPost]
         [Route("api/suppliers/Getsupplierservice")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         public IHttpActionResult Getsupplierservice([FromUri] string id)
         {
             var data = mngvendorservice.getsuplierservicesbyid(Convert.ToInt32(id));
@@ -161,6 +174,7 @@ namespace AhwanamAPI.Controllers
         }
         [HttpPost]
         [Route("api/suppliers/UpdatesuppliersServices")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         public IHttpActionResult UpdatesuppliersServices([FromBody] AllSupplierServices supplierservices, [FromUri] string id)
         {
             userLogin.UserName = "Sireesh.k@xsilica.com";
@@ -180,6 +194,8 @@ namespace AhwanamAPI.Controllers
 
         [HttpPost]
         [Route("api/suppliers/checksupplierservices")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
+
         public IHttpActionResult checksupplierservices([FromUri] string servicename, [FromUri] string vid)
         {
             int services = mngvendorservice.checksupplierservices(servicename, vid);

@@ -12,6 +12,8 @@ using System.Net.Http;
 using System.Text;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Cors;
+
 
 namespace AhwanamAPI.Controllers
 {
@@ -28,6 +30,7 @@ namespace AhwanamAPI.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("api/cart/cartpage")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         public IHttpActionResult cartpage()
         {
              List<GetCartItems_Result> cartitems = new List<GetCartItems_Result>();
@@ -63,8 +66,10 @@ namespace AhwanamAPI.Controllers
             public string netamount { get; set; }
          
         }
-
-
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("api/cart/billing")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         public IHttpActionResult billing(string cartid)
         {
 
@@ -119,6 +124,10 @@ namespace AhwanamAPI.Controllers
             return Json(bill);
         }
 
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("api/cart/email")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         public IHttpActionResult email(string selcartid, string searchedcontent)
         {
             selcartid = selcartid.Trim(',');
@@ -191,6 +200,7 @@ namespace AhwanamAPI.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("api/cart/booknow")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         public IHttpActionResult booknow(string selcartid, string searchedcontent, string total, string booktype)
         {
             if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)

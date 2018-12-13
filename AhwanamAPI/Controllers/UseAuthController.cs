@@ -236,7 +236,10 @@ namespace AhwanamAPI.Controllers
             return Char.ToUpper(str[0]) + str.Substring(1).ToLower();
         }
         #endregion
-
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("api/UseAuth/updatepassword")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         #region Password
         public IHttpActionResult updatepassword(string Email)
         {
@@ -278,6 +281,7 @@ namespace AhwanamAPI.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("api/UseAuth/forgotpass")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         public IHttpActionResult forgotpass(string Email)
         {
             UserLogin userLogin = new UserLogin();

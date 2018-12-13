@@ -46,7 +46,7 @@ namespace AhwanamAPI.Controllers
         }
 
         [HttpPost]
-        [Route("api/invoice/getinvoice")]
+        [Route("api/invoice/getpayments")]
         public IHttpActionResult getpayments([FromUri] string oid)
         {
             List<Payment> payments = new List<Payment>();
