@@ -24,7 +24,8 @@ namespace AhwanamAPI.Controllers
         decimal totalp, servcharge, gst, nettotal, totalp2;
         CartService cartService = new CartService();
         QuotationListsService quotationListsService = new QuotationListsService();
-
+        UserLogin userLogin = new UserLogin();
+        ResultsPageService resultsPageService = new ResultsPageService();
         private static TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
 
         [AllowAnonymous]
@@ -34,20 +35,26 @@ namespace AhwanamAPI.Controllers
         public IHttpActionResult cartpage()
         {
              List<GetCartItems_Result> cartitems = new List<GetCartItems_Result>();
-            if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
-            {
-                var user = (CustomPrincipal)System.Web.HttpContext.Current.User;
-                if (user.UserType == "User")
-                {
-                    var userdata = userLoginDetailsService.GetUser((int)user.UserId);
-                    List<GetCartItems_Result> cartlist = cartserve.CartItemsList(int.Parse(user.UserId.ToString()));
+            //if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
+            //{
+            //    var user = (CustomPrincipal)System.Web.HttpContext.Current.User;
+            //    if (user.UserType == "User")
+            //    {
+            userLogin.UserName = "rameshsai2@xsilica.com";
+            userLogin.Password = "ks";
+            userLogin = resultsPageService.GetUserLogin(userLogin);
+            //var user = (CustomPrincipal)System.Web.HttpContext.Current.User;
+            //string uid = user.UserId.ToString();
+            string uid = userLogin.UserLoginId.ToString();
+            var userdata = userLoginDetailsService.GetUser(Convert.ToInt32(uid));
+                    List<GetCartItems_Result> cartlist = cartserve.CartItemsList(int.Parse(uid));
                     cartitems = cartlist.OrderByDescending(m => m.UpdatedDate).Where(m => m.Status == "Active").ToList();
-                }
-            }
-            else
-            {
-                cartitems = null;
-            }
+            //    }
+            //}
+            //else
+            //{
+            //    cartitems = null;
+            //}
             return Json(cartitems);
         }
         [AllowAnonymous]
@@ -74,12 +81,17 @@ namespace AhwanamAPI.Controllers
         {
 
             billing1 bill = new billing1();
-            if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
-            {
-                var user = (CustomPrincipal)System.Web.HttpContext.Current.User;
-                if (user.UserType == "User")
-                {
-                    List<GetCartItems_Result> cartlist = cartserve.CartItemsList(int.Parse(user.UserId.ToString())).ToList();
+            //if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
+            //{
+            //    var user = (CustomPrincipal)System.Web.HttpContext.Current.User;
+            //    if (user.UserType == "User")
+            //    {
+            userLogin.UserName = "rameshsai2@xsilica.com";
+            userLogin.Password = "ks";
+            userLogin = resultsPageService.GetUserLogin(userLogin);
+        
+            string uid = userLogin.UserLoginId.ToString();
+            List<GetCartItems_Result> cartlist = cartserve.CartItemsList(int.Parse(uid)).ToList();
 
                     if (cartlist.Count == 0)
                     {
@@ -118,8 +130,8 @@ namespace AhwanamAPI.Controllers
                     bill.service = servcharge1.ToString();
                     bill.Gst = gst1.ToString();
                     bill.netamount = nettotal1;
-                }
-            }
+            //    }
+            //}
             //}
             return Json(bill);
         }
@@ -131,22 +143,29 @@ namespace AhwanamAPI.Controllers
         public IHttpActionResult email(string selcartid, string searchedcontent)
         {
             selcartid = selcartid.Trim(',');
-            if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
-            {
-                var user = (CustomPrincipal)System.Web.HttpContext.Current.User;
-                if (user.UserType == "User")
-                {
-                    var userlogin = userLoginDetailsService.GetUserId(int.Parse(user.UserId.ToString()));
-                    string Email = userlogin.UserName;
+            //if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
+            //{
+            //    var user = (CustomPrincipal)System.Web.HttpContext.Current.User;
+            //    if (user.UserType == "User")
+            //    {
+            userLogin.UserName = "rameshsai2@xsilica.com";
+            userLogin.Password = "ks";
+            userLogin = resultsPageService.GetUserLogin(userLogin);
+            //var user = (CustomPrincipal)System.Web.HttpContext.Current.User;
+            //string uid = user.UserId.ToString();
+            string uid = userLogin.UserLoginId.ToString();
+            var userlogin = userLoginDetailsService.GetUserId(int.Parse(uid));
+            // var userlogin = userLoginDetailsService.GetUserId(int.Parse(user.UserId.ToString()));
+            string Email = userlogin.UserName;
                     string txtto = "sireesh.k@xsilica.com,rameshsai@xsilica.com,seema@xsilica.com,amit.saxena@ahwanam.com,jm@dsc-usa.com";
-                    int id = Convert.ToInt32(user.UserId);
+                    int id = Convert.ToInt32(uid);
                     var userdetails = userLoginDetailsService.GetUser(id);
                     string ipaddress = HttpContext.Current.Request.UserHostAddress;
                     string username = userdetails.FirstName;
                     string phoneno = userdetails.UserPhone;
                     UseAuthController home = new UseAuthController();
                     username = home.Capitalise(username) + " " + home.Capitalise(userdetails.LastName);
-                    List<GetCartItems_Result> cartlist = cartserve.CartItemsList(int.Parse(user.UserId.ToString()));
+                    List<GetCartItems_Result> cartlist = cartserve.CartItemsList(int.Parse(uid));
                     var cartid1 = selcartid.Split(',');
                     QuotationsList quotationsList = new QuotationsList();
                     List<GetCartItems_Result> cartdetails = new List<GetCartItems_Result>();
@@ -192,8 +211,8 @@ namespace AhwanamAPI.Controllers
                     string subj = "Get Assistance/Quote From Cart Page";
                     EmailSendingUtility emailSendingUtility = new EmailSendingUtility();
                     emailSendingUtility.Email_maaaahwanam(txtto, txtmessage, subj, null);
-                }
-            }
+          //      }
+          //  }
             var message = "success";
             return Json(message);
         }
@@ -203,26 +222,35 @@ namespace AhwanamAPI.Controllers
         [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         public IHttpActionResult booknow(string selcartid, string searchedcontent, string total, string booktype)
         {
-            if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
-            {
+            //if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
+            //{
                 var msg = "";
-                var user = (CustomPrincipal)System.Web.HttpContext.Current.User;
-                if (user.UserType == "User")
-                {
-                    selcartid = selcartid.Trim(',');
+            //var user = (CustomPrincipal)System.Web.HttpContext.Current.User;
+            //if (user.UserType == "User")
+            //{
+            userLogin.UserName = "rameshsai2@xsilica.com";
+            userLogin.Password = "ks";
+            userLogin = resultsPageService.GetUserLogin(userLogin);
+            //var user = (CustomPrincipal)System.Web.HttpContext.Current.User;
+            //string uid = user.UserId.ToString();
+            string uid = userLogin.UserLoginId.ToString();
+            selcartid = selcartid.Trim(',');
                     UseAuthController home = new UseAuthController();
-                    var userdata = userLoginDetailsService.GetUser((int)user.UserId);
-                    var cartCount = cartService.CartItemsCount((int)user.UserId);
-                    var cartlist = cartService.CartItemsList(int.Parse(user.UserId.ToString()));
-                    var cartnos1 = selcartid.Split(',');
+            var userdata = userLoginDetailsService.GetUser(int.Parse(uid));
+            var cartCount = cartService.CartItemsCount(int.Parse(uid));
+            var cartlist = cartService.CartItemsList(int.Parse(uid));
+            // var userdata = userLoginDetailsService.GetUser((int)user.UserId);
+            // var cartCount = cartService.CartItemsCount((int)user.UserId);
+            // var cartlist = cartService.CartItemsList(int.Parse(user.UserId.ToString()));
+            var cartnos1 = selcartid.Split(',');
                     DateTime updateddate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
                     //Saving Record in order Table
                     OrderService orderService = new OrderService();
                     MaaAahwanam.Models.Order order = new MaaAahwanam.Models.Order();
                     order.TotalPrice = Convert.ToDecimal(total);
                     order.OrderDate = Convert.ToDateTime(updateddate);
-                    order.UpdatedBy = (Int64)user.UserId;
-                    order.OrderedBy = (Int64)user.UserId;
+                    order.UpdatedBy = int.Parse(uid);
+                    order.OrderedBy = int.Parse(uid);
                     order.UpdatedDate = Convert.ToDateTime(updateddate);
                     order.Status = "Pending";
                     if (booktype == "Quote") { order.type = "Quote"; }
@@ -256,12 +284,12 @@ namespace AhwanamAPI.Controllers
                         {
                             totalprice = Convert.ToString(cartdetails.TotalPrice);
                         }
-                        int userid = Convert.ToInt32(user.UserId);
+                        int userid = Convert.ToInt32(uid);
                         //Saving Order Details
                         OrderdetailsServices orderdetailsServices = new OrderdetailsServices();
                         OrderDetail orderDetail = new OrderDetail();
                         orderDetail.OrderId = order.OrderId;
-                        orderDetail.OrderBy = user.UserId;
+                        orderDetail.OrderBy = int.Parse(uid);
                         orderDetail.PaymentId = '1';
                         orderDetail.ServiceType = type;
                         orderDetail.ServicePrice = decimal.Parse(price);
@@ -273,7 +301,7 @@ namespace AhwanamAPI.Controllers
                         orderDetail.VendorId = long.Parse(id);
                         orderDetail.Status = "Pending";
                         orderDetail.UpdatedDate = Convert.ToDateTime(updateddate);
-                        orderDetail.UpdatedBy = user.UserId;
+                        orderDetail.UpdatedBy = int.Parse(uid);
                         orderDetail.subid = long.Parse(vid);
                         orderDetail.BookedDate = date;
                         orderDetail.EventType = etype1;
@@ -328,8 +356,8 @@ namespace AhwanamAPI.Controllers
                         emailSendingUtility.Email_maaaahwanam(txtto1, txtmessage1, subj1, null);
                         if (booktype == "Quote") { }
                         else if (booktype == "booknow") { var message = cartService.Deletecartitem(long.Parse(cartno2)); }
-                    }
-                }
+                //    }
+                //}
                 if (booktype == "Quote") { msg = "Quotation sent"; }
                 else if (booktype == "booknow") { msg = "Order Successfully placed"; }
                 return Json(msg);
