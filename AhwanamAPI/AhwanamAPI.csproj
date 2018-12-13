@@ -51,16 +51,16 @@
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="MaaAahwanam.Models">
-      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Models.dll</HintPath>
+      <HintPath>..\..\Ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Models.dll</HintPath>
     </Reference>
     <Reference Include="MaaAahwanam.Repository">
-      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Repository.dll</HintPath>
+      <HintPath>..\..\Ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Repository.dll</HintPath>
     </Reference>
     <Reference Include="MaaAahwanam.Service">
-      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Service.dll</HintPath>
+      <HintPath>..\..\Ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Service.dll</HintPath>
     </Reference>
     <Reference Include="MaaAahwanam.Utility">
-      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Utility.dll</HintPath>
+      <HintPath>..\..\Ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Utility.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Net.Http" />
