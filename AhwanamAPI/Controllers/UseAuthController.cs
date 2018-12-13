@@ -35,6 +35,7 @@ namespace AhwanamAPI.Controllers
         VendorOthersService vendorOthersService = new VendorOthersService();
         VenorVenueSignUpService vendorVenueSignUpService = new VenorVenueSignUpService();
         Vendormaster vendormaster = new Vendormaster();
+
         [AllowAnonymous]
         [HttpGet]
         [Route("api/UseAuth/login")]
@@ -71,7 +72,7 @@ namespace AhwanamAPI.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpPost]
         [Route("api/UseAuth/register")]
         [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
 
@@ -254,7 +255,7 @@ namespace AhwanamAPI.Controllers
             }
         }
         [AllowAnonymous]
-        [HttpGet]
+        [HttpPost]
         [Route("api/UseAuth/changepassword")]
         [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
 
