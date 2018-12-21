@@ -105,31 +105,39 @@ namespace AhwanamAPI.Controllers
                     var cartid1 = cartid.Split(',');
                     for (int i = 0; i < cartid1.Count(); i++)
                     {
-                        if (cartid1[i] == "" || cartid1[i] == null)
-                        {
-                            totalp = 0;
-                        }
-                        else
-                        {
-                            var cartdetails = cartlist.Where(m => m.CartId == Convert.ToInt64(cartid1[i])).FirstOrDefault();
-                            totalp = cartdetails.TotalPrice;
+                if (cartid1[i] == "" || cartid1[i] == null)
+                {
+                    totalp = 0;
+                }
+                else
+                {
+                    var cartdetails = cartlist.Where(m => m.CartId == Convert.ToInt64(cartid1[i])).FirstOrDefault();
+                
+                    if ( cartdetails == null)
+                    {
+                        totalp = 0;
+                    }
+                    else
+                    {
+                        totalp = cartdetails.TotalPrice;
+                    }
                         }
                         totalp2 = totalp2 + totalp;
                         bill.discount = "";
                         servcharge = 0;
                         gst = 0;
-                        nettotal = nettotal + totalp - Convert.ToDecimal(bill.discount) + Convert.ToDecimal(servcharge) + Convert.ToDecimal(gst);
+                    //  nettotal = (nettotal) + (totalp) - decimal.Parse(bill.discount) + (servcharge) + (gst);
                     }
                     var totalp1 = totalp2;
                     var discount1 = "0";
                     var servcharge1 = servcharge;
                     var gst1 = gst;
-                    var nettotal1 = Convert.ToString(nettotal);
+                 //   string nettotal1 = Convert.ToString(nettotal);
                     bill.tamount = totalp1.ToString();
                     bill.discount = discount1;
                     bill.service = servcharge1.ToString();
                     bill.Gst = gst1.ToString();
-                    bill.netamount = nettotal1;
+                 //   bill.netamount = nettotal1;
             //    }
             //}
             //}
@@ -137,7 +145,8 @@ namespace AhwanamAPI.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        //[HttpGet]
+        [HttpPost]
         [Route("api/cart/email")]
         [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         public IHttpActionResult email(string selcartid, string searchedcontent)
@@ -217,7 +226,8 @@ namespace AhwanamAPI.Controllers
             return Json(message);
         }
         [AllowAnonymous]
-        [HttpGet]
+        //[HttpGet]
+        [HttpPost]
         [Route("api/cart/booknow")]
         [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         public IHttpActionResult booknow(string selcartid, string searchedcontent, string total, string booktype)
