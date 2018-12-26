@@ -56,7 +56,7 @@ namespace AhwanamAPI.Controllers
                     vendormaster = resultsPageService.GetVendorByEmail(userResponce.UserName);
                     string userdata = JsonConvert.SerializeObject(userResponce);
                     ValidUserUtility.SetAuthCookie(userdata, userResponce.UserName.ToString());
-                    msg = "Success";
+                    msg = userResponce.UserName;
                 }
                 else
                 {
@@ -72,7 +72,7 @@ namespace AhwanamAPI.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost]
+        [HttpGet]
         [Route("api/UseAuth/register")]
         [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
 
