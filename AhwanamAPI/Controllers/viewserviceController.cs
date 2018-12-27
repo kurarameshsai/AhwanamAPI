@@ -7,6 +7,8 @@ using System.Web.Http;
 using MaaAahwanam.Models;
 using MaaAahwanam.Service;
 using MaaAahwanam.Repository;
+using System.Web.Http.Cors;
+
 
 namespace AhwanamAPI.Controllers
 {
@@ -17,6 +19,7 @@ namespace AhwanamAPI.Controllers
 
         [HttpGet]
         [Route("api/viewservice/gvbyname")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         public IHttpActionResult getvendorbyname(string name, string type)
         {
             // Vendor Retrieval by Business Name
@@ -26,6 +29,7 @@ namespace AhwanamAPI.Controllers
 
         [HttpGet]
         [Route("api/viewservice/gv")]
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         public IHttpActionResult getvendor(string type, string id, string vid)
         {
             // Vendor Retrieval by masterid & subid

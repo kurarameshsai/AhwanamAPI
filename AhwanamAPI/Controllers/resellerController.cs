@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 
+
 namespace AhwanamAPI.Controllers
 {
     public class resellerController : ApiController
@@ -24,7 +25,8 @@ namespace AhwanamAPI.Controllers
         const string imagepath = @"/partnerdocs/";
 
 
-
+        [HttpPost]
+        [Route("api/reseller/Index")]
         public IHttpActionResult Index(string partid)
         {
             reseller resell = new reseller();
@@ -100,6 +102,7 @@ namespace AhwanamAPI.Controllers
         }
 
         [HttpPost]
+        [Route("api/reseller/Index1")]
         public IHttpActionResult Index(Partner partner, string command, string partid)
         {
 
@@ -143,6 +146,7 @@ namespace AhwanamAPI.Controllers
 
 
         [HttpPost]
+        [Route("api/reseller/PartnerPackage")]
         public IHttpActionResult PartnerPackage(PartnerPackage partnerPackage, string command, string partid)
         {
             partnerPackage.RegisteredDate = DateTime.Now.Date;
@@ -154,6 +158,7 @@ namespace AhwanamAPI.Controllers
         }
 
         [HttpPost]
+        [Route("api/reseller/Contacts")]
         public IHttpActionResult Contacts(PartnerContact Partnercontact, PartnerContact Partnercontact1, string command, string partid)
         {
             Partnercontact.RegisteredDate = DateTime.Now;
@@ -172,6 +177,7 @@ namespace AhwanamAPI.Controllers
 
 
         [HttpPost]
+        [Route("api/reseller/UploadContractdoc")]
         public IHttpActionResult UploadContractdoc(HttpPostedFileBase helpSectionImages, string command, string partid, string vid)
         {
 
