@@ -13,6 +13,7 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Security;
 using System.Web.Http.Cors;
+using System.Collections;
 
 namespace AhwanamAPI.Controllers
 {
@@ -43,32 +44,29 @@ namespace AhwanamAPI.Controllers
 
         public IHttpActionResult login(string username, string password)
         {
-            string msg = "";
-            
+            UserLogin data = new UserLogin();
             UserLogin userlogin = new UserLogin();
+
+          
             userlogin.UserName = username;
             userlogin.Password = password;
             var userResponce = resultsPageService.GetUserLogin(userlogin);
             if (userResponce != null)
             {
-                if (userResponce.Status == "Active")
-                {
-                    vendormaster = resultsPageService.GetVendorByEmail(userResponce.UserName);
-                    string userdata = JsonConvert.SerializeObject(userResponce);
-                    ValidUserUtility.SetAuthCookie(userdata, userResponce.UserName.ToString());
-                    msg = userResponce.UserName;
-                }
-                else
-                {
-                    msg = "Inactive";
-                }
+               vendormaster = resultsPageService.GetVendorByEmail(userResponce.UserName);
+               string userdata = JsonConvert.SerializeObject(userResponce);
+               ValidUserUtility.SetAuthCookie(userdata, userResponce.UserName.ToString());
+               data = userResponce;
+                
             }
             else
             {
-                msg = "failed";
+                data.UserName = username;
+                data.Password = password;
+                data.Status = "notfound";
 
             }
-            return Json(msg);
+            return Json(data);
         }
 
         [AllowAnonymous]
