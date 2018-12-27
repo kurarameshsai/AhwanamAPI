@@ -40,8 +40,8 @@ namespace AhwanamAPI.Controllers
             //    var user = (CustomPrincipal)System.Web.HttpContext.Current.User;
             //    if (user.UserType == "User")
             //    {
-            userLogin.UserName = "rameshsai2@xsilica.com";
-            userLogin.Password = "ks";
+            userLogin.UserName = "krameshsai1@gmail.com";
+            userLogin.Password = "abc@1234";
             userLogin = resultsPageService.GetUserLogin(userLogin);
             //var user = (CustomPrincipal)System.Web.HttpContext.Current.User;
             //string uid = user.UserId.ToString();
@@ -58,7 +58,7 @@ namespace AhwanamAPI.Controllers
             return Json(cartitems);
         }
         [AllowAnonymous]
-        [HttpGet]
+        [HttpDelete]
         [Route("api/cart/DeletecartItem")]
         public IHttpActionResult DeletecartItem(long cartId)
         {
@@ -74,7 +74,7 @@ namespace AhwanamAPI.Controllers
          
         }
         [AllowAnonymous]
-        [HttpGet]
+        [HttpPost]
         [Route("api/cart/billing")]
         [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         public IHttpActionResult billing(string cartid)
@@ -172,7 +172,7 @@ namespace AhwanamAPI.Controllers
                     string ipaddress = HttpContext.Current.Request.UserHostAddress;
                     string username = userdetails.FirstName;
                     string phoneno = userdetails.UserPhone;
-                    UseAuthController home = new UseAuthController();
+                    UserAuthController home = new UserAuthController();
                     username = home.Capitalise(username) + " " + home.Capitalise(userdetails.LastName);
                     List<GetCartItems_Result> cartlist = cartserve.CartItemsList(int.Parse(uid));
                     var cartid1 = selcartid.Split(',');
@@ -245,7 +245,7 @@ namespace AhwanamAPI.Controllers
             //string uid = user.UserId.ToString();
             string uid = userLogin.UserLoginId.ToString();
             selcartid = selcartid.Trim(',');
-                    UseAuthController home = new UseAuthController();
+                    UserAuthController home = new UserAuthController();
             var userdata = userLoginDetailsService.GetUser(int.Parse(uid));
             var cartCount = cartService.CartItemsCount(int.Parse(uid));
             var cartlist = cartService.CartItemsList(int.Parse(uid));
