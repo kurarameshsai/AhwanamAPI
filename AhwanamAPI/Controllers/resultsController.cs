@@ -27,9 +27,9 @@ namespace AhwanamAPI.Controllers
         [Route("api/results/search")]
         public IHttpActionResult searchvendor(string name, string type)
         {
-            //need to rewrite logic
+            //Filter Vendors by Name
             type = (type == null) ? "Venue" : type;
-            var data = resultsPageService.GetAllVendors(type).Where(m=>m.BusinessName.Contains(name)).FirstOrDefault();
+            var data = resultsPageService.GetVendorsByName(type, name);
             return Json(data);
         }
 
