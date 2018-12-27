@@ -37,10 +37,9 @@ namespace AhwanamAPI.Controllers
         VenorVenueSignUpService vendorVenueSignUpService = new VenorVenueSignUpService();
         Vendormaster vendormaster = new Vendormaster();
 
-        [AllowAnonymous]
+ 
         [HttpPost]
         [Route("api/UserAuth/login")]
-        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
 
         public IHttpActionResult login(string username, string password)
         {
@@ -69,10 +68,10 @@ namespace AhwanamAPI.Controllers
             return Json(data);
         }
 
-        [AllowAnonymous]
+        
         [HttpPost]
         [Route("api/UserAuth/register")]
-        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
+       
 
         public IHttpActionResult register(string customerphoneno, string customername, string password, string email)
         {
@@ -107,7 +106,6 @@ namespace AhwanamAPI.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("api/UserAuth/activateemail")]
-        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
 
         public IHttpActionResult activateemail(string activatecode, string email)
         {
@@ -126,7 +124,6 @@ namespace AhwanamAPI.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("api/UserAuth/ActivateEmail1")]
-        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
 
         public IHttpActionResult ActivateEmail1(string ActivationCode, string Email)
         {
@@ -238,7 +235,6 @@ namespace AhwanamAPI.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("api/UserAuth/updatepassword")]
-        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         #region Password
         public IHttpActionResult updatepassword(string Email)
         {
@@ -255,7 +251,6 @@ namespace AhwanamAPI.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("api/UserAuth/changepassword")]
-        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
 
         public IHttpActionResult changepassword(UserLogin userLogin)
         {
@@ -280,7 +275,6 @@ namespace AhwanamAPI.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("api/UserAuth/forgotpass")]
-        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         public IHttpActionResult forgotpass(string Email)
         {
             UserLogin userLogin = new UserLogin();
