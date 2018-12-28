@@ -38,7 +38,7 @@ namespace AhwanamAPI.Controllers
         Vendormaster vendormaster = new Vendormaster();
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpPost]
         [Route("api/UserAuth/login")]
 
         public IHttpActionResult login(string username, string password)
