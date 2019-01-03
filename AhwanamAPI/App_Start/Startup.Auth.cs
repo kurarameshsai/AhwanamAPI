@@ -22,7 +22,7 @@ namespace AhwanamAPI
             {
                 TokenEndpointPath = new PathString("/token"),
                 Provider = new OAuthProvider(),
-                AccessTokenExpireTimeSpan = TimeSpan.FromDays(1000),
+                AccessTokenExpireTimeSpan = TimeSpan.FromDays(100),
                 AllowInsecureHttp = true
             };
         }
