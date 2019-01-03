@@ -10,7 +10,7 @@ using MaaAahwanam.Repository;
 
 namespace AhwanamAPI.Controllers
 {
-    //[Authorize]
+ 
     public class resultsController : ApiController
     {
         ResultsPageService resultsPageService = new ResultsPageService();
