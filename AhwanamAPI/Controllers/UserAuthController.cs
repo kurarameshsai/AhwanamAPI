@@ -37,8 +37,8 @@ namespace AhwanamAPI.Controllers
         VenorVenueSignUpService vendorVenueSignUpService = new VenorVenueSignUpService();
         Vendormaster vendormaster = new Vendormaster();
 
-        [AllowAnonymous]
-        [HttpPost]
+        //[AllowAnonymous]
+        [HttpGet]
         [Route("api/UserAuth/login")]
 
         public IHttpActionResult login(string username, string password)

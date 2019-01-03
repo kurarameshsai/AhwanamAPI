@@ -56,8 +56,9 @@
     <Reference Include="MaaAahwanam.Repository">
       <HintPath>..\..\..\ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Repository.dll</HintPath>
     </Reference>
-    <Reference Include="MaaAahwanam.Service">
-      <HintPath>..\..\..\ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Service.dll</HintPath>
+    <Reference Include="MaaAahwanam.Service, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Service.dll</HintPath>
     </Reference>
     <Reference Include="MaaAahwanam.Utility">
       <HintPath>..\..\..\ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Utility.dll</HintPath>
