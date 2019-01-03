@@ -12,6 +12,7 @@ using System.Web.Http.Cors;
 
 namespace AhwanamAPI.Controllers
 {
+    [Authorize]
     public class viewserviceController : ApiController
     {
         viewservicesservice viewservicesss = new viewservicesservice();
