@@ -254,17 +254,14 @@ namespace AhwanamAPI.Controllers
             return Json("Session Expired!!! Please Login");
         }
 
-        public IHttpActionResult resellername()
+        public IHttpActionResult resellername(long id)
         {
-            long id = GetVendorID();
-            if (id != 0)
-            {
+            
 
                 var resellername = partnerservice.GetPartners(Convert.ToString(id));
 
                 return Json(resellername);
-            }
-            return Json("Session Expired!!! Please Login");
+          
         }
       
 
