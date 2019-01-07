@@ -10,7 +10,7 @@ using MaaAahwanam.Repository;
 
 namespace AhwanamAPI.Controllers
 {
- 
+ //[Authorize]
     public class resultsController : ApiController
     {
         ResultsPageService resultsPageService = new ResultsPageService();
@@ -33,8 +33,6 @@ namespace AhwanamAPI.Controllers
             var data = resultsPageService.GetAllVendors(type);
             return Json(data);
         }
-
-
         [HttpGet]
         [Route("api/results/search")]
         public IHttpActionResult searchvendor(string name, string type)

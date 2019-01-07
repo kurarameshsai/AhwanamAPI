@@ -38,17 +38,18 @@ namespace AhwanamAPI.Controllers
         Vendormaster vendormaster = new Vendormaster();
 
         //[AllowAnonymous]
-        [HttpGet]
+        [HttpPost]
         [Route("api/UserAuth/login")]
 
-        public IHttpActionResult login(string username, string password)
+        //public IHttpActionResult login(string username, string password)
+        public IHttpActionResult login(UserLogin userlogin)
         {
             UserLogin data = new UserLogin();
-            UserLogin userlogin = new UserLogin();
+            //UserLogin userlogin = new UserLogin();
 
           
-            userlogin.UserName = username;
-            userlogin.Password = password;
+            //userlogin.UserName = username;
+            //userlogin.Password = password;
             var userResponce = resultsPageService.GetUserLogin(userlogin);
             if (userResponce != null)
             {
@@ -60,8 +61,8 @@ namespace AhwanamAPI.Controllers
             }
             else
             {
-                data.UserName = username;
-                data.Password = password;
+                data.UserName = userlogin.UserName;
+                data.Password = userlogin.Password;
                 data.Status = "notfound";
 
             }
