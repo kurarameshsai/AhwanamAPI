@@ -37,22 +37,16 @@ namespace AhwanamAPI.Controllers
         VenorVenueSignUpService vendorVenueSignUpService = new VenorVenueSignUpService();
         Vendormaster vendormaster = new Vendormaster();
 
-        //[AllowAnonymous]
-        [HttpGet]
+        [HttpPost]
         [Route("api/UserAuth/login")]
-
-        public IHttpActionResult login(string username, string password)
+        public IHttpActionResult login(UserLogin userlogin)
         {
             UserLogin data = new UserLogin();
-            UserLogin userlogin = new UserLogin();
-
-          
-            userlogin.UserName = username;
-            userlogin.Password = password;
             var userResponce = resultsPageService.GetUserLogin(userlogin);
             if (userResponce != null)
             {
                vendormaster = resultsPageService.GetVendorByEmail(userResponce.UserName);
+                userResponce.Password = "";
                string userdata = JsonConvert.SerializeObject(userResponce);
                ValidUserUtility.SetAuthCookie(userdata, userResponce.UserName.ToString());
                data = userResponce;
@@ -60,8 +54,8 @@ namespace AhwanamAPI.Controllers
             }
             else
             {
-                data.UserName = username;
-                data.Password = password;
+                data.UserName = userlogin.UserName;
+                data.Password = userlogin.Password;
                 data.Status = "notfound";
 
             }
@@ -71,8 +65,6 @@ namespace AhwanamAPI.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("api/UserAuth/register")]
-       
-
         public IHttpActionResult register(string customerphoneno, string customername, string password, string email)
         {
             string msg = "";
@@ -103,10 +95,10 @@ namespace AhwanamAPI.Controllers
 
             return Json(msg);
         }
+
         [AllowAnonymous]
         [HttpGet]
         [Route("api/UserAuth/activateemail")]
-
         public IHttpActionResult activateemail(string activatecode, string email)
         {
             string msg = "";
@@ -124,7 +116,6 @@ namespace AhwanamAPI.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("api/UserAuth/ActivateEmail1")]
-
         public IHttpActionResult ActivateEmail1(string ActivationCode, string Email)
         {
             try
@@ -232,6 +223,7 @@ namespace AhwanamAPI.Controllers
             return Char.ToUpper(str[0]) + str.Substring(1).ToLower();
         }
         #endregion
+
         [AllowAnonymous]
         [HttpGet]
         [Route("api/UserAuth/updatepassword")]
