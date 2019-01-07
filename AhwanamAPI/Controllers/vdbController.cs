@@ -256,12 +256,8 @@ namespace AhwanamAPI.Controllers
 
         public IHttpActionResult resellername(long id)
         {
-            
-
                 var resellername = partnerservice.GetPartners(Convert.ToString(id));
-
-                return Json(resellername);
-          
+                return Json(resellername); 
         }
       
 
