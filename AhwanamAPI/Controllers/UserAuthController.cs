@@ -14,6 +14,7 @@ using System.Web.Http;
 using System.Web.Security;
 using System.Web.Http.Cors;
 using System.Collections;
+using AhwanamAPI.Models;
 
 namespace AhwanamAPI.Controllers
 {
@@ -65,20 +66,21 @@ namespace AhwanamAPI.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("api/UserAuth/register")]
-        public IHttpActionResult register(string customerphoneno, string customername, string password, string email)
+        //public IHttpActionResult register(string customerphoneno, string customername, string password, string email)
+        public IHttpActionResult register([FromBody]registerdetails details)
         {
             string msg = "";
             UserLogin userlogin = new UserLogin();
             UserDetail userdetail = new UserDetail();
             userlogin.ActivationCode = Guid.NewGuid().ToString();
-            userdetail.FirstName = customername;
-            userdetail.UserPhone = customerphoneno;
-            userlogin.Password = password;
-            userlogin.UserName = email;
+            userdetail.FirstName = details.personname;
+            userdetail.UserPhone = details.phoneno;
+            userlogin.Password = details.password;
+            userlogin.UserName = details.email;
             userlogin.Status = "InActive";
             var responce = "";
             userlogin.UserType = "User";
-            long data = userlogindetailsservice.GetLoginDetailsByEmail(email);
+            long data = userlogindetailsservice.GetLoginDetailsByEmail(details.email);
             if (data == 0)
             { responce = userlogindetailsservice.AddUserDetails(userlogin, userdetail); }
             else
