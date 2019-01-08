@@ -130,7 +130,7 @@ namespace AhwanamAPI.Controllers
             return Json(mngvendor);
         }
         
-        [HttpPost]
+        [HttpGet]
         [Route("api/suppliers/checkVendoremail")]
         [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
 

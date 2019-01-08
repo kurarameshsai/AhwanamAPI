@@ -33,7 +33,7 @@ namespace AhwanamAPI.Controllers
             VendorsDecorator vendorsDecorator = new VendorsDecorator();
             VendorOthersService other = new VendorOthersService();
             //userLogin1.IPAddress = HttpContext.Request.UserHostAddress;
-            rgdetails.ActivationCode = Guid.NewGuid().ToString();
+            //rgdetails.ActivationCode = Guid.NewGuid().ToString();
             userLogin1.ActivationCode = rgdetails.ActivationCode; //Guid.NewGuid().ToString();
             userLogin1.Status = "InActive";
             userLogin1.UserType = "Vendor";
@@ -66,13 +66,7 @@ namespace AhwanamAPI.Controllers
                     msg = "Failed";
                 }
             }
-            if(msg=="Success")
-            {
-                return Json(msg);
-            }
-            else {
-                return Json(msg);
-            }
+            return Json(msg);
 
         }
         public int addservice(Vendormaster vendorMaster)
@@ -106,13 +100,6 @@ namespace AhwanamAPI.Controllers
                 vendorsDecorator = venorVenueSignUpService.AddVendorDecorator(vendorsDecorator);
                 if (vendorsDecorator.Id != 0) count++;
             }
-            //if (vendorMaster.ServicType == "EventManagement")
-            //{
-            //    VendorsEventOrganiser vendorsEventOrganiser = new VendorsEventOrganiser();
-            //    vendorsEventOrganiser.VendorMasterId = vendorMaster.Id;
-            //    vendorsEventOrganiser = venorVenueSignUpService.AddVendorEventOrganiser(vendorsEventOrganiser);
-            //    if (vendorsEventOrganiser.Id != 0) count++;
-            //}
             if (vendorMaster.ServicType == "Other")
             {
                 VendorsOther vendorsOther = new VendorsOther();
@@ -127,6 +114,17 @@ namespace AhwanamAPI.Controllers
                 if (vendorsOther.Id != 0) count++;
             }
             return count;
+        }
+
+        [HttpGet]
+        [Route("api/pathnerregister/checkvendoremail")]
+       public IHttpActionResult checkVendoremail(string email)
+        {
+            int query = vendorMasterService.checkemail(email);
+            if (query == 0)
+                return Json("email is not existed");
+            else
+                return Json("email is already existed select another email");
         }
     }
 }
