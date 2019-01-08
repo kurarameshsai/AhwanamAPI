@@ -124,7 +124,7 @@ namespace AhwanamAPI.Controllers
             if (query == 0)
                 return Json("email is not existed");
             else
-                return Json("email is already existed select another email");
+                return Json("email is already existed Enter another email");
         }
     }
 }
