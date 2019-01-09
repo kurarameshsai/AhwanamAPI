@@ -262,7 +262,7 @@ namespace AhwanamAPI.Controllers
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);
                 readFile = readFile.Replace("[name]", Capitalise(userdetails.FirstName));
-                TriggerEmail(userLogin.UserName, readFile, "Your Password is changed", null); // A mail will be triggered
+               /* TriggerEmail(userLogin.UserName, readFile, "Your Password is changed", null);*/ // A mail will be triggered
                 return Json("success");
             }
             catch (Exception)
@@ -286,7 +286,7 @@ namespace AhwanamAPI.Controllers
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);
                 readFile = readFile.Replace("[name]", Capitalise(userdetails.FirstName));
-                TriggerEmail(Email, readFile, "Password reset information", null); // A mail will be triggered
+               /* TriggerEmail(Email, readFile, "Password reset information", null);*/ // A mail will be triggered
                 return Json("success");
             }
             return Json("success1");
