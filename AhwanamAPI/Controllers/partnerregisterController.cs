@@ -13,7 +13,7 @@ using System.Web.Http;
 
 namespace AhwanamAPI.Controllers
 {
-    public class pathnerregisterController : ApiController
+    public class partnerregisterController : ApiController
     {
         UserLoginDetailsService userLoginDetailsService = new UserLoginDetailsService();
         VendorVenueService vendorVenueService = new VendorVenueService();
@@ -21,8 +21,8 @@ namespace AhwanamAPI.Controllers
         VendorMasterService vendorMasterService = new VendorMasterService();
 
         [HttpPost]
-        [Route("api/pathnerregister/PRegister")]
-        public IHttpActionResult PRegister([FromBody] registerdetails rgdetails)
+        [Route("api/partnerregister/register")]
+        public IHttpActionResult register([FromBody]registerdetails rgdetails)
         {
             string msg = "";
             UserLogin userLogin1 = new UserLogin();
@@ -117,8 +117,8 @@ namespace AhwanamAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/pathnerregister/checkvendoremail")]
-       public IHttpActionResult checkVendoremail(string email)
+        [Route("api/partnerregister/checkvendoremail")]
+       public IHttpActionResult checkVendoremail([FromUri]string email)
         {
             int query = vendorMasterService.checkemail(email);
             if (query == 0)

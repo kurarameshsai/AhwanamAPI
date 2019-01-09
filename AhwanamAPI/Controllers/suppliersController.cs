@@ -81,6 +81,7 @@ namespace AhwanamAPI.Controllers
         [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         public IHttpActionResult Insertsuppliers([FromBody] ManageVendor mngvendor)
         {
+            string msg = "";
             userLogin.UserName = "Sireesh.k@xsilica.com";
             userLogin.Password = "ksc";
             userLogin = resultsPageService.GetUserLogin(userLogin);
@@ -94,8 +95,19 @@ namespace AhwanamAPI.Controllers
             //string msg = string.Empty;
             mngvendor.registereddate = DateTime.Now;
             mngvendor.updateddate = DateTime.Now;
-            mngvendor = mngvendorservice.SaveVendor(mngvendor);
-            return Json(mngvendor);
+            int query = mngvendorservice.checkvendoremail(mngvendor.email, mngvendor.vendorId);
+            if(query == 0)
+            {
+                mngvendor = mngvendorservice.SaveVendor(mngvendor);
+                msg = "Success";
+            }
+            else
+            {
+                msg = "Failed";
+            }
+            return Json(msg);
+
+            //return Json(mngvendor);
         }
         [HttpPost]
         [Route("api/suppliers/Getsuppliersbyid")]
