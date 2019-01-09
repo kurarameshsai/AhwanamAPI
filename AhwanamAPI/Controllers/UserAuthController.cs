@@ -98,6 +98,10 @@ namespace AhwanamAPI.Controllers
             return Json(msg);
         }
 
+        //[AllowAnonymous]
+        //[HttpPost]
+        //public IHttpAsyncHandler 
+
         [AllowAnonymous]
         [HttpGet]
         [Route("api/UserAuth/activateemail")]
