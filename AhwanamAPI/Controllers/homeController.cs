@@ -33,5 +33,12 @@ namespace AhwanamAPI.Controllers
             emailSendingUtility.Wordpress_Email(txtto, txtmsg, subject, attachment);
             return Json("Quote Sent Successfully");
         }
+
+        //[HttpPost]
+        //[Route("api/home/sendemail")]
+        //public IHttpActionResult Sendemail(string txtto, string txtmsg, string subject, HttpPostedFileBase attachment)
+        //{
+
+        //}
     }
 }
