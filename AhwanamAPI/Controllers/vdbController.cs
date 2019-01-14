@@ -32,18 +32,15 @@ namespace AhwanamAPI.Controllers
         OrderService orderService = new OrderService();
         const string imagepath = @"/vendorimages/";
 
-      
+
 
         public IHttpActionResult policy(string id, string vid)
-            {
-                   var policy = vendorMasterService.Getpolicy(id.ToString(), vid);
+        {
+            var policy = vendorMasterService.Getpolicy(id.ToString(), vid);
             return Json(policy);
+        }
 
-               }
-
-
-
-    public IHttpActionResult PAck( string id,string vid)
+        public IHttpActionResult PAck(string id, string vid)
         {
             var vendordata = vendorMasterService.GetVendor(Convert.ToInt64(id));
             // Packages Section
@@ -129,18 +126,18 @@ namespace AhwanamAPI.Controllers
                     pkgitem.Add(null);
                 }
             }
-           
+
             return Json(pkgsks);
         }
 
         public IHttpActionResult allpkgs(string id, string vid)
         {
 
-  var allpkgs = vendorVenueSignUpService.Getpackages(long.Parse(id), long.Parse(vid)).ToList();
-        var pkgsks = allpkgs.Where(m => m.type == "Package").ToList();
-        var rentalpkgs = allpkgs.Where(m => m.type == "Rental").ToList();
+            var allpkgs = vendorVenueSignUpService.Getpackages(long.Parse(id), long.Parse(vid)).ToList();
+            var pkgsks = allpkgs.Where(m => m.type == "Package").ToList();
+            var rentalpkgs = allpkgs.Where(m => m.type == "Rental").ToList();
             return Json(allpkgs);
-    }
+        }
 
         public IHttpActionResult orders(string id)
         {
@@ -158,7 +155,7 @@ namespace AhwanamAPI.Controllers
 
             //Packages Section 
             viewservicesservice viewservicesss = new viewservicesservice();
-             var availablepackages = viewservicesss.getvendorpkgs(id.ToString()).Where(m => m.type == "Package").ToList();
+            var availablepackages = viewservicesss.getvendorpkgs(id.ToString()).Where(m => m.type == "Package").ToList();
             return Json(availablepackages);
         }
 
@@ -202,31 +199,30 @@ namespace AhwanamAPI.Controllers
         }
 
 
-        public IHttpActionResult allimages( string id,string vid)
+        public IHttpActionResult allimages(string id, string vid)
         {
 
             List<VendorImage> allimages = vendorImageService.GetImages(long.Parse(id), long.Parse(vid));
-            
-               var allimages1 = allimages.ToList();
-           
+
+            var allimages1 = allimages.ToList();
+
             return Json(allimages1);
         }
 
         public IHttpActionResult servicedata(string id, string vid)
         {
-                //Retrieving Available Services
-                var venues = vendorVenueSignUpService.GetVendorVenue(long.Parse(id)).ToList();
-                // Retrieving Particular Vendor Details
-                var vendordata = vendorMasterService.GetVendor(Convert.ToInt64(id));
-                VendorVenueService vendorVenueService = new VendorVenueService();
-                // Retrieving Particular Service Info
-                var servicedata = venues.Where(m => m.Id == long.Parse(vid)).ToList();
-                if (servicedata == null)
-                 return Json("Error");
-                 else
-                      return Json(servicedata);
-         }
-       
+            //Retrieving Available Services
+            var venues = vendorVenueSignUpService.GetVendorVenue(long.Parse(id)).ToList();
+            // Retrieving Particular Vendor Details
+            var vendordata = vendorMasterService.GetVendor(Convert.ToInt64(id));
+            VendorVenueService vendorVenueService = new VendorVenueService();
+            // Retrieving Particular Service Info
+            var servicedata = venues.Where(m => m.Id == long.Parse(vid)).ToList();
+            if (servicedata == null)
+                return Json("Error");
+            else
+                return Json(servicedata);
+        }
 
 
 
@@ -235,12 +231,13 @@ namespace AhwanamAPI.Controllers
 
 
 
-        
-       public IHttpActionResult profilepic(string id)
+
+
+        public IHttpActionResult profilepic(string id)
         {
-                var Vendor = vendorMasterService.GetVendor(Convert.ToInt64(id));
-                var profilepic = userLoginDetailsService.GetUser(int.Parse(Vendor.UserId.ToString())).UserImgName;
-                return Json(profilepic); 
+            var Vendor = vendorMasterService.GetVendor(Convert.ToInt64(id));
+            var profilepic = userLoginDetailsService.GetUser(int.Parse(Vendor.UserId.ToString())).UserImgName;
+            return Json(profilepic);
         }
 
         public IHttpActionResult venues()
@@ -249,17 +246,17 @@ namespace AhwanamAPI.Controllers
             if (id != 0)
             {
                 var venues = vendorVenueSignUpService.GetVendorVenue(id).ToList();
-                   return Json(venues);
+                return Json(venues);
             }
             return Json("Session Expired!!! Please Login");
         }
 
         public IHttpActionResult resellername(long id)
         {
-                var resellername = partnerservice.GetPartners(Convert.ToString(id));
-                return Json(resellername); 
+            var resellername = partnerservice.GetPartners(Convert.ToString(id));
+            return Json(resellername);
         }
-      
+
 
         #region References
 
@@ -429,7 +426,7 @@ namespace AhwanamAPI.Controllers
             string email = userLoginDetailsService.Getusername(long.Parse(id));
             vendorMaster = vendorMasterService.GetVendorByEmail(email);
             return vendorMaster.Id;
-          }
+        }
 
         #endregion
 

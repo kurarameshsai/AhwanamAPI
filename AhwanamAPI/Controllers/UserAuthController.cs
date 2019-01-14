@@ -46,19 +46,17 @@ namespace AhwanamAPI.Controllers
             var userResponce = resultsPageService.GetUserLogin(userlogin);
             if (userResponce != null)
             {
-               vendormaster = resultsPageService.GetVendorByEmail(userResponce.UserName);
+                vendormaster = resultsPageService.GetVendorByEmail(userResponce.UserName);
                 userResponce.Password = "";
-               string userdata = JsonConvert.SerializeObject(userResponce);
-               ValidUserUtility.SetAuthCookie(userdata, userResponce.UserName.ToString());
-               data = userResponce;
-                
+                string userdata = JsonConvert.SerializeObject(userResponce);
+                ValidUserUtility.SetAuthCookie(userdata, userResponce.UserName.ToString());
+                data = userResponce;
             }
             else
             {
                 data.UserName = userlogin.UserName;
                 data.Password = userlogin.Password;
                 data.Status = "notfound";
-
             }
             return Json(data);
         }
@@ -88,13 +86,11 @@ namespace AhwanamAPI.Controllers
                 msg = "unique";
                 return Json(msg);
             }
-            if(responce == "sucess")
+            if (responce == "sucess")
             {
                 msg = "success";
                 return Json(msg);
             }
-
-
             return Json(msg);
         }
 
@@ -111,7 +107,8 @@ namespace AhwanamAPI.Controllers
             if (activatecode == "") { activatecode = null; }
             var userresponce = venorvenuesignupservice.GetUserdetails(email);
             if (activatecode == userresponce.ActivationCode)
-            { msg = "success";
+            {
+                msg = "success";
                 return Json(msg);
             }
             msg = "failed";
@@ -175,7 +172,7 @@ namespace AhwanamAPI.Controllers
                                 vendorsOther = vendorOthersService.activationOther(vendorsOther, vendormaster, long.Parse(others.Id.ToString()), long.Parse(vid));
                             }
                         }
-                        
+
                         return Json("Thanks for Verifying the Email");
                     }
                 }
@@ -213,9 +210,9 @@ namespace AhwanamAPI.Controllers
                         name = "" + userdata.FirstName + " " + userdata.LastName + "";
                     else
                         name = userlogindetailsservice.GetUserId((int)user.UserId).UserName; //userdata.AlternativeEmailID;
-                   
+
                     var cart = cartserve.CartItemsList((int)user.UserId).Where(m => m.Status == "Active");
-                   
+
                     return Json(cart);
                 }
             }
@@ -238,7 +235,7 @@ namespace AhwanamAPI.Controllers
         {
             try
             {
-               
+
                 return Json(Email);
             }
             catch (Exception)
@@ -257,7 +254,7 @@ namespace AhwanamAPI.Controllers
                 var userResponse = venorvenuesignupservice.GetUserdetails(userLogin.UserName);
                 userlogindetailsservice.changepassword(userLogin, (int)userResponse.UserLoginId);
                 var userdetails = userlogindetailsservice.GetUser(int.Parse(userResponse.UserLoginId.ToString()));
-                string url = Request.RequestUri.GetLeftPart(UriPartial.Authority)+ "/home";
+                string url = Request.RequestUri.GetLeftPart(UriPartial.Authority) + "/home";
                 FileInfo File = new FileInfo(HttpContext.Current.Server.MapPath("/mailtemplate/change-email.html"));
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);
@@ -303,4 +300,4 @@ namespace AhwanamAPI.Controllers
         //#endregion
     }
 }
-  
+

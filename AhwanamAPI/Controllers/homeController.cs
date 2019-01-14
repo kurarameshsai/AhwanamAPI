@@ -9,6 +9,7 @@ using MaaAahwanam.Utility;
 using System.Web;
 using System.IO;
 using MaaAahwanam.Models;
+using System.Text;
 
 namespace AhwanamAPI.Controllers
 {
@@ -25,16 +26,30 @@ namespace AhwanamAPI.Controllers
             return Json(list.Split(','));
         }
 
+        public class Quote
+        {
+            public string name { get; set; }
+            public string email { get; set; }
+            public string phone { get; set; }
+            public string date { get; set; }
+            public string city { get; set; }
+            public string comments { get; set; }
+            public string page { get; set; }
+        }
+
         [HttpGet]
         [Route("api/home/sendquote")]
-        public IHttpActionResult SendQuote(string name, string email, string phone,string page)
+        public IHttpActionResult SendQuote(string name, string email, string phone, string page, string date = null, string city = null, string comments = null)
         {
+            StringBuilder txtmsg = new StringBuilder();
             string txtto = "info@ahwanam.com,prabodh.dasari@xsilica.com";
-            string txtmsg = "Name:"+name+",Email ID:"+email+",Phone Number:"+phone+"";
-            string subject = "Get Quote from "+page+"";
+            txtmsg.Append("Name:" + name + ",Email_ID:" + email + ",Phone Number:" + phone + "");
+            if (page == "Wedding-Gold-Package") txtmsg = txtmsg.Append(",Selected Date:" + date + ",City:" + city + ",Comments:" + comments);
+            string subject = "Get Quote from " + page + "";
             HttpPostedFileBase attachment = null;
             EmailSendingUtility emailSendingUtility = new EmailSendingUtility();
-            emailSendingUtility.Wordpress_Email(txtto, txtmsg, subject, attachment);
+            emailSendingUtility.Wordpress_Email(txtto, txtmsg.ToString().Replace(",", "<br/>"), subject, attachment);
+            //emailSendingUtility.Email_maaaahwanam(txtto, txtmsg.ToString().Replace(",", "<br/>"), subject, attachment);
             return Json("Quote Sent Successfully");
         }
 
