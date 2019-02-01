@@ -10,20 +10,115 @@ using System.Web;
 using System.IO;
 using MaaAahwanam.Models;
 using System.Text;
+using System.Web.Http.Cors;
 
 namespace AhwanamAPI.Controllers
 {
+    //[EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
     public class homeController : ApiController
     {
         VendorMasterService vendorMasterService = new VendorMasterService();
         UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
         VenorVenueSignUpService venorvenuesignupservice = new VenorVenueSignUpService();
+
+        public class services
+        {
+            public string name { get; set; }
+            public int serviceId { get; set; }
+            public string image { get; set; }
+        }
+
+        public class packages
+        {
+            public string name { get; set; }
+            public string packageId { get; set; }
+            public string description { get; set; }
+            public price price { get; set; }
+            public string imageUrl { get; set; }
+            public string targetUrl { get; set; }
+        }
+
+        public class price
+        {
+            public long offer_price { get; set; }
+            public long actual_price { get; set; }
+            public string save_amount { get; set; }
+            public string save_percentage { get; set; }
+        }
+
         [HttpGet]
-        [Route("api/home/services")]
+        [Route("api/home/categories")]
         public IHttpActionResult GetVendorServicesList()
         {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
             string list = "Venue,Catering,Decorator,Photography,Pandit,Mehendi";
-            return Json(list.Split(','));
+            List<services> res = new List<services>();
+            for (int i = 0; i < list.Split(',').Count(); i++)
+            {
+                services result = new services();
+                result.name = list.Split(',')[i];
+                result.serviceId = i;
+                result.image = "http://183.82.97.220/images/category.png";
+                res.Add(result);
+            }
+            dict.Add("status",true);
+            dict.Add("message", "Success");
+            dict.Add("results", res);
+            return Json(dict);
+        }
+
+        [HttpGet]
+        [Route("api/home/deals")]
+        
+        public IHttpActionResult GetPackages()
+        {
+            List<packages> package = new List<packages>();
+            packages pkg = new packages();
+            pkg.name = "Silver Package";
+            pkg.packageId = "P1";
+            pkg.description = "The Silver Package is designed to be all inclusive.";
+            price price = new price();
+            price.offer_price = 16000000;
+            price.actual_price = 18400000;
+            price.save_amount = "2.4 Lakhs";
+            price.save_percentage = "15";
+            pkg.price = price;
+            pkg.imageUrl = "http://183.82.97.220/images/package.png";
+            pkg.targetUrl = "https://www.ahwanam.com/packages/wedding-gold-package/";
+            package.Add(pkg);
+
+            pkg = new packages();
+            pkg.name = "Birthday Blast Package";
+            pkg.packageId = "P2";
+            pkg.description = "Birthday Blast Package is designed to be all inclusive.";
+            price = new price();
+            price.offer_price = 16000000;
+            price.actual_price = 18400000;
+            price.save_amount = "2.4 Lakhs";
+            price.save_percentage = "15";
+            pkg.price = price;
+            pkg.imageUrl = "http://183.82.97.220/images/package.png";
+            pkg.targetUrl = "https://www.ahwanam.com/packages/wedding-gold-package/";
+            package.Add(pkg);
+
+            pkg = new packages();
+            pkg.name = "Golden Package";
+            pkg.packageId = "P3";
+            pkg.description = "The Golden Package is designed to be all inclusive.";
+            price = new price();
+            price.offer_price = 16000000;
+            price.actual_price = 18400000;
+            price.save_amount = "2.4 Lakhs";
+            price.save_percentage = "15";
+            pkg.price = price;
+            pkg.imageUrl = "http://183.82.97.220/images/package.png";
+            pkg.targetUrl = "https://www.ahwanam.com/packages/wedding-gold-package/";
+            package.Add(pkg);
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            dict.Add("status", true);
+            dict.Add("message", "Success");
+            dict.Add("results", package);
+            return Json(dict);
         }
 
         public class Quote
@@ -79,6 +174,7 @@ namespace AhwanamAPI.Controllers
             }
 
         }
+
         public string Capitalise(string str)
         {
             if (String.IsNullOrEmpty(str))

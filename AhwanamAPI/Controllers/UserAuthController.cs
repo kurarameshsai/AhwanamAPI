@@ -42,6 +42,7 @@ namespace AhwanamAPI.Controllers
         [Route("api/UserAuth/login")]
         public IHttpActionResult login(UserLogin userlogin)
         {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
             UserLogin data = new UserLogin();
             var userResponce = resultsPageService.GetUserLogin(userlogin);
             if (userResponce != null)
@@ -51,14 +52,23 @@ namespace AhwanamAPI.Controllers
                 string userdata = JsonConvert.SerializeObject(userResponce);
                 ValidUserUtility.SetAuthCookie(userdata, userResponce.UserName.ToString());
                 data = userResponce;
+                encptdecpt encrypt = new encptdecpt();
+                string encrypted = encrypt.Encrypt(data.UserName);
+                dict.Add("Status", true);
+                dict.Add("message", "Success");
+                dict.Add("token", encrypted);
+                dict.Add("data", data);
             }
             else
             {
                 data.UserName = userlogin.UserName;
                 data.Password = userlogin.Password;
                 data.Status = "notfound";
+                dict.Add("Status", false);
+                dict.Add("message", "Fail");
+                dict.Add("data", data);
             }
-            return Json(data);
+            return Json(dict);
         }
 
         [AllowAnonymous]
@@ -73,6 +83,7 @@ namespace AhwanamAPI.Controllers
             userlogin.ActivationCode = Guid.NewGuid().ToString();
             userdetail.FirstName = details.personname;
             userdetail.UserPhone = details.phoneno;
+            userdetail.AlternativeEmailID = details.email;
             userlogin.Password = details.password;
             userlogin.UserName = details.email;
             userlogin.Status = "InActive";
@@ -83,12 +94,19 @@ namespace AhwanamAPI.Controllers
             { responce = userlogindetailsservice.AddUserDetails(userlogin, userdetail); }
             else
             {
-                msg = "unique";
+                msg = "Email ID Exists";
                 return Json(msg);
             }
             if (responce == "sucess")
             {
                 msg = "success";
+                string url = "http://api.ahwanam.com/api/home/ActivateEmail1?ActivationCode=" + userlogin.ActivationCode + "&&Email=" + userlogin.UserName;
+                FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
+                string readFile = File.OpenText().ReadToEnd();
+                readFile = readFile.Replace("[ActivationLink]", url);
+                readFile = readFile.Replace("[name]", Capitalise(userdetail.FirstName));
+                readFile = readFile.Replace("[phoneno]", userdetail.UserPhone);
+                TriggerEmail(userlogin.UserName, readFile, "Account Activation", null); // A Mail will be triggered
                 return Json(msg);
             }
             return Json(msg);
@@ -191,7 +209,7 @@ namespace AhwanamAPI.Controllers
         public void TriggerEmail(string txtto, string txtmsg, string subject, HttpPostedFileBase attachment)
         {
             EmailSendingUtility emailSendingUtility = new EmailSendingUtility();
-            emailSendingUtility.Email_maaaahwanam(txtto, txtmsg, subject, attachment);
+            emailSendingUtility.Wordpress_Email(txtto, txtmsg, subject, attachment);
         }
 
         #region References
@@ -259,7 +277,7 @@ namespace AhwanamAPI.Controllers
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);
                 readFile = readFile.Replace("[name]", Capitalise(userdetails.FirstName));
-               /* TriggerEmail(userLogin.UserName, readFile, "Your Password is changed", null);*/ // A mail will be triggered
+                /* TriggerEmail(userLogin.UserName, readFile, "Your Password is changed", null);*/ // A mail will be triggered
                 return Json("success");
             }
             catch (Exception)
@@ -283,7 +301,7 @@ namespace AhwanamAPI.Controllers
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);
                 readFile = readFile.Replace("[name]", Capitalise(userdetails.FirstName));
-               /* TriggerEmail(Email, readFile, "Password reset information", null);*/ // A mail will be triggered
+                /* TriggerEmail(Email, readFile, "Password reset information", null);*/ // A mail will be triggered
                 return Json("success");
             }
             return Json("success1");

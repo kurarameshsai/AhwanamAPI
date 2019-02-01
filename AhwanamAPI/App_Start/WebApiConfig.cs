@@ -14,8 +14,8 @@ namespace AhwanamAPI
             // Web API configuration and services
 
             // Web API routes
-            config.EnableCors(new EnableCorsAttribute("http://localhost:3000", headers: "*", methods: "*"));
-
+            //config.EnableCors(new EnableCorsAttribute("http://localhost:3000", headers: "*", methods: "*"));
+            config.EnableCors(new EnableCorsAttribute("http://api.ahwanam.com", headers: "*", methods: "*"));
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
