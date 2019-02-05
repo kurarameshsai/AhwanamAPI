@@ -38,36 +38,84 @@ namespace AhwanamAPI.Controllers
         VenorVenueSignUpService vendorVenueSignUpService = new VenorVenueSignUpService();
         Vendormaster vendormaster = new Vendormaster();
 
+        public class outputresponse
+        {
+            public string status { get; set; }
+            public string message { get; set; }
+            public userdata userdata { get; set; }
+        }
+
+        public class userdata
+        {
+            public string email { get; set; }
+            public string password { get; set; }
+            public string phoneno { get; set; }
+            public string name { get; set; }
+        }
+
+        public class loginresponse
+        {
+            public string status { get; set; }
+            public string message { get; set; }
+            public loginuser loginuser { get; set; }
+        }
+
+        public class loginuser
+        {
+            public string email { get; set; }
+            public string password { get; set; }
+            public string phoneno { get; set; }
+            public string name { get; set; }
+        }
+
         [HttpPost]
         [Route("api/UserAuth/login")]
         public IHttpActionResult login(UserLogin userlogin)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
             UserLogin data = new UserLogin();
+            userdata user = new userdata();
+            Dictionary<string, object> u1 = new Dictionary<string, object>();
+            if (userlogin.UserName == null || userlogin.Password == null)
+            {
+                dict.Add("Status", false);
+                dict.Add("message", "Field missing");
+                loginuser loginuser = new loginuser();
+                loginuser.email = userlogin.UserName;
+                loginuser.password = userlogin.Password;
+                u1.Add("user", loginuser);
+                dict.Add("data", u1);
+                return Json(dict);
+            }
             var userResponce = resultsPageService.GetUserLogin(userlogin);
             if (userResponce != null)
             {
-                vendormaster = resultsPageService.GetVendorByEmail(userResponce.UserName);
-                userResponce.Password = "";
-                string userdata = JsonConvert.SerializeObject(userResponce);
-                ValidUserUtility.SetAuthCookie(userdata, userResponce.UserName.ToString());
-                data = userResponce;
+                UserLoginDetailsService userLoginDetailsService = new UserLoginDetailsService();
+                var userdetails = userLoginDetailsService.GetUser((int)userResponce.UserLoginId);
                 encptdecpt encrypt = new encptdecpt();
-                string encrypted = encrypt.Encrypt(data.UserName);
+                string encrypted = encrypt.Encrypt(userResponce.UserName);
                 dict.Add("Status", true);
-                dict.Add("message", "Success");
-                dict.Add("token", encrypted);
-                dict.Add("data", data);
+                dict.Add("message", "Login Success");
+                loginuser loginuser = new loginuser();
+                loginuser.email = userlogin.UserName;
+                loginuser.password = userlogin.Password;
+                loginuser.name = userdetails.FirstName;
+                loginuser.phoneno = userdetails.UserPhone;
+                u1.Add("token", encrypted);
+                u1.Add("user", loginuser);
+                dict.Add("data", u1);
             }
             else
             {
-                data.UserName = userlogin.UserName;
-                data.Password = userlogin.Password;
-                data.Status = "notfound";
                 dict.Add("Status", false);
-                dict.Add("message", "Fail");
-                dict.Add("data", data);
+                dict.Add("message", "email and password doesnot match");
+                loginuser loginuser = new loginuser();
+                loginuser.email = userlogin.UserName;
+                loginuser.password = userlogin.Password;
+                u1.Add("user", loginuser);
+                dict.Add("data", u1);
             }
+            
             return Json(dict);
         }
 
@@ -77,7 +125,22 @@ namespace AhwanamAPI.Controllers
         //public IHttpActionResult register(string customerphoneno, string customername, string password, string email)
         public IHttpActionResult register([FromBody]registerdetails details)
         {
-            string msg = "";
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            userdata user = new userdata();
+            Dictionary<string, object> u1 = new Dictionary<string, object>();
+            if (details.personname == null || details.email == null || details.phoneno == null || details.password == null)
+            {
+                dict.Add("status", "Error");
+                dict.Add("message", "Field missing");
+                user.email = details.email;
+                user.name = details.personname;
+                user.password = details.password;
+                user.phoneno = details.phoneno;
+                u1.Add("User", user);
+                dict.Add("data", u1);
+                return Json(dict);
+            }
+            //string msg = "";
             UserLogin userlogin = new UserLogin();
             UserDetail userdetail = new UserDetail();
             userlogin.ActivationCode = Guid.NewGuid().ToString();
@@ -94,12 +157,12 @@ namespace AhwanamAPI.Controllers
             { responce = userlogindetailsservice.AddUserDetails(userlogin, userdetail); }
             else
             {
-                msg = "Email ID Exists";
-                return Json(msg);
+                dict.Add("status", "Error");
+                dict.Add("message", "Email already used");
             }
             if (responce == "sucess")
             {
-                msg = "success";
+                //msg = "success";
                 string url = "http://api.ahwanam.com/api/home/ActivateEmail1?ActivationCode=" + userlogin.ActivationCode + "&&Email=" + userlogin.UserName;
                 FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
                 string readFile = File.OpenText().ReadToEnd();
@@ -107,14 +170,18 @@ namespace AhwanamAPI.Controllers
                 readFile = readFile.Replace("[name]", Capitalise(userdetail.FirstName));
                 readFile = readFile.Replace("[phoneno]", userdetail.UserPhone);
                 TriggerEmail(userlogin.UserName, readFile, "Account Activation", null); // A Mail will be triggered
-                return Json(msg);
+                //return Json(msg);
+                dict.Add("status", "Success");
+                dict.Add("message", "Successfully registered");
             }
-            return Json(msg);
+            user.email = details.email;
+            user.name = details.personname;
+            user.password = details.password;
+            user.phoneno = details.phoneno;
+            u1.Add("User", user);
+            dict.Add("data", u1);
+            return Json(dict);
         }
-
-        //[AllowAnonymous]
-        //[HttpPost]
-        //public IHttpAsyncHandler 
 
         [AllowAnonymous]
         [HttpGet]
@@ -301,7 +368,7 @@ namespace AhwanamAPI.Controllers
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);
                 readFile = readFile.Replace("[name]", Capitalise(userdetails.FirstName));
-               TriggerEmail(Email, readFile, "Password reset information", null);// A mail will be triggered
+                TriggerEmail(Email, readFile, "Password reset information", null);// A mail will be triggered
                 return Json("success");
             }
             return Json("success1");

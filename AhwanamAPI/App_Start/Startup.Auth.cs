@@ -18,18 +18,18 @@ namespace AhwanamAPI
         static Startup()
 
         {
-            OAuthOptions = new OAuthAuthorizationServerOptions
-            {
-                TokenEndpointPath = new PathString("/token"),
-                Provider = new OAuthProvider(),
-                //AccessTokenExpireTimeSpan = TimeSpan.FromDays(100),
-                AccessTokenExpireTimeSpan=TimeSpan.FromMinutes(15),
-                AllowInsecureHttp = true
-            };
+            //OAuthOptions = new OAuthAuthorizationServerOptions
+            //{
+            //    TokenEndpointPath = new PathString("/token"),
+            //    Provider = new OAuthProvider(),
+            //    //AccessTokenExpireTimeSpan = TimeSpan.FromDays(100),
+            //    AccessTokenExpireTimeSpan=TimeSpan.FromMinutes(15),
+            //    AllowInsecureHttp = true
+            //};
         }
         public void ConfigureAuth(IAppBuilder app)
         {
-            app.UseOAuthBearerTokens(OAuthOptions);
+            //app.UseOAuthBearerTokens(OAuthOptions);
         }
     }
 }
