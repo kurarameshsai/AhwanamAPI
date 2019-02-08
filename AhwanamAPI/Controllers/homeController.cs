@@ -69,7 +69,6 @@ namespace AhwanamAPI.Controllers
 
         [HttpGet]
         [Route("api/home/deals")]
-        
         public IHttpActionResult GetPackages()
         {
             List<packages> package = new List<packages>();

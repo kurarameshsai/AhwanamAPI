@@ -70,20 +70,23 @@ namespace AhwanamAPI.Controllers
 
         [HttpPost]
         [Route("api/UserAuth/login")]
-        public IHttpActionResult login(UserLogin userlogin)
+        public IHttpActionResult login([FromBody]registerdetails details)//(UserLogin userlogin)
         {
+            UserLogin userlogin = new UserLogin();
+            userlogin.UserName = details.email;
+            userlogin.Password = details.password;
             Dictionary<string, object> dict = new Dictionary<string, object>();
             UserLogin data = new UserLogin();
             userdata user = new userdata();
             Dictionary<string, object> u1 = new Dictionary<string, object>();
             if (userlogin.UserName == null || userlogin.Password == null)
             {
-                dict.Add("Status", false);
+                dict.Add("status", false);
                 dict.Add("message", "Field missing");
-                loginuser loginuser = new loginuser();
-                loginuser.email = userlogin.UserName;
-                loginuser.password = userlogin.Password;
-                u1.Add("user", loginuser);
+                //loginuser loginuser = new loginuser();
+                //loginuser.email = userlogin.UserName;
+                //loginuser.password = userlogin.Password;
+                u1.Add("user", null);
                 dict.Add("data", u1);
                 return Json(dict);
             }
@@ -94,11 +97,11 @@ namespace AhwanamAPI.Controllers
                 var userdetails = userLoginDetailsService.GetUser((int)userResponce.UserLoginId);
                 encptdecpt encrypt = new encptdecpt();
                 string encrypted = encrypt.Encrypt(userResponce.UserName);
-                dict.Add("Status", true);
+                dict.Add("status", true);
                 dict.Add("message", "Login Success");
                 loginuser loginuser = new loginuser();
                 loginuser.email = userlogin.UserName;
-                loginuser.password = userlogin.Password;
+                //loginuser.password = userlogin.Password;
                 loginuser.name = userdetails.FirstName;
                 loginuser.phoneno = userdetails.UserPhone;
                 u1.Add("token", encrypted);
@@ -107,12 +110,12 @@ namespace AhwanamAPI.Controllers
             }
             else
             {
-                dict.Add("Status", false);
+                dict.Add("status", false);
                 dict.Add("message", "email and password doesnot match");
-                loginuser loginuser = new loginuser();
-                loginuser.email = userlogin.UserName;
-                loginuser.password = userlogin.Password;
-                u1.Add("user", loginuser);
+                //loginuser loginuser = new loginuser();
+                //loginuser.email = userlogin.UserName;
+                //loginuser.password = userlogin.Password;
+                u1.Add("user", null);
                 dict.Add("data", u1);
             }
             
@@ -128,15 +131,15 @@ namespace AhwanamAPI.Controllers
             Dictionary<string, object> dict = new Dictionary<string, object>();
             userdata user = new userdata();
             Dictionary<string, object> u1 = new Dictionary<string, object>();
-            if (details.personname == null || details.email == null || details.phoneno == null || details.password == null)
+            if (details.name == null || details.email == null || details.phoneno == null || details.password == null)
             {
-                dict.Add("status", "Error");
+                dict.Add("status", false);
                 dict.Add("message", "Field missing");
-                user.email = details.email;
-                user.name = details.personname;
-                user.password = details.password;
-                user.phoneno = details.phoneno;
-                u1.Add("User", user);
+                //user.email = details.email;
+                //user.name = details.personname;
+                //user.password = details.password;
+                //user.phoneno = details.phoneno;
+                u1.Add("User", null);
                 dict.Add("data", u1);
                 return Json(dict);
             }
@@ -144,7 +147,7 @@ namespace AhwanamAPI.Controllers
             UserLogin userlogin = new UserLogin();
             UserDetail userdetail = new UserDetail();
             userlogin.ActivationCode = Guid.NewGuid().ToString();
-            userdetail.FirstName = details.personname;
+            userdetail.FirstName = details.name;
             userdetail.UserPhone = details.phoneno;
             userdetail.AlternativeEmailID = details.email;
             userlogin.Password = details.password;
@@ -157,8 +160,9 @@ namespace AhwanamAPI.Controllers
             { responce = userlogindetailsservice.AddUserDetails(userlogin, userdetail); }
             else
             {
-                dict.Add("status", "Error");
+                dict.Add("status", false);
                 dict.Add("message", "Email already used");
+                u1.Add("User", null);
             }
             if (responce == "sucess")
             {
@@ -171,14 +175,14 @@ namespace AhwanamAPI.Controllers
                 readFile = readFile.Replace("[phoneno]", userdetail.UserPhone);
                 TriggerEmail(userlogin.UserName, readFile, "Account Activation", null); // A Mail will be triggered
                 //return Json(msg);
-                dict.Add("status", "Success");
+                dict.Add("status", true);
                 dict.Add("message", "Successfully registered");
+                user.email = details.email;
+                user.name = details.name;
+                user.password = details.password;
+                user.phoneno = details.phoneno;
+                u1.Add("User", user);
             }
-            user.email = details.email;
-            user.name = details.personname;
-            user.password = details.password;
-            user.phoneno = details.phoneno;
-            u1.Add("User", user);
             dict.Add("data", u1);
             return Json(dict);
         }

@@ -37,15 +37,12 @@ namespace AhwanamAPI.Controllers
             userLogin1.ActivationCode = rgdetails.ActivationCode; //Guid.NewGuid().ToString();
             userLogin1.Status = "InActive";
             userLogin1.UserType = "Vendor";
-            userDetail.FirstName = rgdetails.personname;
-            userDetail.UserPhone = rgdetails.phoneno;
+            userDetail.FirstName= vendorMaster.ContactPerson = rgdetails.name;
+            userDetail.UserPhone = vendorMaster.ContactNumber = rgdetails.phoneno;
             userLogin1.Password = rgdetails.password;
-            userLogin1.UserName = rgdetails.email;
+            userLogin1.UserName =vendorMaster.EmailId  = rgdetails.email;
             vendorMaster.BusinessName = rgdetails.businessname;
-            vendorMaster.ContactPerson = rgdetails.personname;
-            vendorMaster.ContactNumber = rgdetails.phoneno;
             vendorMaster.ServicType = rgdetails.servicetype;
-            vendorMaster.EmailId = rgdetails.email;
             vendorMaster.BusinessType = rgdetails.businesstype;
             long data = userLoginDetailsService.GetLoginDetailsByEmail(userLogin1.UserName);
             if (data == 0)
