@@ -242,7 +242,9 @@ namespace AhwanamAPI.Controllers
             }
             var records = param;
             #endregion
-
+            Dictionary<string, object> dict1 = new Dictionary<string, object>();
+            dict1.Add("status", true);
+            dict1.Add("message","Success");
             Dictionary<string, object> dict = new Dictionary<string, object>();
             dict.Add("results", records);
             dict.Add("total_count", data.Count);
@@ -250,7 +252,8 @@ namespace AhwanamAPI.Controllers
             dict.Add("no_of_pages", data.Count / 6);
             dict.Add("sort_options", (sortby == null) ? 1 : sortby);
             dict.Add("service_type", type);
-            return Json(dict);
+            dict1.Add("data", dict);
+            return Json(dict1);
         }
 
         [HttpGet]
@@ -398,7 +401,11 @@ namespace AhwanamAPI.Controllers
             dict.Add("filters", filter);
             //Cookie Section
             HttpContext.Current.Response.Cookies["filters"].Value = JsonConvert.SerializeObject(dict); //new JavaScriptSerializer().Serialize(dict);
-            return Json(dict);
+            Dictionary<string, object> dict1 = new Dictionary<string, object>();
+            dict1.Add("status", true);
+            dict1.Add("message", "Success");
+            dict1.Add("data", dict);
+            return Json(dict1);
         }
 
         [HttpGet]
