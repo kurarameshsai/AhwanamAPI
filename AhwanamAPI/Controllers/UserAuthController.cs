@@ -358,7 +358,7 @@ namespace AhwanamAPI.Controllers
         }
         [AllowAnonymous]
         [HttpGet]
-        [Route("api/UserAuth/forgotpass")]
+        [Route("api/UserAuth/forgotpassword")]
         public IHttpActionResult forgotpass(string Email)
         {
             UserLogin userLogin = new UserLogin();
@@ -375,6 +375,7 @@ namespace AhwanamAPI.Controllers
                 TriggerEmail(Email, readFile, "Password reset information", null);// A mail will be triggered
                 return Json("success");
             }
+
             return Json("success1");
         }
         #endregion
