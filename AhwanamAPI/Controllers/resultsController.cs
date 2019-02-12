@@ -198,7 +198,10 @@ namespace AhwanamAPI.Controllers
 
             page = (page == null) ? 1 : page;
             type = (type == null) ? "Venue" : type;
+            int takecount = (int)page * (int)offset;
             var data = resultsPageService.GetAllVendors(type);//.Skip(page*6).ToList();
+            if (page > 1)
+                data = data.Skip(takecount).Take((int)offset).ToList();
             if (cityvalue != null)
                 data = data.Where(m => m.City == cityvalue).ToList();
             if (localityvalue != null && cityvalue != null)
@@ -448,6 +451,20 @@ namespace AhwanamAPI.Controllers
             int takecount = (count == "" || count == null) ? 6 : int.Parse(count) * 6;
             List<GetVendors_Result> vendorslist = vendorlist(6, type.Split(','), "next", takecount).Where(m => m.cost1 >= decimal.Parse(range.Split(',')[0]) && m.cost1 <= decimal.Parse(range.Split(',')[1])).ToList();
             return Json(vendorslist);
+        }
+
+        [HttpGet]
+        [Route("api/results/ratings")]
+        public IHttpActionResult ratings()
+        {
+            RatingsServices ratingsServices = new RatingsServices();
+            var list = ratingsServices.GetRatings();
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            dict.Add("status", true);
+            dict.Add("message", "Success");
+            dict.Add("data", list);
+            dict.Add("count", list.Count);
+            return Json(dict);
         }
 
         public List<GetVendors_Result> vendorlist(int count, string[] selectedservices, string command, int takecount)

@@ -316,10 +316,11 @@ namespace AhwanamAPI.Controllers
         }
         #endregion
 
+
+        #region Password
         [AllowAnonymous]
         [HttpGet]
         [Route("api/UserAuth/updatepassword")]
-        #region Password
         public IHttpActionResult updatepassword(string Email)
         {
             try
@@ -332,12 +333,16 @@ namespace AhwanamAPI.Controllers
                 return Json("error");
             }
         }
+
         [AllowAnonymous]
         [HttpPost]
         [Route("api/UserAuth/changepassword")]
-
-        public IHttpActionResult changepassword(UserLogin userLogin)
+        public IHttpActionResult changepassword([FromBody]registerdetails details)
         {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            UserLogin userLogin = new UserLogin();
+            userLogin.UserName = details.email;
+            userLogin.Password = details.password;
             try
             {
                 var userResponse = venorvenuesignupservice.GetUserdetails(userLogin.UserName);
@@ -349,11 +354,15 @@ namespace AhwanamAPI.Controllers
                 readFile = readFile.Replace("[ActivationLink]", url);
                 readFile = readFile.Replace("[name]", Capitalise(userdetails.FirstName));
                 TriggerEmail(userLogin.UserName, readFile, "Your Password is changed", null); // A mail will be triggered
-                return Json("success");
+                dict.Add("status", true);
+                dict.Add("message", "Password Changed");
+                return Json(dict);
             }
             catch (Exception)
             {
-                return Json("Error");
+                dict.Add("status", false);
+                dict.Add("message", "Failure");
+                return Json(dict);
             }
         }
         [AllowAnonymous]
@@ -367,7 +376,7 @@ namespace AhwanamAPI.Controllers
             if (userResponse != null)
             {
                 var userdetails = userlogindetailsservice.GetUser(int.Parse(userResponse.UserLoginId.ToString()));
-                string url = Request.RequestUri.GetLeftPart(UriPartial.Authority) + "/Home/ActivateEmail?ActivationCode=" + userResponse.ActivationCode + "&&Email=" + Email;
+                string url = "http://api.ahwanam.com/api/UserAuth/changepassword?Email="+ Email;
                 FileInfo File = new FileInfo(HttpContext.Current.Server.MapPath("/mailtemplate/mailer.html"));
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);
