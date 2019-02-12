@@ -316,10 +316,11 @@ namespace AhwanamAPI.Controllers
         }
         #endregion
 
+
+        #region Password
         [AllowAnonymous]
         [HttpGet]
         [Route("api/UserAuth/updatepassword")]
-        #region Password
         public IHttpActionResult updatepassword(string Email)
         {
             try
