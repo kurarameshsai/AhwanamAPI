@@ -118,7 +118,7 @@ namespace AhwanamAPI.Controllers
                 u1.Add("user", null);
                 dict.Add("data", u1);
             }
-            
+
             return Json(dict);
         }
 
@@ -129,8 +129,8 @@ namespace AhwanamAPI.Controllers
         public IHttpActionResult register([FromBody]registerdetails details)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
-            userdata user = new userdata();
-            Dictionary<string, object> u1 = new Dictionary<string, object>();
+            //userdata user = new userdata();
+            //Dictionary<string, object> u1 = new Dictionary<string, object>();
             if (details.name == null || details.email == null || details.phoneno == null || details.password == null)
             {
                 dict.Add("status", false);
@@ -139,8 +139,8 @@ namespace AhwanamAPI.Controllers
                 //user.name = details.personname;
                 //user.password = details.password;
                 //user.phoneno = details.phoneno;
-                u1.Add("User", null);
-                dict.Add("data", u1);
+                //u1.Add("User", null);
+                //dict.Add("data", u1);
                 return Json(dict);
             }
             //string msg = "";
@@ -162,11 +162,11 @@ namespace AhwanamAPI.Controllers
             {
                 dict.Add("status", false);
                 dict.Add("message", "Email already used");
-                u1.Add("User", null);
+                //u1.Add("User", null);
             }
             if (responce == "sucess")
             {
-                string url = "https://www.ahwanam.com/home";
+                string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + " & email = " + userlogin.UserName;
                 //msg = "success";
                 //string url = "http://api.ahwanam.com/api/home/ActivateEmail1?ActivationCode=" + userlogin.ActivationCode + "&&Email=" + userlogin.UserName;
                 FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
@@ -178,31 +178,33 @@ namespace AhwanamAPI.Controllers
                 //return Json(msg);
                 dict.Add("status", true);
                 dict.Add("message", "Successfully registered");
-                user.email = details.email;
-                user.name = details.name;
-                user.password = details.password;
-                user.phoneno = details.phoneno;
-                u1.Add("User", user);
+                //user.email = details.email;
+                //user.name = details.name;
+                //user.password = details.password;
+                //user.phoneno = details.phoneno;
+                //u1.Add("User", user);
             }
-            dict.Add("data", u1);
+            //dict.Add("data", u1);
             return Json(dict);
         }
 
         [AllowAnonymous]
         [HttpGet]
-        [Route("api/UserAuth/activateemail")]
-        public IHttpActionResult activateemail(string activatecode, string email)
+        [Route("api/UserAuth/verify")]
+        public IHttpActionResult activateemail(string activation_code, string email)
         {
-            string msg = "";
-            if (activatecode == "") { activatecode = null; }
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            if (activation_code == "") { activation_code = null; }
             var userresponce = venorvenuesignupservice.GetUserdetails(email);
-            if (activatecode == userresponce.ActivationCode)
+            if (activation_code == userresponce.ActivationCode)
             {
-                msg = "success";
-                return Json(msg);
+                dict.Add("status", true);
+                dict.Add("message", "Email successfully verified");
+                return Json(dict);
             }
-            msg = "failed";
-            return Json(msg);
+            dict.Add("status", false);
+            dict.Add("message", "Link Expired");
+            return Json(dict);
 
         }
 
@@ -335,37 +337,73 @@ namespace AhwanamAPI.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpPost]
-        [Route("api/UserAuth/changepassword")]
+        [Route("api/UserAuth/reset")]
         public IHttpActionResult changepassword([FromBody]registerdetails details)
         {
+            VenorVenueSignUpService venorVenueSignUpService = new VenorVenueSignUpService();
             Dictionary<string, object> dict = new Dictionary<string, object>();
             UserLogin userLogin = new UserLogin();
             userLogin.UserName = details.email;
             userLogin.Password = details.password;
-            try
+            var data = venorVenueSignUpService.GetUserdetails(userLogin.UserName);
+            if (details.code == data.ActivationCode)
             {
-                var userResponse = venorvenuesignupservice.GetUserdetails(userLogin.UserName);
-                userlogindetailsservice.changepassword(userLogin, (int)userResponse.UserLoginId);
-                var userdetails = userlogindetailsservice.GetUser(int.Parse(userResponse.UserLoginId.ToString()));
-                string url = Request.RequestUri.GetLeftPart(UriPartial.Authority) + "/home";
-                FileInfo File = new FileInfo(HttpContext.Current.Server.MapPath("/mailtemplate/change-email.html"));
-                string readFile = File.OpenText().ReadToEnd();
-                readFile = readFile.Replace("[ActivationLink]", url);
-                readFile = readFile.Replace("[name]", Capitalise(userdetails.FirstName));
-                TriggerEmail(userLogin.UserName, readFile, "Your Password is changed", null); // A mail will be triggered
-                dict.Add("status", true);
-                dict.Add("message", "Password Changed");
-                return Json(dict);
+                try
+                {
+                    userLogin = userlogindetailsservice.changepassword(userLogin, (int)data.UserLoginId);
+                    dict.Add("status", true);
+                    dict.Add("message", "Password Changed");
+                    return Json(dict);
+                }
+                catch (Exception)
+                {
+                    dict.Add("status", false);
+                    dict.Add("message", "Link Expired");
+                    return Json(dict);
+                }
             }
-            catch (Exception)
+            else
             {
                 dict.Add("status", false);
-                dict.Add("message", "Failure");
+                dict.Add("message", "Link Expired");
                 return Json(dict);
             }
         }
+
+
+        //[AllowAnonymous]
+        //[HttpPost]
+        //[Route("api/UserAuth/changepassword")]
+        //public IHttpActionResult changepassword([FromBody]registerdetails details)
+        //{
+        //    Dictionary<string, object> dict = new Dictionary<string, object>();
+        //    UserLogin userLogin = new UserLogin();
+        //    userLogin.UserName = details.email;
+        //    userLogin.Password = details.password;
+        //    try
+        //    {
+        //        var userResponse = venorvenuesignupservice.GetUserdetails(userLogin.UserName);
+        //        userlogindetailsservice.changepassword(userLogin, (int)userResponse.UserLoginId);
+        //        var userdetails = userlogindetailsservice.GetUser(int.Parse(userResponse.UserLoginId.ToString()));
+        //        string url = Request.RequestUri.GetLeftPart(UriPartial.Authority) + "/home";
+        //        FileInfo File = new FileInfo(HttpContext.Current.Server.MapPath("/mailtemplate/change-email.html"));
+        //        string readFile = File.OpenText().ReadToEnd();
+        //        readFile = readFile.Replace("[ActivationLink]", url);
+        //        readFile = readFile.Replace("[name]", Capitalise(userdetails.FirstName));
+        //        TriggerEmail(userLogin.UserName, readFile, "Your Password is changed", null); // A mail will be triggered
+        //        dict.Add("status", true);
+        //        dict.Add("message", "Password Changed");
+        //        return Json(dict);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        dict.Add("status", false);
+        //        dict.Add("message", "Failure");
+        //        return Json(dict);
+        //    }
+        //}
+
         [AllowAnonymous]
         [HttpPost]
         [Route("api/UserAuth/forgotpassword")]
@@ -374,11 +412,14 @@ namespace AhwanamAPI.Controllers
             Dictionary<string, object> dict = new Dictionary<string, object>();
             UserLogin userLogin = new UserLogin();
             userLogin.UserName = details.email;
-            var userResponse = venorvenuesignupservice.GetUserLogdetails(userLogin);
-            if (userResponse != null)
+            userLogin = venorvenuesignupservice.GetUserLogdetails(userLogin);
+            if (userLogin != null)
             {
-                var userdetails = userlogindetailsservice.GetUser(int.Parse(userResponse.UserLoginId.ToString()));
-                string url = "https://www.ahwanam.com/home";
+                var userdetails = userlogindetailsservice.GetUser(int.Parse(userLogin.UserLoginId.ToString()));
+                userLogin.ActivationCode = Guid.NewGuid().ToString();
+                userLogin.UpdatedDate = DateTime.Now;
+                var data = userlogindetailsservice.UpdateActivationCode(userLogin);
+                string url = "https://ahwanam-sandbox.herokuapp.com/resetpassword?code=" + userLogin.ActivationCode;
                 FileInfo File = new FileInfo(HttpContext.Current.Server.MapPath("/mailtemplate/mailer.html"));
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);

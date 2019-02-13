@@ -20,7 +20,7 @@ namespace AhwanamAPI.Controllers
         VendorMasterService vendorMasterService = new VendorMasterService();
         UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
         VenorVenueSignUpService venorvenuesignupservice = new VenorVenueSignUpService();
-
+        TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
         public class services
         {
             public string name { get; set; }
@@ -44,6 +44,17 @@ namespace AhwanamAPI.Controllers
             public long actual_price { get; set; }
             public string save_amount { get; set; }
             public string save_percentage { get; set; }
+        }
+
+        public class contact
+        {
+            public int ID { get; set; }
+            public string name { get; set; }
+            public string email { get; set; }
+            public string phone { get; set; }
+            public string event_date { get; set; }
+            public string time { get; set; }
+            public string description { get; set; }
         }
 
         [HttpGet]
@@ -204,6 +215,33 @@ namespace AhwanamAPI.Controllers
             if (String.IsNullOrEmpty(str))
                 return String.Empty;
             return Char.ToUpper(str[0]) + str.Substring(1).ToLower();
+        }
+
+        [HttpPost]
+        [Route("api/home/savecontact")]
+        public IHttpActionResult savecontact([FromBody]contact contact)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            EnquiryService enquiryService = new EnquiryService();
+            Enquiry enquiry = new Enquiry();
+            enquiry.PersonName = contact.name;
+            enquiry.SenderPhone = contact.phone;
+            enquiry.SenderEmailId = contact.email;
+            //string date = contact.event_date + contact.time;
+            //DateTime d1 = Convert.ToDateTime(contact.event_date);
+            //d1.Add("time",contact.time);
+            enquiry.EnquiryDate = DateTime.Parse(contact.event_date);
+            enquiry.EnquiryDetails = contact.description;
+            enquiry.EnquiryTitle = "Talk To Ahwanam";
+            enquiry.EnquiryStatus=enquiry.Status = "Open";
+            enquiry.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+            string status = enquiryService.SaveEnquiries(enquiry);
+            if (status == "Success")
+                dict.Add("status", true);
+            else
+                dict.Add("status", true);
+            dict.Add("message", status);
+            return Json(dict);
         }
     }
 }

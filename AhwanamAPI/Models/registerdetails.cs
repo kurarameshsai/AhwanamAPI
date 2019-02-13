@@ -15,5 +15,6 @@ namespace AhwanamAPI.Models
         public string servicetype { get; set; }
         public string ActivationCode { get; set; }
         public string businesstype { get; set; }
+        public string code { get; set; }
     }
 }
