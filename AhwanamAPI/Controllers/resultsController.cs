@@ -463,6 +463,18 @@ namespace AhwanamAPI.Controllers
             dict.Add("status", true);
             dict.Add("message", "Success");
             dict.Add("data", list);
+            return Json(dict);
+        }
+
+        [HttpGet]
+        [Route("api/results/ratingcount")]
+        public IHttpActionResult ratingcount()
+        {
+            RatingsServices ratingsServices = new RatingsServices();
+            var list = ratingsServices.GetRatings();
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            dict.Add("status", true);
+            dict.Add("message", "Success");
             dict.Add("count", list.Count);
             return Json(dict);
         }

@@ -166,8 +166,9 @@ namespace AhwanamAPI.Controllers
             }
             if (responce == "sucess")
             {
+                string url = "https://www.ahwanam.com/home";
                 //msg = "success";
-                string url = "http://api.ahwanam.com/api/home/ActivateEmail1?ActivationCode=" + userlogin.ActivationCode + "&&Email=" + userlogin.UserName;
+                //string url = "http://api.ahwanam.com/api/home/ActivateEmail1?ActivationCode=" + userlogin.ActivationCode + "&&Email=" + userlogin.UserName;
                 FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);
@@ -366,26 +367,30 @@ namespace AhwanamAPI.Controllers
             }
         }
         [AllowAnonymous]
-        [HttpGet]
+        [HttpPost]
         [Route("api/UserAuth/forgotpassword")]
-        public IHttpActionResult forgotpass(string Email)
+        public IHttpActionResult forgotpass([FromBody]registerdetails details)
         {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
             UserLogin userLogin = new UserLogin();
-            userLogin.UserName = Email;
+            userLogin.UserName = details.email;
             var userResponse = venorvenuesignupservice.GetUserLogdetails(userLogin);
             if (userResponse != null)
             {
                 var userdetails = userlogindetailsservice.GetUser(int.Parse(userResponse.UserLoginId.ToString()));
-                string url = "http://api.ahwanam.com/api/UserAuth/changepassword?Email="+ Email;
+                string url = "https://www.ahwanam.com/home";
                 FileInfo File = new FileInfo(HttpContext.Current.Server.MapPath("/mailtemplate/mailer.html"));
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);
                 readFile = readFile.Replace("[name]", Capitalise(userdetails.FirstName));
-                TriggerEmail(Email, readFile, "Password reset information", null);// A mail will be triggered
-                return Json("success");
+                TriggerEmail(details.email, readFile, "Password reset information", null);// A mail will be triggered
+                dict.Add("status", true);
+                dict.Add("message", "Reset Password Request Sent");
+                return Json(dict);
             }
-
-            return Json("success1");
+            dict.Add("status", false);
+            dict.Add("message", "Failure");
+            return Json(dict);
         }
         #endregion
 
