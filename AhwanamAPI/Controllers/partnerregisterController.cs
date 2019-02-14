@@ -34,7 +34,7 @@ namespace AhwanamAPI.Controllers
             VendorOthersService other = new VendorOthersService();
             //userLogin1.IPAddress = HttpContext.Request.UserHostAddress;
             //rgdetails.ActivationCode = Guid.NewGuid().ToString();
-            userLogin1.ActivationCode = rgdetails.ActivationCode; //Guid.NewGuid().ToString();
+            userLogin1.ActivationCode = Guid.NewGuid().ToString();
             userLogin1.Status = "InActive";
             userLogin1.UserType = "Vendor";
             userDetail.FirstName= vendorMaster.ContactPerson = rgdetails.name;
