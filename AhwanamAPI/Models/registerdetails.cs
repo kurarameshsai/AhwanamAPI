@@ -13,7 +13,7 @@ namespace AhwanamAPI.Models
         public string password { get; set; }
         public string businessname { get; set; }
         public string servicetype { get; set; }
-        public string ActivationCode { get; set; }
+        //public string ActivationCode { get; set; }
         public string businesstype { get; set; }
         public string code { get; set; }
     }

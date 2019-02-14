@@ -166,7 +166,7 @@ namespace AhwanamAPI.Controllers
             }
             if (responce == "sucess")
             {
-                string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + " & email = " + userlogin.UserName;
+                string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
                 //msg = "success";
                 //string url = "http://api.ahwanam.com/api/home/ActivateEmail1?ActivationCode=" + userlogin.ActivationCode + "&&Email=" + userlogin.UserName;
                 FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
@@ -344,14 +344,19 @@ namespace AhwanamAPI.Controllers
             VenorVenueSignUpService venorVenueSignUpService = new VenorVenueSignUpService();
             Dictionary<string, object> dict = new Dictionary<string, object>();
             UserLogin userLogin = new UserLogin();
-            userLogin.UserName = details.email;
+            UserLogin u1 = new UserLogin();
+            TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
             userLogin.Password = details.password;
-            var data = venorVenueSignUpService.GetUserdetails(userLogin.UserName);
-            if (details.code == data.ActivationCode)
+            if (details.email != null)
+                u1 = venorVenueSignUpService.GetUserdetails(userLogin.UserName);
+            else
+                u1 = venorVenueSignUpService.GetUserLoginByCode(details.code);
+            if (details.code == u1.ActivationCode)
             {
                 try
                 {
-                    userLogin = userlogindetailsservice.changepassword(userLogin, (int)data.UserLoginId);
+                    userLogin.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+                    userLogin = userlogindetailsservice.changepassword(userLogin, (int)u1.UserLoginId);
                     dict.Add("status", true);
                     dict.Add("message", "Password Changed");
                     return Json(dict);

@@ -187,6 +187,33 @@ namespace AhwanamAPI.Controllers
         public IHttpActionResult getrecords(string type, int? city = -1, int? locality = -1, int? page = 0, int? capacity = -1, int? price_per_plate_or_rental = -1, int? offset = 0, int? sortby = -1, int? space_preference = -1, int? rating = -1, int? venue_type = -1)
         {
             int status = checktoken(); // Checking Token
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            Dictionary<string, object> dict1 = new Dictionary<string, object>();
+            type = (type == null) ? "Venue" : type;
+            //Type Venue
+            if (type == "Venue")
+                dict = VenueRecords(type, city, locality, page, capacity, price_per_plate_or_rental, offset, sortby, space_preference, rating, venue_type);
+            //Type Caterer
+            else if (type == "Catering")
+                dict = CatererRecords(type, page, offset, rating);
+            //Type Decorator
+            else if (type == "Photographer")
+                dict = PhotographerRecords(type, page, offset, rating);
+            //Type photographer
+            else if (type == "Decorator")
+                dict = DecoratorRecords(type, page, offset, rating);
+            //Type Other
+            else if (type == "Pandit" || type == "Mehendi")
+                dict = OtherRecords(type, page, offset, rating);
+            dict1.Add("status", true);
+            dict1.Add("message", "Success");
+            dict1.Add("data", dict);
+            return Json(dict1);
+        }
+
+        #region Venue_Records
+        public Dictionary<string, object> VenueRecords(string type, int? city = -1, int? locality = -1, int? page = 0, int? capacity = -1, int? price_per_plate_or_rental = -1, int? offset = 0, int? sortby = -1, int? space_preference = -1, int? rating = -1, int? venue_type = -1)
+        {
             string guestsvalue = (capacity != -1) ? cookies((int)capacity, "guests") : null;
             string cityvalue = (city != -1) ? cookies((int)city, "city") : null;
             string localityvalue = (locality != -1) ? cookies((int)locality, "locality") : null;
@@ -195,9 +222,7 @@ namespace AhwanamAPI.Controllers
             string sortbyvalue = (sortby != -1) ? cookies((int)sortby, "sort") : null;
             string ratingvalue = (rating != -1) ? cookies((int)rating, "rating") : null;
             string vtypevalue = (venue_type != -1) ? cookies((int)venue_type, "vtype") : null;
-
             page = (page == null) ? 1 : page;
-            type = (type == null) ? "Venue" : type;
             int takecount = (int)page * (int)offset;
             var data = resultsPageService.GetAllVendors(type);//.Skip(page*6).ToList();
             if (page > 1)
@@ -245,9 +270,7 @@ namespace AhwanamAPI.Controllers
             }
             var records = param;
             #endregion
-            Dictionary<string, object> dict1 = new Dictionary<string, object>();
-            dict1.Add("status", true);
-            dict1.Add("message","Success");
+
             Dictionary<string, object> dict = new Dictionary<string, object>();
             dict.Add("results", records);
             dict.Add("total_count", data.Count);
@@ -255,9 +278,81 @@ namespace AhwanamAPI.Controllers
             dict.Add("no_of_pages", data.Count / 6);
             dict.Add("sort_options", (sortby == null) ? 1 : sortby);
             dict.Add("service_type", type);
-            dict1.Add("data", dict);
-            return Json(dict1);
+            return dict;
         }
+        #endregion
+
+        #region Caterer_Records
+        public Dictionary<string, object> CatererRecords(string type, int? page = 0,int? offset = 0,int? rating = -1)
+        {
+            page = (page == null) ? 1 : page;
+            int takecount = (int)page * (int)offset;
+            var data = resultsPageService.GetAllCaterers();
+            if (page > 1)
+                data = data.Skip(takecount).Take((int)offset).ToList();
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            dict.Add("results", data);
+            dict.Add("total_count", data.Count);
+            dict.Add("offset", (offset == null) ? 12 : offset);
+            dict.Add("no_of_pages", data.Count / 6);
+            dict.Add("service_type", type);
+            return dict;
+        }
+        #endregion
+
+        #region Decorator_Records
+        public Dictionary<string, object> DecoratorRecords(string type, int? page = 0, int? offset = 0, int? rating = -1)
+        {
+            page = (page == null) ? 1 : page;
+            int takecount = (int)page * (int)offset;
+            var data = resultsPageService.GetAllDecorators();
+            if (page > 1)
+                data = data.Skip(takecount).Take((int)offset).ToList();
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            dict.Add("results", data);
+            dict.Add("total_count", data.Count);
+            dict.Add("offset", (offset == null) ? 12 : offset);
+            dict.Add("no_of_pages", data.Count / 6);
+            dict.Add("service_type", type);
+            return dict;
+        }
+        #endregion
+
+        #region Photographer_Records
+        public Dictionary<string, object> PhotographerRecords(string type, int? page = 0, int? offset = 0, int? rating = -1)
+        {
+            page = (page == null) ? 1 : page;
+            int takecount = (int)page * (int)offset;
+            var data = resultsPageService.GetAllPhotographers();
+            if (page > 1)
+                data = data.Skip(takecount).Take((int)offset).ToList();
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            dict.Add("results", data);
+            dict.Add("total_count", data.Count);
+            dict.Add("offset", (offset == null) ? 12 : offset);
+            dict.Add("no_of_pages", data.Count / 6);
+            dict.Add("service_type", type);
+            return dict;
+        }
+        #endregion
+
+        #region Other_Records
+        public Dictionary<string, object> OtherRecords(string type, int? page = 0, int? offset = 0, int? rating = -1)
+        {
+            page = (page == null) ? 1 : page;
+            int takecount = (int)page * (int)offset;
+            var data = resultsPageService.GetAllOthers(type);
+            if (page > 1)
+                data = data.Skip(takecount).Take((int)offset).ToList();
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            dict.Add("results", data);
+            dict.Add("total_count", data.Count);
+            dict.Add("offset", (offset == null) ? 12 : offset);
+            dict.Add("no_of_pages", data.Count / 6);
+            dict.Add("service_type", type);
+            return dict;
+        }
+        #endregion
 
         [HttpGet]
         [Route("api/results/getfilters")]
