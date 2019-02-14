@@ -81,12 +81,12 @@ namespace AhwanamAPI.Controllers
 
         [HttpGet]
         [Route("api/home/othercategories")]
-        public IHttpActionResult GetVendorOtherServiceList()
+        public IHttpActionResult GetVendorOtherServiceList([FromUri] string type)
         {
 
             Dictionary<string, object> dict = new Dictionary<string, object>();
-            List<string> servicelist = new List<string> { "Venue","Catering","Decorator","Photography","Pandit","Mehendi"};
-           var list = servicelist.Remove("Venue");
+            List<string> servicelist = new List<string> {"Venue","Catering","Decorator","Photography","Pandit","Mehendi"};
+           var list = servicelist.Remove(type);
             List<services> res = new List<services>();
             for (int i = 0; i < servicelist.Count(); i++)
             {
