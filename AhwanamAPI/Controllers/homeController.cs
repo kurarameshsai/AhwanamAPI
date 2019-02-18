@@ -72,7 +72,7 @@ namespace AhwanamAPI.Controllers
                 result.image = "http://183.82.97.220/images/category.png";
                 res.Add(result);
             }
-            dict.Add("status",true);
+            dict.Add("status", true);
             dict.Add("message", "Success");
             dict.Add("results", res);
             //dict.Add("sort_options", true);
@@ -85,8 +85,8 @@ namespace AhwanamAPI.Controllers
         {
 
             Dictionary<string, object> dict = new Dictionary<string, object>();
-            List<string> servicelist = new List<string> {"Venue","Catering","Decorator","Photography","Pandit","Mehendi"};
-           var list = servicelist.Remove(type);
+            List<string> servicelist = new List<string> { "Venue", "Catering", "Decorator", "Photography", "Pandit", "Mehendi" };
+            var list = servicelist.Remove(type);
             List<services> res = new List<services>();
             for (int i = 0; i < servicelist.Count(); i++)
             {
@@ -233,7 +233,7 @@ namespace AhwanamAPI.Controllers
             enquiry.EnquiryDate = DateTime.Parse(contact.event_date);
             enquiry.EnquiryDetails = contact.description;
             enquiry.EnquiryTitle = "Talk To Ahwanam";
-            enquiry.EnquiryStatus=enquiry.Status = "Open";
+            enquiry.EnquiryStatus = enquiry.Status = "Open";
             enquiry.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
             string status = enquiryService.SaveEnquiries(enquiry);
             if (status == "Success")
