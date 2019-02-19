@@ -41,6 +41,9 @@ namespace AhwanamAPI.Controllers
                 {
                     GetVendors_Result vendor = resultsPageService.GetAllVendors(type).Where(m => m.Id == long.Parse(id) && m.subid == long.Parse(vid)).FirstOrDefault();
                     dict.Add("data", vendor);
+                    //Ratings
+                    decimal trating = (vendor.fbrating != null && vendor.googlerating != null && vendor.jdrating != null) ? decimal.Parse(vendor.fbrating) + decimal.Parse(vendor.googlerating) + decimal.Parse(vendor.jdrating) : 0;
+                    dict.Add("rating", (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0");
                 }
                 else if (type == "Catering")
                 {
@@ -62,8 +65,37 @@ namespace AhwanamAPI.Controllers
                     GetDecorators_Result vendor = resultsPageService.GetAllDecorators().Where(m => m.Id == long.Parse(id) && m.subid == long.Parse(vid)).FirstOrDefault();
                     dict.Add("data", vendor);
                 }
+
+                // Gallery
+                var allimages = viewservicesss.GetVendorAllImages(long.Parse(id)).ToList();
+                dict.Add("gallery", allimages);
+
+                if (vid != null)
+                {
+                    //Particular Service Gallery
+                    var allimages1 = viewservicesss.GetVendorAllImages(long.Parse(id)).Where(m => m.VendorId == long.Parse(vid)).ToList();
+                    dict.Add("pgallery", allimages1);
+
+                    //Food Packages
+                    var fpkgs = viewservicesss.getvendorpkgs(id).Where(p => p.VendorSubId == long.Parse(vid)).Where(p => p.type == "Package").ToList();
+                    dict.Add("food_packages", fpkgs);
+
+                    //Rental Packages
+                    var rpkgs = viewservicesss.getvendorpkgs(id).Where(p => p.VendorSubId == long.Parse(vid)).Where(p => p.type == "Rental").ToList();
+                    dict.Add("rental_packages", rpkgs);
+
+                    //Amenities
+                    var amenities = Amenities(id, vid);
+                    dict.Add("amenities", amenities);
+
+                    //Policy
+                    VendorMasterService vendorMasterService = new VendorMasterService();
+                    var policy = vendorMasterService.Getpolicy(id, vid);
+                    dict.Add("policy", policy);
+                }
+                
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 dict.Clear();
                 dict.Add("status", false);
@@ -160,13 +192,13 @@ namespace AhwanamAPI.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("api/viewservice/amenity")]
-        public IHttpActionResult Amenities(string id, string vid)
+        //[HttpGet]
+        //[Route("api/viewservice/amenity")]
+        public List<string> Amenities(string id, string vid)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
-            try
-            {
+            //try
+            //{
                 // Retrieving Available Amenities
                 var venues = viewservicesss.GetVendorVenue(long.Parse(id)).Where(m => m.Id == long.Parse(vid)).ToList();
                 var allamenities = venues.Where(m => m.Id == long.Parse(vid)).Select(m => new
@@ -230,15 +262,15 @@ namespace AhwanamAPI.Controllers
                     famenities.Add(value.TrimStart(','));
                 }
                 if (famenities.Count == 0) famenities.Add("No Amenities Available");
-                dict.Add("data", famenities);
-                return Json(dict);
-            }
-            catch (Exception)
-            {
-                dict.Add("status", false);
-                dict.Add("message", "Failed");
-                return Json(dict);
-            }
+                //dict.Add("data", famenities);
+                return famenities;
+            //}
+            //catch (Exception)
+            //{
+            //    dict.Add("status", false);
+            //    dict.Add("message", "Failed");
+            //    return Json(dict);
+            //}
         }
 
         [HttpGet]

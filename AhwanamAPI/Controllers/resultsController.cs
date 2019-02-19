@@ -245,6 +245,7 @@ namespace AhwanamAPI.Controllers
             {
                 foreach (var item in data)
                 {
+                    decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
                     param p = new param();
 
                     //prices Section
@@ -257,7 +258,7 @@ namespace AhwanamAPI.Controllers
                     p.category_name = item.ServicType;
                     p.reviews_count = "58";
                     p.description = item.Description;
-                    p.rating = "4.5";
+                    p.rating = (trating != 0) ? (trating/3).ToString().Substring(0,4) : "0";
                     p.charge_type = "Per Day";
                     p.latitude = "17.385044";
                     p.longitude = "78.486671";
