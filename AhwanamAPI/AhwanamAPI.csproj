@@ -52,19 +52,18 @@
     </Reference>
     <Reference Include="MaaAahwanam.Models, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Models.dll</HintPath>
+      <HintPath>..\..\Ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Models.dll</HintPath>
     </Reference>
     <Reference Include="MaaAahwanam.Repository, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Repository.dll</HintPath>
+      <HintPath>..\..\Ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Repository.dll</HintPath>
     </Reference>
-    <Reference Include="MaaAahwanam.Service, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="MaaAahwanam.Service">
       <HintPath>..\..\Ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Service.dll</HintPath>
     </Reference>
     <Reference Include="MaaAahwanam.Utility, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Utility.dll</HintPath>
+      <HintPath>..\..\Ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Utility.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
