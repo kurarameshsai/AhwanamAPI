@@ -167,6 +167,8 @@ namespace AhwanamAPI.Controllers
             Dictionary<string, object> dict = new Dictionary<string, object>();
             try
             {
+                dict.Add("status", true);
+                dict.Add("message", "Success");
                 // Retrieving Available Amenities
                 var venues = viewservicesss.GetVendorVenue(long.Parse(id)).Where(m => m.Id == long.Parse(vid)).ToList();
                 var allamenities = venues.Where(m => m.Id == long.Parse(vid)).Select(m => new
