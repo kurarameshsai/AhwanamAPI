@@ -224,6 +224,8 @@ namespace AhwanamAPI.Controllers
             string vtypevalue = (venue_type != -1) ? cookies((int)venue_type, "vtype") : null;
             page = (page == null) ? 1 : page;
             int takecount = (int)page * (int)offset;
+
+            //Retrieve Cookie value
             var data = resultsPageService.GetAllVendors(type);//.Skip(page*6).ToList();
             if (page > 1)
                 data = data.Skip(takecount).Take((int)offset).ToList();
@@ -235,8 +237,8 @@ namespace AhwanamAPI.Controllers
                 data = data.Where(m => m.Minimumseatingcapacity > int.Parse(guestsvalue)).ToList();
             if (pricevalue != null)
                 data = data.Where(m => m.cost1 > decimal.Parse(pricevalue)).ToList();
-
-
+            //if (ratingvalue != null)
+            //data = data.Where(m => m. == localityvalue).ToList();
             #region Format API
             List<param> param = new List<param>();
             if (data.Count > 0)
@@ -283,7 +285,7 @@ namespace AhwanamAPI.Controllers
         #endregion
 
         #region Caterer_Records
-        public Dictionary<string, object> CatererRecords(string type, int? page = 0,int? offset = 0,int? rating = -1)
+        public Dictionary<string, object> CatererRecords(string type, int? page = 0, int? offset = 0, int? rating = -1)
         {
             page = (page == null) ? 1 : page;
             int takecount = (int)page * (int)offset;
@@ -356,12 +358,24 @@ namespace AhwanamAPI.Controllers
 
         [HttpGet]
         [Route("api/results/getfilters")]
-        public IHttpActionResult getfilters(string type = "Venue")
+        public IHttpActionResult getfilters(string type)
         {
+            type = (type == null) ? "Venue" : type;
             Dictionary<string, object> dict = new Dictionary<string, object>();
             // Header Section
             header headers = new header();
-            headers.header_text = "Best Wedding Venues";
+            if (type == "Venue")
+                headers.header_text = "Best Wedding Venues";
+            else if (type == "Catering")
+                headers.header_text = "Best Catering Vendors";
+            else if (type == "Decorator")
+                headers.header_text = "Best Decorator Vendors";
+            else if (type == "Photography")
+                headers.header_text = "Best Photography Vendors";
+            else if (type == "Pandit")
+                headers.header_text = "Best Pandit Vendors";
+            else if (type == "Mehendi")
+                headers.header_text = "Best Mehendi Vendors";
             headers.sub_text = "Sub Text";
             headers.image = "http://183.82.97.220/images/header1.png";
             dict.Add("header", headers);
@@ -395,73 +409,114 @@ namespace AhwanamAPI.Controllers
             f.is_mutliple_selection = true;
             filter.Add(f);
 
-            //Venue Type Section
-            f = new newfilter();
-            val = new List<values>();
-            list = "4 Star & Above Hotels!Banquet Hall!Lawn / Farmhouse!Hotels!Country / Golf Club!Resort!Restaurant / Lounge Bar!Heritage property";
-            f.name = "venue_type";
-            f.display_name = "Venue Type";
-            for (int i = 0; i < list.Split('!').Count(); i++)
+            if (type == "Venue" || type == "Photographer" || type == "Catering")
             {
-                values v = new values();
-                v.name = list.Split('!')[i];
-                v.id = i;
-                val.Add(v);
+                //Venue Type Section
+                f = new newfilter();
+                val = new List<values>();
+                if (type == "Venue")
+                {
+                    list = "4 Star & Above Hotels!Banquet Hall!Lawn / Farmhouse!Hotels!Country / Golf Club!Resort!Restaurant / Lounge Bar!Heritage property";
+                    f.name = "venue_type";
+                    f.display_name = "Venue Type";
+                }
+                else if (type == "Photographer")
+                {
+                    list = "Photography (candid + traditional)!Photography + Videography";
+                    f.name = "services";
+                    f.display_name = "Services";
+                }
+                else if (type == "Catering")
+                {
+                    list = "Vegetarian!Street food!South Indian!North Indian";
+                    f.name = "dietary_preferences";
+                    f.display_name = "Dietary Preferences";
+                }
+                
+                for (int i = 0; i < list.Split('!').Count(); i++)
+                {
+                    values v = new values();
+                    v.name = list.Split('!')[i];
+                    v.id = i;
+                    val.Add(v);
+                }
+                f.values = val;
+                f.is_mutliple_selection = true;
+                filter.Add(f);
             }
-            f.values = val;
-            f.is_mutliple_selection = true;
-            filter.Add(f);
 
-            //Guests Section
-            f = new newfilter();
-            val = new List<values>();
-            list = "< 100!100-250!250-500!500-1000!> 1000";
-            f.name = "capacity";
-            f.display_name = "No. of Guests";
-            for (int i = 0; i < list.Split('!').Count(); i++)
+            if (type == "Venue")
             {
-                values v = new values();
-                v.name = list.Split('!')[i];
-                v.id = i;
-                val.Add(v);
-            }
-            f.values = val;
-            f.is_mutliple_selection = true;
-            filter.Add(f);
+                //Guests Section
+                f = new newfilter();
+                val = new List<values>();
+                list = "< 100!100-250!250-500!500-1000!> 1000";
+                f.name = "capacity";
+                f.display_name = "No. of Guests";
+                for (int i = 0; i < list.Split('!').Count(); i++)
+                {
+                    values v = new values();
+                    v.name = list.Split('!')[i];
+                    v.id = i;
+                    val.Add(v);
+                }
+                f.values = val;
+                f.is_mutliple_selection = true;
+                filter.Add(f);
 
-            //Price per plate Section
-            f = new newfilter();
-            val = new List<values>();
-            list = "< 1000!1000-1500!1500-2000!2000-3000!> 3000,Rental";
-            f.name = "price_per_plate_or_rental";
-            f.display_name = "Price per plate";
-            for (int i = 0; i < list.Split('!').Count(); i++)
-            {
-                values v = new values();
-                v.name = list.Split('!')[i];
-                v.id = i;
-                val.Add(v);
-            }
-            f.values = val;
-            f.is_mutliple_selection = true;
-            filter.Add(f);
+                //Price per plate Section
+                f = new newfilter();
+                val = new List<values>();
+                list = "< 1000!1000-1500!1500-2000!2000-3000!> 3000,Rental";
+                f.name = "price_per_plate_or_rental";
+                f.display_name = "Price per plate";
+                for (int i = 0; i < list.Split('!').Count(); i++)
+                {
+                    values v = new values();
+                    v.name = list.Split('!')[i];
+                    v.id = i;
+                    val.Add(v);
+                }
+                f.values = val;
+                f.is_mutliple_selection = true;
+                filter.Add(f);
 
-            //Space preference Section
-            f = new newfilter();
-            val = new List<values>();
-            list = "Indoor!Outdoor!Indoor with outdoor!Terrace!Poolside";
-            f.name = "space_preference";
-            f.display_name = "Space Preference";
-            for (int i = 0; i < list.Split('!').Count(); i++)
-            {
-                values v = new values();
-                v.name = list.Split('!')[i];
-                v.id = i;
-                val.Add(v);
+                //Space preference Section
+                f = new newfilter();
+                val = new List<values>();
+                list = "Indoor!Outdoor!Indoor with outdoor!Terrace!Poolside";
+                f.name = "space_preference";
+                f.display_name = "Space Preference";
+                for (int i = 0; i < list.Split('!').Count(); i++)
+                {
+                    values v = new values();
+                    v.name = list.Split('!')[i];
+                    v.id = i;
+                    val.Add(v);
+                }
+                f.values = val;
+                f.is_mutliple_selection = true;
+                filter.Add(f);
             }
-            f.values = val;
-            f.is_mutliple_selection = true;
-            filter.Add(f);
+            if (type == "Photographer" || type == "Decorator" || type == "Catering")
+            {
+                //Budget per plate Section
+                f = new newfilter();
+                val = new List<values>();
+                list = "< 50000!50000 - 200000!200000 - 350000!350000 - 450000!> 450000";
+                f.name = "budget_per_plate";
+                f.display_name = "Budget per plate";
+                for (int i = 0; i < list.Split('!').Count(); i++)
+                {
+                    values v = new values();
+                    v.name = list.Split('!')[i];
+                    v.id = i;
+                    val.Add(v);
+                }
+                f.values = val;
+                f.is_mutliple_selection = true;
+                filter.Add(f);
+            }
 
             //City Section
             VendorMasterService vendorMasterService = new VendorMasterService();
