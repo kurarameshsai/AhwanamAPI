@@ -15,6 +15,7 @@ using System.Web.Security;
 using System.Web.Http.Cors;
 using System.Collections;
 using AhwanamAPI.Models;
+using System.Net.Http.Headers;
 
 namespace AhwanamAPI.Controllers
 {
@@ -68,6 +69,84 @@ namespace AhwanamAPI.Controllers
             public string name { get; set; }
         }
 
+        public class slogin
+        {
+            public string access_token { get; set; }
+            public string auth_type { get; set; }
+        }
+
+        public class sloginresponse
+        {
+            public string id { get; set; }
+            public string first_name { get; set; }
+            public string last_name { get; set; }
+            public string email { get; set; }
+            public string link { get; set; }
+            public string gender { get; set; }
+            public string locale { get; set; }
+            public string picture { get; set; }
+            public string timezone { get; set; }
+            public string verified { get; set; }
+            public string age_range { get; set; }
+            public string name { get; set; }
+            public string phoneno { get; set; }
+        }
+
+        [HttpPost]
+        [Route("api/UserAuth/sociallogin")]
+        public IHttpActionResult sociallogin([FromBody]slogin login)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            if (login.auth_type == "facebook")
+            {
+                HttpClient client = new HttpClient();
+                client.BaseAddress = new Uri("https://graph.facebook.com/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                //GET Method  
+                HttpResponseMessage response = client.GetAsync("v3.2/me?fields=id,first_name,last_name,email,link,gender,locale&locale=en_US&access_token=" + login.access_token).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    dict.Add("status", true);
+                    dict.Add("message", "Success");
+                    sloginresponse data = response.Content.ReadAsAsync<sloginresponse>().Result;
+                    //dict.Add("data", data);
+                    //sloginresponse d1 = data;
+                    //d1.email = data.email;
+
+                    checkemail(data, login);
+                }
+                else
+                {
+                    dict.Add("status", false);
+                    dict.Add("message", "Invalid Token");
+                }
+            }
+            else if(login.auth_type == "google")
+            {
+                HttpClient client = new HttpClient();
+                client.BaseAddress = new Uri("https://www.googleapis.com/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                //GET Method  
+                HttpResponseMessage response = client.GetAsync("oauth2/v1/userinfo?access_token=" + login.access_token).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    dict.Add("status", true);
+                    dict.Add("message", "Success");
+                    sloginresponse data = response.Content.ReadAsAsync<sloginresponse>().Result;
+                    //dict.Add("data", data);
+                    checkemail(data, login);
+                }
+                else
+                {
+                    dict.Add("status", false);
+                    dict.Add("message", "Invalid Token");
+                }
+            }
+            return Json(dict);
+        }
+
         [HttpPost]
         [Route("api/UserAuth/login")]
         public IHttpActionResult login([FromBody]registerdetails details)//(UserLogin userlogin)
@@ -76,115 +155,32 @@ namespace AhwanamAPI.Controllers
             userlogin.UserName = details.email;
             userlogin.Password = details.password;
             Dictionary<string, object> dict = new Dictionary<string, object>();
-            UserLogin data = new UserLogin();
-            userdata user = new userdata();
-            Dictionary<string, object> u1 = new Dictionary<string, object>();
             if (userlogin.UserName == null || userlogin.Password == null)
             {
                 dict.Add("status", false);
                 dict.Add("message", "Field missing");
-                //loginuser loginuser = new loginuser();
-                //loginuser.email = userlogin.UserName;
-                //loginuser.password = userlogin.Password;
+                Dictionary<string, object> u1 = new Dictionary<string, object>();
                 u1.Add("user", null);
                 dict.Add("data", u1);
                 return Json(dict);
             }
-            var userResponce = resultsPageService.GetUserLogin(userlogin);
-            if (userResponce != null)
-            {
-                UserLoginDetailsService userLoginDetailsService = new UserLoginDetailsService();
-                var userdetails = userLoginDetailsService.GetUser((int)userResponce.UserLoginId);
-                encptdecpt encrypt = new encptdecpt();
-                string encrypted = encrypt.Encrypt(userResponce.UserName);
-                dict.Add("status", true);
-                dict.Add("message", "Login Success");
-                loginuser loginuser = new loginuser();
-                loginuser.email = userlogin.UserName;
-                //loginuser.password = userlogin.Password;
-                loginuser.name = userdetails.FirstName;
-                loginuser.phoneno = userdetails.UserPhone;
-                u1.Add("token", encrypted);
-                u1.Add("user", loginuser);
-                dict.Add("data", u1);
-            }
-            else
-            {
-                dict.Add("status", false);
-                dict.Add("message", "email and password doesnot match");
-                //loginuser loginuser = new loginuser();
-                //loginuser.email = userlogin.UserName;
-                //loginuser.password = userlogin.Password;
-                u1.Add("user", null);
-                dict.Add("data", u1);
-            }
-
+            dict = checklogin(userlogin); // Login Authentication
             return Json(dict);
         }
 
         [AllowAnonymous]
         [HttpPost]
         [Route("api/UserAuth/register")]
-        //public IHttpActionResult register(string customerphoneno, string customername, string password, string email)
         public IHttpActionResult register([FromBody]registerdetails details)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
-            //userdata user = new userdata();
-            //Dictionary<string, object> u1 = new Dictionary<string, object>();
             if (details.name == null || details.email == null || details.phoneno == null || details.password == null)
             {
                 dict.Add("status", false);
                 dict.Add("message", "Field missing");
-                //user.email = details.email;
-                //user.name = details.personname;
-                //user.password = details.password;
-                //user.phoneno = details.phoneno;
-                //u1.Add("User", null);
-                //dict.Add("data", u1);
                 return Json(dict);
             }
-            //string msg = "";
-            UserLogin userlogin = new UserLogin();
-            UserDetail userdetail = new UserDetail();
-            userlogin.ActivationCode = Guid.NewGuid().ToString();
-            userdetail.FirstName = details.name;
-            userdetail.UserPhone = details.phoneno;
-            userdetail.AlternativeEmailID = details.email;
-            userlogin.Password = details.password;
-            userlogin.UserName = details.email;
-            userlogin.Status = "InActive";
-            var responce = "";
-            userlogin.UserType = "User";
-            long data = userlogindetailsservice.GetLoginDetailsByEmail(details.email);
-            if (data == 0)
-            { responce = userlogindetailsservice.AddUserDetails(userlogin, userdetail); }
-            else
-            {
-                dict.Add("status", false);
-                dict.Add("message", "Email already used");
-                //u1.Add("User", null);
-            }
-            if (responce == "sucess")
-            {
-                string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
-                //msg = "success";
-                //string url = "http://api.ahwanam.com/api/home/ActivateEmail1?ActivationCode=" + userlogin.ActivationCode + "&&Email=" + userlogin.UserName;
-                FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
-                string readFile = File.OpenText().ReadToEnd();
-                readFile = readFile.Replace("[ActivationLink]", url);
-                readFile = readFile.Replace("[name]", Capitalise(userdetail.FirstName));
-                readFile = readFile.Replace("[phoneno]", userdetail.UserPhone);
-                TriggerEmail(userlogin.UserName, readFile, "Account Activation", null); // A Mail will be triggered
-                //return Json(msg);
-                dict.Add("status", true);
-                dict.Add("message", "Successfully registered");
-                //user.email = details.email;
-                //user.name = details.name;
-                //user.password = details.password;
-                //user.phoneno = details.phoneno;
-                //u1.Add("User", user);
-            }
-            //dict.Add("data", u1);
+            dict = checkregister(details);
             return Json(dict);
         }
 
@@ -316,6 +312,98 @@ namespace AhwanamAPI.Controllers
             if (String.IsNullOrEmpty(str))
                 return String.Empty;
             return Char.ToUpper(str[0]) + str.Substring(1).ToLower();
+        }
+
+        public Dictionary<string, object> checklogin(UserLogin userlogin)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            Dictionary<string, object> u1 = new Dictionary<string, object>();
+            var userResponce = resultsPageService.GetUserLogin(userlogin);
+            if (userResponce != null)
+            {
+                UserLoginDetailsService userLoginDetailsService = new UserLoginDetailsService();
+                var userdetails = userLoginDetailsService.GetUser((int)userResponce.UserLoginId);
+                encptdecpt encrypt = new encptdecpt();
+                string encrypted = encrypt.Encrypt(userResponce.UserName);
+                dict.Add("status", true);
+                dict.Add("message", "Login Success");
+                loginuser loginuser = new loginuser();
+                loginuser.email = userlogin.UserName;
+                loginuser.name = userdetails.FirstName;
+                loginuser.phoneno = userdetails.UserPhone;
+                u1.Add("token", encrypted);
+                u1.Add("user", loginuser);
+                dict.Add("data", u1);
+            }
+            else
+            {
+                dict.Add("status", false);
+                dict.Add("message", "email and password doesnot match");
+                u1.Add("user", null);
+                dict.Add("data", u1);
+            }
+            return dict;
+        }
+
+        public Dictionary<string, object> checkregister(registerdetails details)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            UserLogin userlogin = new UserLogin();
+            UserDetail userdetail = new UserDetail();
+            userlogin.ActivationCode = Guid.NewGuid().ToString();
+            userdetail.FirstName = details.name;
+            userdetail.UserPhone = details.phoneno;
+            userdetail.AlternativeEmailID = details.email;
+            userlogin.Password = details.password;
+            userlogin.UserName = details.email;
+            userlogin.Status = "InActive";
+            var responce = "";
+            userlogin.UserType = "User";
+            long data = userlogindetailsservice.GetLoginDetailsByEmail(details.email);
+            if (data == 0)
+            { responce = userlogindetailsservice.AddUserDetails(userlogin, userdetail); }
+            else
+            {
+                dict.Add("status", false);
+                dict.Add("message", "Email already used");
+            }
+            if (responce == "sucess")
+            {
+                string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
+                FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
+                string readFile = File.OpenText().ReadToEnd();
+                readFile = readFile.Replace("[ActivationLink]", url);
+                readFile = readFile.Replace("[name]", Capitalise(userdetail.FirstName));
+                readFile = readFile.Replace("[phoneno]", userdetail.UserPhone);
+                TriggerEmail(userlogin.UserName, readFile, "Account Activation", null); // A Mail will be triggered
+                dict.Add("status", true);
+                dict.Add("message", "Successfully registered");
+            }
+            return dict;
+        }
+
+        public void checkemail(sloginresponse sloginresponse,slogin slogin)
+        {
+            registerdetails details = new registerdetails();
+            details.email = sloginresponse.email;
+            long data = userlogindetailsservice.GetLoginDetailsByEmail(details.email);
+            if (data == 0)
+            {
+                details.name = sloginresponse.first_name + " " + sloginresponse.last_name;
+                details.phoneno = sloginresponse.phoneno;
+                checkregister(details);
+            }
+            else
+            {
+                UserLogin userlogin = new UserLogin();
+                userlogin.UserName = details.email;
+                userlogin.Password = details.password;
+                if (slogin != null)
+                {
+                    userlogin.Password = slogin.auth_type;
+                }
+                checklogin(userlogin);
+            }
         }
         #endregion
 
