@@ -85,13 +85,13 @@ namespace AhwanamAPI.Controllers
         {
 
             Dictionary<string, object> dict = new Dictionary<string, object>();
-            List<string> servicelist = new List<string> { "Venue", "Catering", "Decorator", "Photography", "Pandit", "Mehendi" };
+            List<string> servicelist = new List<string> { "venue", "catering", "decorator", "photography", "pandit", "mehendi","macke_up" };
             var list = servicelist.Remove(type);
             List<services> res = new List<services>();
             for (int i = 0; i < servicelist.Count(); i++)
             {
                 services result = new services();
-                result.name = servicelist[i];
+                result.name = servicelist[i].Replace("_"," ");
                 result.serviceId = i;
                 result.image = "http://183.82.97.220/images/category.png";
                 res.Add(result);
