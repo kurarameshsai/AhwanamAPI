@@ -197,7 +197,7 @@ namespace AhwanamAPI.Controllers
             else if (type == "Catering")
                 dict = CatererRecords(type, page, offset, rating);
             //Type Decorator
-            else if (type == "Photographer")
+            else if (type == "Photography")
                 dict = PhotographerRecords(type, page, offset, rating);
             //Type photographer
             else if (type == "Decorator")
@@ -410,7 +410,7 @@ namespace AhwanamAPI.Controllers
             f.is_mutliple_selection = true;
             filter.Add(f);
 
-            if (type == "Venue" || type == "Photographer" || type == "Catering")
+            if (type == "Venue" || type == "Photography" || type == "Catering")
             {
                 //Venue Type Section
                 f = new newfilter();
@@ -421,7 +421,7 @@ namespace AhwanamAPI.Controllers
                     f.name = "venue_type";
                     f.display_name = "Venue Type";
                 }
-                else if (type == "Photographer")
+                else if (type == "Photography")
                 {
                     list = "Photography (candid + traditional)!Photography + Videography";
                     f.name = "services";
@@ -499,7 +499,7 @@ namespace AhwanamAPI.Controllers
                 f.is_mutliple_selection = true;
                 filter.Add(f);
             }
-            if (type == "Photographer" || type == "Decorator" || type == "Catering")
+            if (type == "Photography" || type == "Decorator" || type == "Catering")
             {
                 //Budget per plate Section
                 f = new newfilter();

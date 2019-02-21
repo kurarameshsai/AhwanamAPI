@@ -82,23 +82,34 @@ namespace AhwanamAPI.Controllers
         [HttpGet]
         [Route("api/home/othercategories")]
         public IHttpActionResult GetVendorOtherServiceList([FromUri] string type)
-        {
+    {
 
             Dictionary<string, object> dict = new Dictionary<string, object>();
-            List<string> servicelist = new List<string> { "venue", "catering", "decorator", "photography", "pandit", "mehendi","macke_up" };
-            var list = servicelist.Remove(type);
+            List<string> servicelist = new List<string> { "Venue", "Catering", "Decorator", "Photography", "Pandit", "Mehendi"};
+
+            if (char.IsLower(type[0]))
+            {
+                var servicetype = char.ToUpper(type[0]) + type.Substring(1);
+                var list = servicelist.Remove(servicetype);
+            }
+            else
+            {
+                var lst = servicelist.Remove(type);
+            }
             List<services> res = new List<services>();
             for (int i = 0; i < servicelist.Count(); i++)
             {
                 services result = new services();
-                result.name = servicelist[i].Replace("_"," ");
+                result.name = servicelist[i].Replace("-"," ");
                 result.serviceId = i;
                 result.image = "https://api.ahwanam.com/images/category.png";
                 res.Add(result);
-            }
-            dict.Add("status", true);
-            dict.Add("message", "Success");
-            dict.Add("results", res.Take(3));
+              }
+                dict.Add("status", true);
+                dict.Add("message", "Success");
+                dict.Add("results", res.Take(3));
+            
+          
             return Json(dict);
         }
 
