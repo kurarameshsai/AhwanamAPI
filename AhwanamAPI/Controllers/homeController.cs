@@ -69,7 +69,7 @@ namespace AhwanamAPI.Controllers
                 services result = new services();
                 result.name = list.Split(',')[i];
                 result.serviceId = i;
-                result.image = "http://183.82.97.220/images/category.png";
+                result.image = "https://api.ahwanam.com/images/category.png";
                 res.Add(result);
             }
             dict.Add("status", true);
@@ -93,7 +93,7 @@ namespace AhwanamAPI.Controllers
                 services result = new services();
                 result.name = servicelist[i].Replace("_"," ");
                 result.serviceId = i;
-                result.image = "http://183.82.97.220/images/category.png";
+                result.image = "https://api.ahwanam.com/images/category.png";
                 res.Add(result);
             }
             dict.Add("status", true);
@@ -118,7 +118,7 @@ namespace AhwanamAPI.Controllers
             price.save_amount = "2.4 Lakhs";
             price.save_percentage = "15";
             pkg.price = price;
-            pkg.imageUrl = "http://183.82.97.220/images/package.png";
+            pkg.imageUrl = "https://api.ahwanam.com/images/package.png";
             pkg.targetUrl = "https://www.ahwanam.com/packages/wedding-gold-package/";
             package.Add(pkg);
 
@@ -132,7 +132,7 @@ namespace AhwanamAPI.Controllers
             price.save_amount = "2.4 Lakhs";
             price.save_percentage = "15";
             pkg.price = price;
-            pkg.imageUrl = "http://183.82.97.220/images/package.png";
+            pkg.imageUrl = "https://api.ahwanam.com/images/package.png";
             pkg.targetUrl = "https://www.ahwanam.com/packages/wedding-gold-package/";
             package.Add(pkg);
 
@@ -146,7 +146,7 @@ namespace AhwanamAPI.Controllers
             price.save_amount = "2.4 Lakhs";
             price.save_percentage = "15";
             pkg.price = price;
-            pkg.imageUrl = "http://183.82.97.220/images/package.png";
+            pkg.imageUrl = "https://api.ahwanam.com/images/package.png";
             pkg.targetUrl = "https://www.ahwanam.com/packages/wedding-gold-package/";
             package.Add(pkg);
             Dictionary<string, object> dict = new Dictionary<string, object>();

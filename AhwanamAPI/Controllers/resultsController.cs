@@ -263,7 +263,7 @@ namespace AhwanamAPI.Controllers
                     p.latitude = "17.385044";
                     p.longitude = "78.486671";
                     p.city = item.City;
-                    p.pic_url = "http://183.82.97.220/vendorimages/" + item.image;
+                    p.pic_url = "https://api.ahwanam.com/vendorimages/" + item.image;
                     p.price = price;
                     p.min_guest = item.Minimumseatingcapacity.ToString();
                     p.max_guest = item.Maximumcapacity.ToString();
@@ -378,7 +378,7 @@ namespace AhwanamAPI.Controllers
             else if (type == "Mehendi")
                 headers.header_text = "Best Mehendi Vendors";
             headers.sub_text = "Sub Text";
-            headers.image = "http://183.82.97.220/images/header1.png";
+            headers.image = "https://api.ahwanam.com/images/header1.png";
             dict.Add("header", headers);
 
             List<newfilter> filter = new List<newfilter>();
@@ -753,7 +753,7 @@ namespace AhwanamAPI.Controllers
         //    header headers = new header();
         //    headers.header_text = "Best Wedding Venues";
         //    headers.sub_text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud";
-        //    headers.image = "http://183.82.97.220/convention1.jpg";
+        //    headers.image = "https://api.ahwanam.com/convention1.jpg";
         //    dict.Add("header", headers);
 
         //    filters filter = new filters();
