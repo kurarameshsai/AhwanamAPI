@@ -105,6 +105,41 @@ namespace AhwanamAPI.Controllers
         }
 
         [HttpGet]
+        [Route("api/viewservice/similar")]
+        public IHttpActionResult similarvendors(string type, string id, string vid)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            dict.Add("status", true);
+            dict.Add("message", "Success");
+            if (type == "Venue" || type == null)
+            {
+                List<GetVendors_Result> vendor = resultsPageService.GetAllVendors(type).Where(m => m.Id != long.Parse(id) && m.subid != long.Parse(vid)).Take(3).ToList();
+                dict.Add("data", vendor);
+            }
+            else if (type == "Catering")
+            {
+                List<GetCaterers_Result> vendor = resultsPageService.GetAllCaterers().Where(m => m.Id != long.Parse(id) && m.subid != long.Parse(vid)).Take(3).ToList();
+                dict.Add("data", vendor);
+            }
+            else if (type == "Decorator")
+            {
+                List<GetDecorators_Result> vendor = resultsPageService.GetAllDecorators().Where(m => m.Id != long.Parse(id) && m.subid != long.Parse(vid)).Take(3).ToList();
+                dict.Add("data", vendor);
+            }
+            else if (type == "Photography")
+            {
+                List<GetCaterers_Result> vendor = resultsPageService.GetAllCaterers().Where(m => m.Id != long.Parse(id) && m.subid != long.Parse(vid)).Take(3).ToList();
+                dict.Add("data", vendor);
+            }
+            else if (type == "Pandit")
+            {
+                List<GetDecorators_Result> vendor = resultsPageService.GetAllDecorators().Where(m => m.Id == long.Parse(id) && m.subid == long.Parse(vid)).Take(3).ToList();
+                dict.Add("data", vendor);
+            }
+            return Json(dict);
+        }
+
+        [HttpGet]
         [Route("api/viewservice/gallery")]
         public IHttpActionResult vendorimages(string id)
         {

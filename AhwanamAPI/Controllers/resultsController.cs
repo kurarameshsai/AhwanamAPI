@@ -196,10 +196,10 @@ namespace AhwanamAPI.Controllers
             //Type Caterer
             else if (type == "Catering")
                 dict = CatererRecords(type, page, offset, rating);
-            //Type Decorator
-            else if (type == "Photographer")
+            //Type Photography
+            else if (type == "Photography")
                 dict = PhotographerRecords(type, page, offset, rating);
-            //Type photographer
+            //Type Decorator
             else if (type == "Decorator")
                 dict = DecoratorRecords(type, page, offset, rating);
             //Type Other
