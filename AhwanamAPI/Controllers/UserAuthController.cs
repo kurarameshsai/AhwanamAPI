@@ -149,6 +149,14 @@ namespace AhwanamAPI.Controllers
             var userResponce = resultsPageService.GetUserLogin(userlogin);
             if (userResponce != null)
             {
+                if (userResponce.Status == "InActive")
+                {
+                    dict.Add("status", false);
+                    dict.Add("message", "email id not verified");
+                    u1.Add("user", null);
+                    dict.Add("data", u1);
+                    return Json(dict);
+                }
                 UserLoginDetailsService userLoginDetailsService = new UserLoginDetailsService();
                 var userdetails = userLoginDetailsService.GetUser((int)userResponce.UserLoginId);
                 encptdecpt encrypt = new encptdecpt();
@@ -230,6 +238,7 @@ namespace AhwanamAPI.Controllers
             var userresponce = venorvenuesignupservice.GetUserdetails(email);
             if (activation_code == userresponce.ActivationCode)
             {
+
                 dict.Add("status", true);
                 dict.Add("message", "Email successfully verified");
                 return Json(dict);

@@ -183,8 +183,8 @@ namespace AhwanamAPI.Controllers
 
         #region API
         [HttpGet]
-        [Route("api/results/getall")]
-        public IHttpActionResult getrecords(string type, int? city = -1, int? locality = -1, int? page = 0, int? capacity = -1, int? price_per_plate_or_rental = -1, int? offset = 0, int? sortby = -1, int? space_preference = -1, int? rating = -1, int? venue_type = -1)
+        [Route("api/results/getall")]                                                                                                                                                                                                                                       //Catering                                  //photography
+        public IHttpActionResult getrecords(string type, int? city = -1, int? locality = -1, int? page = 0, int? capacity = -1, int? price_per_plate_or_rental = -1, int? offset = 0, int? sortby = -1, int? space_preference = -1, int? rating = -1, int? venue_type = -1,int? budget=-1,int? dietary_prefernces = -1,int? services = -1)
         {
             int status = checktoken(); // Checking Token
             Dictionary<string, object> dict = new Dictionary<string, object>();
@@ -195,13 +195,13 @@ namespace AhwanamAPI.Controllers
                 dict = VenueRecords(type, city, locality, page, capacity, price_per_plate_or_rental, offset, sortby, space_preference, rating, venue_type);
             //Type Caterer
             else if (type == "Catering")
-                dict = CatererRecords(type, page, offset, rating);
+                dict = CatererRecords(type, page, offset, rating,budget,dietary_prefernces,city);
             //Type Photography
             else if (type == "Photography")
-                dict = PhotographerRecords(type, page, offset, rating);
+                dict = PhotographerRecords(type, page, offset, rating,city,services,budget);
             //Type Decorator
             else if (type == "Decorator")
-                dict = DecoratorRecords(type, page, offset, rating);
+                dict = DecoratorRecords(type, page, offset, rating,budget,city);
             //Type Other
             else if (type == "Pandit" || type == "Mehendi")
                 dict = OtherRecords(type, page, offset, rating);
@@ -238,7 +238,7 @@ namespace AhwanamAPI.Controllers
             if (pricevalue != null)
                 data = data.Where(m => m.cost1 > decimal.Parse(pricevalue)).ToList();
             //if (ratingvalue != null)
-            //data = data.Where(m => m. == localityvalue).ToList();
+            //    data = data.Where(m => m.rat == localityvalue).ToList();
             #region Format API
             List<param> param = new List<param>();
             if (data.Count > 0)
@@ -272,6 +272,8 @@ namespace AhwanamAPI.Controllers
                 }
             }
             var records = param;
+            if (ratingvalue != null)
+                records = records.Where(m => m.rating == ratingvalue).ToList();
             #endregion
 
             Dictionary<string, object> dict = new Dictionary<string, object>();
@@ -286,13 +288,21 @@ namespace AhwanamAPI.Controllers
         #endregion
 
         #region Caterer_Records
-        public Dictionary<string, object> CatererRecords(string type, int? page = 0, int? offset = 0, int? rating = -1)
+        public Dictionary<string, object> CatererRecords(string type, int? page = 0, int? offset = 0, int? rating = -1,int? budget =-1,int? dietary_prefernces=-1, int? city = -1)
         {
+            string cityvalue = (city != -1) ? cookies((int)city, "city") : null;
+            string budgetvalue = (budget != -1) ? cookies((int)budget, "budget") : null;
+            string ratingvalue = (rating != -1) ? cookies((int)rating, "rating") : null;
+            string dietvalue = (dietary_prefernces != -1) ? cookies((int)dietary_prefernces, "dietary_prefernces") : null;
             page = (page == null) ? 1 : page;
             int takecount = (int)page * (int)offset;
             var data = resultsPageService.GetAllCaterers();
             if (page > 1)
                 data = data.Skip(takecount).Take((int)offset).ToList();
+            if (cityvalue != null)
+                data = data.Where(m => m.City == cityvalue).ToList();
+            if (budgetvalue != null)
+                data = data.Where(m => decimal.Parse(m.MinOrder) >= decimal.Parse(budgetvalue)).ToList();
             Dictionary<string, object> dict = new Dictionary<string, object>();
             dict.Add("results", data);
             dict.Add("total_count", data.Count);
@@ -304,13 +314,20 @@ namespace AhwanamAPI.Controllers
         #endregion
 
         #region Decorator_Records
-        public Dictionary<string, object> DecoratorRecords(string type, int? page = 0, int? offset = 0, int? rating = -1)
+        public Dictionary<string, object> DecoratorRecords(string type, int? page = 0, int? offset = 0, int? rating = -1,int? budget =-1, int? city = -1)
         {
             page = (page == null) ? 1 : page;
             int takecount = (int)page * (int)offset;
             var data = resultsPageService.GetAllDecorators();
+            string cityvalue = (city != -1) ? cookies((int)city, "city") : null;
+            string budgetvalue = (budget != -1) ? cookies((int)budget, "budget") : null;
+            string ratingvalue = (rating != -1) ? cookies((int)rating, "rating") : null;
             if (page > 1)
                 data = data.Skip(takecount).Take((int)offset).ToList();
+            if (cityvalue != null)
+                data = data.Where(m => m.City == cityvalue).ToList();
+            if (budgetvalue != null)
+                data = data.Where(m => m.cost1 >= decimal.Parse(budgetvalue)).ToList();
             Dictionary<string, object> dict = new Dictionary<string, object>();
             dict.Add("results", data);
             dict.Add("total_count", data.Count);
@@ -322,13 +339,23 @@ namespace AhwanamAPI.Controllers
         #endregion
 
         #region Photographer_Records
-        public Dictionary<string, object> PhotographerRecords(string type, int? page = 0, int? offset = 0, int? rating = -1)
+        public Dictionary<string, object> PhotographerRecords(string type, int? page = 0, int? offset = 0, int? rating = -1, int? city = -1, int? services = -1, int? budget = -1)
         {
+            string servicesvalue = (services != -1) ? cookies((int)services, "services") : null;
+            string cityvalue = (city != -1) ? cookies((int)city, "city") : null;
+            string budgetvalue = (budget != -1) ? cookies((int)budget, "budget") : null;
+            string ratingvalue = (rating != -1) ? cookies((int)rating, "rating") : null;
             page = (page == null) ? 1 : page;
             int takecount = (int)page * (int)offset;
             var data = resultsPageService.GetAllPhotographers();
             if (page > 1)
                 data = data.Skip(takecount).Take((int)offset).ToList();
+            if (cityvalue != null)
+                data = data.Where(m => m.City == cityvalue).ToList();
+            if (budgetvalue != null)
+                data = data.Where(m => m.cost1 >= decimal.Parse(budgetvalue)).ToList();
+            if (cityvalue != null)
+                data = data.Where(m => m.City == cityvalue).ToList();
             Dictionary<string, object> dict = new Dictionary<string, object>();
             dict.Add("results", data);
             dict.Add("total_count", data.Count);
