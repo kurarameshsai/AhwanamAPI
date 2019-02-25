@@ -158,12 +158,7 @@ namespace AhwanamAPI.Controllers
                     return Json(dict);
                 }
                 UserLoginDetailsService userLoginDetailsService = new UserLoginDetailsService();
-                if(userResponce.UserLoginId !=0)
-                {           
                 var userdetails = userLoginDetailsService.GetUser((int)userResponce.UserLoginId);
-                    userResponce.UserType = "User";
-                    string userData = JsonConvert.SerializeObject(userResponce);
-                    ValidUserUtility.SetAuthCookie(userData, userResponce.UserLoginId.ToString());
                     encptdecpt encrypt = new encptdecpt();
                 string encrypted = encrypt.Encrypt(userResponce.UserName);
                 dict.Add("status", true);
@@ -175,7 +170,7 @@ namespace AhwanamAPI.Controllers
                 u1.Add("token", encrypted);
                 u1.Add("user", loginuser);
                 dict.Add("data", u1);
-                }
+              
             }
             else
             {
