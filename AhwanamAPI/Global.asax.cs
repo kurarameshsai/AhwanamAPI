@@ -17,9 +17,7 @@ namespace AhwanamAPI
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
-            //AreaRegistration.RegisterAllAreas();
-            //RouteConfig.RegisterRoutes(RouteTable.Routes);
-            //AntiForgeryConfig.SuppressXFrameOptionsHeader = true;
+           
         }
         protected void Application_PostAuthenticateRequest(Object sender, EventArgs e)
         {
