@@ -92,6 +92,14 @@ namespace AhwanamAPI.Controllers
             public string phoneno { get; set; }
         }
 
+        [HttpGet]
+        [Route("api/UserAuth/check")]
+        public IHttpActionResult checkemail(string email)
+        {
+            long data = userlogindetailsservice.GetLoginDetailsByEmail(email);
+            return Ok();
+        }
+
         [HttpPost]
         [Route("api/UserAuth/sociallogin")]
         public IHttpActionResult sociallogin([FromBody]slogin login)
@@ -237,9 +245,10 @@ namespace AhwanamAPI.Controllers
             Dictionary<string, object> dict = new Dictionary<string, object>();
             if (activation_code == "") { activation_code = null; }
             var userresponce = venorvenuesignupservice.GetUserdetails(email);
-            if (activation_code == userresponce.ActivationCode)
+            DateTime regdate = (DateTime)userresponce.RegDate;
+            int count = (DateTime.Now.Date - regdate.Date).Days;
+            if (activation_code == userresponce.ActivationCode && count <=1)
             {
-
                 dict.Add("status", true);
                 dict.Add("message", "Email successfully verified");
                 return Json(dict);

@@ -100,14 +100,16 @@ namespace AhwanamAPI.Controllers
         public IHttpActionResult GetVendorServicesList()
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
-            string list = "Venue,Catering,Decorator,Photography,Pandit,Mehendi";
+            FilterServices filterServices = new FilterServices();
+            var categories = filterServices.AllCategories();
+            //string list = "Venue,Catering,Decorator,Photography,Pandit,Mehendi";
             List<services> res = new List<services>();
-            for (int i = 0; i < list.Split(',').Count(); i++)
+            for (int i = 0; i < categories.Count(); i++)
             {
                 services result = new services();
-                result.name = list.Split(',')[i];
-                result.serviceId = i;
-                result.image = "https://api.ahwanam.com/images/category.png";
+                result.name = categories[i].name;
+                result.serviceId = categories[i].servicType_id;
+                result.image = categories[i].image;
                 res.Add(result);
             }
             dict.Add("status", true);
