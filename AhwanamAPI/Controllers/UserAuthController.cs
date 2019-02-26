@@ -159,7 +159,7 @@ namespace AhwanamAPI.Controllers
                 }
                 UserLoginDetailsService userLoginDetailsService = new UserLoginDetailsService();
                 var userdetails = userLoginDetailsService.GetUser((int)userResponce.UserLoginId);
-                encptdecpt encrypt = new encptdecpt();
+                    encptdecpt encrypt = new encptdecpt();
                 string encrypted = encrypt.Encrypt(userResponce.UserName);
                 dict.Add("status", true);
                 dict.Add("message", "Login Success");
@@ -170,6 +170,7 @@ namespace AhwanamAPI.Controllers
                 u1.Add("token", encrypted);
                 u1.Add("user", loginuser);
                 dict.Add("data", u1);
+              
             }
             else
             {

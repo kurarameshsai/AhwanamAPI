@@ -21,7 +21,7 @@ namespace AhwanamAPI.Controllers
     {
         cartservices cartserve = new cartservices();
         UserLoginDetailsService userLoginDetailsService = new UserLoginDetailsService();
-        decimal totalp, servcharge, gst, nettotal, totalp2;
+        decimal totalp, servcharge, gst, totalp2;
         CartService cartService = new CartService();
         QuotationListsService quotationListsService = new QuotationListsService();
         UserLogin userLogin = new UserLogin();
