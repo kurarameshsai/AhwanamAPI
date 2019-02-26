@@ -167,8 +167,9 @@ namespace AhwanamAPI.Controllers
                 }
                 UserLoginDetailsService userLoginDetailsService = new UserLoginDetailsService();
                 var userdetails = userLoginDetailsService.GetUser((int)userResponce.UserLoginId);
-                    encptdecpt encrypt = new encptdecpt();
+                 encptdecpt encrypt = new encptdecpt();
                 string encrypted = encrypt.Encrypt(userResponce.UserName);
+                //string encrypted= Guid.NewGuid().ToString();
                 dict.Add("status", true);
                 dict.Add("message", "Login Success");
                 loginuser loginuser = new loginuser();
