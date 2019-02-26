@@ -57,6 +57,44 @@ namespace AhwanamAPI.Controllers
             public string description { get; set; }
         }
 
+        //[HttpGet]
+        //[Route("api/home/encrypt")]
+        //public IHttpActionResult Encrypt(string val)
+        //{
+        //    encptdecpt encript = new encptdecpt();
+        //    string encripted = encript.Encrypt(val);
+        //    Dictionary<string, object> dict = new Dictionary<string, object>();
+        //    if (val != null && val != "")
+        //    {
+        //        Dictionary<string, object> dict1 = new Dictionary<string, object>();
+        //        dict.Add("status", true);
+        //        dict.Add("message", "Success");
+        //        dict1.Add("encrypt", encripted);
+        //        dict.Add("data", dict1);
+        //    }
+        //    else
+        //    {
+        //        dict.Add("status", false);
+        //        dict.Add("message", "Failed!!!");
+        //    }
+        //    return Json(dict);
+        //}
+
+        [HttpGet]
+        [Route("api/home/encrypt")]
+        public IHttpActionResult Decrypt(string val)
+        {
+            encptdecpt encript = new encptdecpt();
+            string decrypted = encript.Decrypt(val);
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            Dictionary<string, object> dict1 = new Dictionary<string, object>();
+            dict.Add("status", true);
+            dict.Add("message", "Success");
+            dict1.Add("encrypt", decrypted);
+            dict.Add("data", dict1);
+            return Json(dict);
+        }
+
         [HttpGet]
         [Route("api/home/categories")]
         public IHttpActionResult GetVendorServicesList()
@@ -82,10 +120,9 @@ namespace AhwanamAPI.Controllers
         [HttpGet]
         [Route("api/home/othercategories")]
         public IHttpActionResult GetVendorOtherServiceList([FromUri] string type)
-    {
-
+        {
             Dictionary<string, object> dict = new Dictionary<string, object>();
-            List<string> servicelist = new List<string> { "Venue", "Catering", "Decorator", "Photography", "Pandit", "Mehendi"};
+            List<string> servicelist = new List<string> { "Venue", "Catering", "Decorator", "Photography", "Pandit", "Mehendi" };
 
             if (char.IsLower(type[0]))
             {
@@ -100,16 +137,14 @@ namespace AhwanamAPI.Controllers
             for (int i = 0; i < servicelist.Count(); i++)
             {
                 services result = new services();
-                result.name = servicelist[i].Replace("-"," ");
+                result.name = servicelist[i].Replace("-", " ");
                 result.serviceId = i;
                 result.image = "https://api.ahwanam.com/images/category.png";
                 res.Add(result);
-              }
-                dict.Add("status", true);
-                dict.Add("message", "Success");
-                dict.Add("results", res.Take(3));
-            
-          
+            }
+            dict.Add("status", true);
+            dict.Add("message", "Success");
+            dict.Add("results", res.Take(3));
             return Json(dict);
         }
 

@@ -385,8 +385,8 @@ namespace AhwanamAPI.Controllers
         #endregion
 
         [HttpGet]
-        [Route("api/results/getfilters")]
-        public IHttpActionResult getfilters(string type)
+        [Route("api/results/getfilters1")]
+        public IHttpActionResult getfilters1(string type)
         {
             type = (type == null) ? "Venue" : type;
             Dictionary<string, object> dict = new Dictionary<string, object>();
@@ -588,6 +588,121 @@ namespace AhwanamAPI.Controllers
             dict1.Add("data", dict);
             return Json(dict1);
         }
+
+        [HttpGet]
+        [Route("api/results/getfilters")]
+        public IHttpActionResult getfilters(string type)
+        {
+            type = (type == null) ? "Venue" : type;
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            // Header Section
+            header headers = new header();
+            if (type == "venue")
+                headers.header_text = "Best Wedding Venues";
+            else if (type == "catering")
+                headers.header_text = "Best Catering Vendors";
+            else if (type == "decorator")
+                headers.header_text = "Best Decorator Vendors";
+            else if (type == "photography")
+                headers.header_text = "Best Photography Vendors";
+            else if (type == "pandit")
+                headers.header_text = "Best Pandit Vendors";
+            else if (type == "mehendi")
+                headers.header_text = "Best Mehendi Vendors";
+            headers.sub_text = "Sub Text";
+            headers.image = "https://api.ahwanam.com/images/header1.png";
+            dict.Add("header", headers);
+
+            List<newfilter> filter = new List<newfilter>();
+            newfilter f = new newfilter();
+            //Sort Section
+            List<sortby> sort1 = new List<sortby>();
+            string slist = "price-low-to-high!price-high-to-low";
+            for (int i = 0; i < slist.Split('!').Count(); i++)
+            {
+                sortby sort = new sortby();
+                sort.name = slist.Split('!')[i];
+                sort.id = i;
+                sort1.Add(sort);
+            }
+            dict.Add("sort_options", sort1);
+            var data = filters(type);
+            dict.Add("filters", data);
+            //Cookie Section
+            HttpContext.Current.Response.Cookies["filters"].Value = JsonConvert.SerializeObject(dict); //new JavaScriptSerializer().Serialize(dict);
+            Dictionary<string, object> dict1 = new Dictionary<string, object>();
+            dict1.Add("status", true);
+            dict1.Add("message", "Success");
+            dict1.Add("data", dict);
+            return Json(dict1);
+        }
+
+        public Dictionary<string,object> filters(string type)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            FilterServices filterServices = new FilterServices();
+
+            //Retrieving All Categories
+            var categories = filterServices.AllCategories();
+
+            // Retrieving All Filters for a category
+            int value = categories.Where(m => m.display_name == type).FirstOrDefault().servicType_id;
+            var filters = filterServices.AllFilters(value);
+
+            // Retrieving All Filter values for a category
+            Dictionary<string, object> d1 = new Dictionary<string, object>();
+
+            //City Section
+            //VendorMasterService vendorMasterService = new VendorMasterService();
+            //var data = vendorMasterService.SearchVendors();
+            //var citylist = data.Select(m => m.City).Distinct().ToList();
+            //f = new newfilter();
+            //f.name = "city";
+            //f.display_name = "City";
+            //List<value> val1 = new List<value>();
+            ////List<newcity> city = new List<newcity>();
+
+            //for (int i = 0; i < citylist.Count; i++)
+            //{
+            //    value c = new value();
+            //    c.name = citylist[i];
+            //    c.id = i;
+            //    var landmark = data.Where(m => m.City == c.name).Select(m => m.Landmark).Distinct().ToList();
+            //    List<localities> locality1 = new List<localities>();
+            //    for (int j = 0; j < landmark.Count; j++)
+            //    {
+            //        localities loc = new localities();
+            //        loc.name = landmark[j];
+            //        loc.id = j;
+            //        locality1.Add(loc);
+            //    }
+            //    c.localities = locality1;
+            //    //city.Add(c);
+            //    val1.Add(c);
+            //}
+            ////f.values = city;
+            //f.value = val1;
+            //f.is_mutliple_selection = true;
+            //filter.Add(f);
+
+            for (int i = 0; i < filters.Count; i++)
+            {
+                List<values> v1 = new List<values>();
+                var filtervalue = filterServices.FilterValues(filters[i].filter_id);
+                for (int j = 0; j < filtervalue.Count; j++)
+                {
+                    values c = new values();
+                    c.id = filtervalue[j].id;
+                    c.name = filtervalue[j].name;
+                    v1.Add(c);
+                }
+                d1.Add(filters[i].display_name,v1);
+            }
+            dict.Add("data",d1);
+            return dict;
+        }
+
+
 
         [HttpGet]
         [Route("api/results/getallsearch")]
