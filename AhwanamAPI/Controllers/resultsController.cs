@@ -35,11 +35,13 @@ namespace AhwanamAPI.Controllers
         {
             public string actual_price { get; set; }
             public string offer_price { get; set; }
+            public string service_price { get; set; }
         }
 
         public class param
         {
             public string name { get; set; }
+            public string page_name { get; set; }
             public string category_name { get; set; }
             public string reviews_count { get; set; }
             public string description { get; set; }
@@ -52,7 +54,6 @@ namespace AhwanamAPI.Controllers
             public string pic_url { get; set; }
             public string min_guest { get; set; }
             public string max_guest { get; set; }
-            public string service_price { get; set; }
         }
 
         public class localities
@@ -252,11 +253,14 @@ namespace AhwanamAPI.Controllers
                     prices price = new prices();
                     price.actual_price = item.cost1.ToString();
                     price.offer_price = item.normaldays;
+                    price.service_price = item.ServiceCost.ToString();
 
                     //Data Section
                     p.name = item.BusinessName;
+                    p.page_name = item.page_name;
                     p.category_name = item.ServicType;
-                    p.reviews_count = "58";
+                    ReviewService reviewService = new ReviewService();
+                    p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
                     p.description = item.Description;
                     p.rating = (trating != 0) ? (trating/3).ToString().Substring(0,4) : "0";
                     p.charge_type = "Per Day";
@@ -267,7 +271,7 @@ namespace AhwanamAPI.Controllers
                     p.price = price;
                     p.min_guest = item.Minimumseatingcapacity.ToString();
                     p.max_guest = item.Maximumcapacity.ToString();
-                    p.service_price = item.ServiceCost.ToString();
+                    
                     param.Add(p);
                 }
             }
@@ -303,8 +307,49 @@ namespace AhwanamAPI.Controllers
                 data = data.Where(m => m.City == cityvalue).ToList();
             if (budgetvalue != null)
                 data = data.Where(m => decimal.Parse(m.MinOrder) >= decimal.Parse(budgetvalue)).ToList();
+
+            #region Format API
+            List<param> param = new List<param>();
+            if (data.Count > 0)
+            {
+                foreach (var item in data)
+                {
+                    decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
+                    param p = new param();
+
+                    //prices Section
+                    prices price = new prices();
+                    price.actual_price = item.Veg.ToString();
+                    price.offer_price = item.Veg.ToString(); // Add Normal Days price here
+                    price.service_price = "";
+
+                    //Data Section
+                    p.name = item.BusinessName;
+                    p.page_name = item.page_name;
+                    p.category_name = item.ServicType;
+                    ReviewService reviewService = new ReviewService();
+                    p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
+                    p.description = item.Description;
+                    p.rating = (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0";
+                    p.charge_type = "Per Day";
+                    p.latitude = "17.385044";
+                    p.longitude = "78.486671";
+                    p.city = item.City;
+                    p.pic_url = "https://api.ahwanam.com/vendorimages/" + item.image;
+                    p.price = price;
+                    //p.min_guest = item.Minimumseatingcapacity.ToString();
+                    //p.max_guest = item.Maximumcapacity.ToString();
+
+                    param.Add(p);
+                }
+            }
+            var records = param;
+            if (ratingvalue != null)
+                records = records.Where(m => m.rating == ratingvalue).ToList();
+            #endregion
+
             Dictionary<string, object> dict = new Dictionary<string, object>();
-            dict.Add("results", data);
+            dict.Add("results", records);
             dict.Add("total_count", data.Count);
             dict.Add("offset", (offset == null) ? 12 : offset);
             dict.Add("no_of_pages", data.Count / 6);
@@ -328,8 +373,47 @@ namespace AhwanamAPI.Controllers
                 data = data.Where(m => m.City == cityvalue).ToList();
             if (budgetvalue != null)
                 data = data.Where(m => m.cost1 >= decimal.Parse(budgetvalue)).ToList();
+            #region Format API
+            List<param> param = new List<param>();
+            if (data.Count > 0)
+            {
+                foreach (var item in data)
+                {
+                    decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
+                    param p = new param();
+
+                    //prices Section
+                    prices price = new prices();
+                    price.actual_price = item.cost1.ToString();
+                    price.offer_price = item.cost1.ToString(); // Add Normal Days price here
+                    price.service_price = "";
+
+                    //Data Section
+                    p.name = item.BusinessName;
+                    p.page_name = item.page_name;
+                    p.category_name = item.ServicType;
+                    ReviewService reviewService = new ReviewService();
+                    p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
+                    p.description = item.Description;
+                    p.rating = (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0";
+                    p.charge_type = "Per Day";
+                    p.latitude = "17.385044";
+                    p.longitude = "78.486671";
+                    p.city = item.City;
+                    p.pic_url = "https://api.ahwanam.com/vendorimages/" + item.image;
+                    p.price = price;
+                    //p.min_guest = item.Minimumseatingcapacity.ToString();
+                    //p.max_guest = item.Maximumcapacity.ToString();
+
+                    param.Add(p);
+                }
+            }
+            var records = param;
+            if (ratingvalue != null)
+                records = records.Where(m => m.rating == ratingvalue).ToList();
+            #endregion
             Dictionary<string, object> dict = new Dictionary<string, object>();
-            dict.Add("results", data);
+            dict.Add("results", records);
             dict.Add("total_count", data.Count);
             dict.Add("offset", (offset == null) ? 12 : offset);
             dict.Add("no_of_pages", data.Count / 6);
@@ -356,8 +440,47 @@ namespace AhwanamAPI.Controllers
                 data = data.Where(m => m.cost1 >= decimal.Parse(budgetvalue)).ToList();
             if (cityvalue != null)
                 data = data.Where(m => m.City == cityvalue).ToList();
+            #region Format API
+            List<param> param = new List<param>();
+            if (data.Count > 0)
+            {
+                foreach (var item in data)
+                {
+                    decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
+                    param p = new param();
+
+                    //prices Section
+                    prices price = new prices();
+                    price.actual_price = item.cost1.ToString();
+                    price.offer_price = item.cost1.ToString(); // Add Normal Days price here
+                    price.service_price = "";
+
+                    //Data Section
+                    p.name = item.BusinessName;
+                    p.page_name = item.page_name;
+                    p.category_name = item.ServicType;
+                    ReviewService reviewService = new ReviewService();
+                    p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
+                    p.description = item.Description;
+                    p.rating = (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0";
+                    p.charge_type = "Per Day";
+                    p.latitude = "17.385044";
+                    p.longitude = "78.486671";
+                    p.city = item.City;
+                    p.pic_url = "https://api.ahwanam.com/vendorimages/" + item.image;
+                    p.price = price;
+                    //p.min_guest = item.Minimumseatingcapacity.ToString();
+                    //p.max_guest = item.Maximumcapacity.ToString();
+
+                    param.Add(p);
+                }
+            }
+            var records = param;
+            if (ratingvalue != null)
+                records = records.Where(m => m.rating == ratingvalue).ToList();
+            #endregion
             Dictionary<string, object> dict = new Dictionary<string, object>();
-            dict.Add("results", data);
+            dict.Add("results", records);
             dict.Add("total_count", data.Count);
             dict.Add("offset", (offset == null) ? 12 : offset);
             dict.Add("no_of_pages", data.Count / 6);
@@ -374,8 +497,47 @@ namespace AhwanamAPI.Controllers
             var data = resultsPageService.GetAllOthers(type);
             if (page > 1)
                 data = data.Skip(takecount).Take((int)offset).ToList();
+            #region Format API
+            List<param> param = new List<param>();
+            if (data.Count > 0)
+            {
+                foreach (var item in data)
+                {
+                    decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
+                    param p = new param();
+
+                    //prices Section
+                    prices price = new prices();
+                    price.actual_price = item.ItemCost.ToString();
+                    price.offer_price = item.ItemCost.ToString(); // Add Normal Days price here
+                    price.service_price = "";
+
+                    //Data Section
+                    p.name = item.BusinessName;
+                    p.page_name = item.page_name;
+                    p.category_name = item.ServicType;
+                    ReviewService reviewService = new ReviewService();
+                    p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
+                    p.description = item.Description;
+                    p.rating = (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0";
+                    p.charge_type = "Per Day";
+                    p.latitude = "17.385044";
+                    p.longitude = "78.486671";
+                    p.city = item.City;
+                    p.pic_url = "https://api.ahwanam.com/vendorimages/" + item.image;
+                    p.price = price;
+                    //p.min_guest = item.Minimumseatingcapacity.ToString();
+                    //p.max_guest = item.Maximumcapacity.ToString();
+
+                    param.Add(p);
+                }
+            }
+            var records = param;
+            //if (ratingvalue != null)
+            //    records = records.Where(m => m.rating == ratingvalue).ToList();
+            #endregion
             Dictionary<string, object> dict = new Dictionary<string, object>();
-            dict.Add("results", data);
+            dict.Add("results", records);
             dict.Add("total_count", data.Count);
             dict.Add("offset", (offset == null) ? 12 : offset);
             dict.Add("no_of_pages", data.Count / 6);
@@ -652,38 +814,40 @@ namespace AhwanamAPI.Controllers
             // Retrieving All Filter values for a category
             Dictionary<string, object> d1 = new Dictionary<string, object>();
 
+           
             //City Section
-            //VendorMasterService vendorMasterService = new VendorMasterService();
-            //var data = vendorMasterService.SearchVendors();
-            //var citylist = data.Select(m => m.City).Distinct().ToList();
-            //f = new newfilter();
-            //f.name = "city";
-            //f.display_name = "City";
-            //List<value> val1 = new List<value>();
-            ////List<newcity> city = new List<newcity>();
+            newfilter f = new newfilter();
+            VendorMasterService vendorMasterService = new VendorMasterService();
+            var data = vendorMasterService.SearchVendors();
+            var citylist = data.Select(m => m.City).Distinct().ToList();
+            f = new newfilter();
+            f.name = "city";
+            f.display_name = "City";
+            List<value> val1 = new List<value>();
+            //List<newcity> city = new List<newcity>();
 
-            //for (int i = 0; i < citylist.Count; i++)
-            //{
-            //    value c = new value();
-            //    c.name = citylist[i];
-            //    c.id = i;
-            //    var landmark = data.Where(m => m.City == c.name).Select(m => m.Landmark).Distinct().ToList();
-            //    List<localities> locality1 = new List<localities>();
-            //    for (int j = 0; j < landmark.Count; j++)
-            //    {
-            //        localities loc = new localities();
-            //        loc.name = landmark[j];
-            //        loc.id = j;
-            //        locality1.Add(loc);
-            //    }
-            //    c.localities = locality1;
-            //    //city.Add(c);
-            //    val1.Add(c);
-            //}
-            ////f.values = city;
-            //f.value = val1;
-            //f.is_mutliple_selection = true;
-            //filter.Add(f);
+            for (int i = 0; i < citylist.Count; i++)
+            {
+                value c = new value();
+                c.name = citylist[i];
+                c.id = i;
+                var landmark = data.Where(m => m.City == c.name).Select(m => m.Landmark).Distinct().ToList();
+                List<localities> locality1 = new List<localities>();
+                for (int j = 0; j < landmark.Count; j++)
+                {
+                    localities loc = new localities();
+                    loc.name = landmark[j];
+                    loc.id = j;
+                    locality1.Add(loc);
+                }
+                c.localities = locality1;
+                //city.Add(c);
+                val1.Add(c);
+            }
+            //f.values = city;
+            f.value = val1;
+            f.is_mutliple_selection = true;
+            d1.Add("city",f);
 
             for (int i = 0; i < filters.Count; i++)
             {

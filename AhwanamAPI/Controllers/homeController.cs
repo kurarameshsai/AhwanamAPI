@@ -122,25 +122,27 @@ namespace AhwanamAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/home/othercategories")]
+        [Route("api/category/relatedcategories")]
         public IHttpActionResult GetVendorOtherServiceList([FromUri] string type)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
             FilterServices filterServices = new FilterServices();
-            var categories = filterServices.AllCategories().Where(m=>m.display_name!=type).Take(3).ToList();
+            var categories = filterServices.AllCategories().Where(m => m.display_name != type).Take(3).ToList();
             List<services> res = new List<services>();
             for (int i = 0; i < categories.Count(); i++)
             {
                 services result = new services();
                 result.name = categories[i].name;
+                result.page_name = categories[i].display_name;
                 result.serviceId = categories[i].servicType_id;
                 result.image = categories[i].image;
                 res.Add(result);
-
             }
-             dict.Add("status", true);
+            dict.Add("status", true);
             dict.Add("message", "Success");
-            dict.Add("result", res);
+            Dictionary<string, object> d1 = new Dictionary<string, object>();
+            d1.Add("results", res);
+            dict.Add("results", d1);
             return Json(dict);
         }
 
