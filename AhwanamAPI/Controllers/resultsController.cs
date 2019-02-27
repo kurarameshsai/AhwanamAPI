@@ -191,19 +191,19 @@ namespace AhwanamAPI.Controllers
             Dictionary<string, object> dict1 = new Dictionary<string, object>();
             type = (type == null) ? "Venue" : type;
             //Type Venue
-            if (type == "Venue")
+            if (type == "venue")
                 dict = VenueRecords(type, city, locality, page, capacity, price_per_plate_or_rental, offset, sortby, space_preference, rating, venue_type);
             //Type Caterer
-            else if (type == "Catering")
+            else if (type == "catering")
                 dict = CatererRecords(type, page, offset, rating,budget,dietary_prefernces,city);
             //Type Photography
-            else if (type == "Photography")
+            else if (type == "photography")
                 dict = PhotographerRecords(type, page, offset, rating,city,services,budget);
             //Type Decorator
-            else if (type == "Decorator")
+            else if (type == "decorator")
                 dict = DecoratorRecords(type, page, offset, rating,budget,city);
             //Type Other
-            else if (type == "Pandit" || type == "Mehendi")
+            else if (type == "pandit" || type == "mehendi")
                 dict = OtherRecords(type, page, offset, rating);
             dict1.Add("status", true);
             dict1.Add("message", "Success");
@@ -392,17 +392,17 @@ namespace AhwanamAPI.Controllers
             Dictionary<string, object> dict = new Dictionary<string, object>();
             // Header Section
             header headers = new header();
-            if (type == "Venue")
+            if (type == "venue")
                 headers.header_text = "Best Wedding Venues";
-            else if (type == "Catering")
+            else if (type == "catering")
                 headers.header_text = "Best Catering Vendors";
-            else if (type == "Decorator")
+            else if (type == "decorator")
                 headers.header_text = "Best Decorator Vendors";
-            else if (type == "Photography")
+            else if (type == "photography")
                 headers.header_text = "Best Photography Vendors";
-            else if (type == "Pandit")
+            else if (type == "pandit")
                 headers.header_text = "Best Pandit Vendors";
-            else if (type == "Mehendi")
+            else if (type == "mehendi")
                 headers.header_text = "Best Mehendi Vendors";
             headers.sub_text = "Sub Text";
             headers.image = "https://api.ahwanam.com/images/header1.png";
@@ -437,7 +437,7 @@ namespace AhwanamAPI.Controllers
             f.is_mutliple_selection = true;
             filter.Add(f);
 
-            if (type == "Venue" || type == "Photography" || type == "Catering")
+            if (type == "venue" || type == "Photography" || type == "Catering")
             {
                 //Venue Type Section
                 f = new newfilter();
@@ -593,7 +593,7 @@ namespace AhwanamAPI.Controllers
         [Route("api/results/getfilters")]
         public IHttpActionResult getfilters(string type)
         {
-            type = (type == null) ? "Venue" : type;
+            type = (type == null) ? "venue" : type;
             Dictionary<string, object> dict = new Dictionary<string, object>();
             // Header Section
             header headers = new header();

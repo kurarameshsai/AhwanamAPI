@@ -24,6 +24,7 @@ namespace AhwanamAPI.Controllers
         public class services
         {
             public string name { get; set; }
+            public string page_name { get; set; }
             public int serviceId { get; set; }
             public string image { get; set; }
         }
@@ -108,6 +109,7 @@ namespace AhwanamAPI.Controllers
             {
                 services result = new services();
                 result.name = categories[i].name;
+                result.page_name = categories[i].display_name;
                 result.serviceId = categories[i].servicType_id;
                 result.image = categories[i].image;
                 res.Add(result);

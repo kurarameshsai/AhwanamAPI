@@ -37,6 +37,7 @@ namespace AhwanamAPI.Controllers
             public List<areas> available_areas { get; set; }
             public List<amenities> amenities { get; set; }
             public List<policies> policies { get; set; }
+            public List<gallery> gallery { get; set; }
             //Add gallery property
         }
 
@@ -71,12 +72,11 @@ namespace AhwanamAPI.Controllers
             public string name { get; set; }
         }
 
-        //public class gallery
-        //{
-        //    public string album_name { get; set; }
-        //    public string album_id { get; set; }
-
-        //}
+        public class gallery
+        {
+            public string url { get; set; }
+            //public string album_id { get; set; }
+        }
 
         public class Reviews
         {
@@ -106,8 +106,8 @@ namespace AhwanamAPI.Controllers
             dict.Add("message", "Success");
             if (type == "venue")
             {
-                type =(type == "venue") ? "Venue" : type;
-                GetVendors_Result vendor = resultsPageService.GetAllVendors(type).Where(m => m.page_name == param).FirstOrDefault();
+                //type =(type == "venue") ? "Venue" : type;
+                GetVendors_Result vendor = resultsPageService.GetAllVendors("Venue").Where(m => m.page_name == param).FirstOrDefault();
                 id = vendor.Id.ToString();
                 vid = vendor.subid.ToString();
                 //GetVendors_Result vendor = resultsPageService.GetAllVendors(type).Where(m => m.Id == long.Parse(id) && m.subid == long.Parse(vid)).FirstOrDefault();
@@ -155,7 +155,7 @@ namespace AhwanamAPI.Controllers
                 vdetail.available_areas = a1;
 
                 List<amenities> amenity1 = new List<amenities>();
-                var amenities = Amenities(id, vid).FirstOrDefault().Split(',');
+                var amenities = Amenities(type,id, vid).FirstOrDefault().Split(',');
                 for (int i = 0; i < amenities.Length; i++)
                 {
                     amenities amenity = new amenities();
@@ -178,6 +178,18 @@ namespace AhwanamAPI.Controllers
                     policy1.Add(policy);
                 }
                 vdetail.policies = policy1;
+
+                // Gallery
+                
+                List<gallery> g1 = new List<gallery>();
+                var allimages = viewservicesss.GetVendorAllImages(long.Parse(id)).Where(m => m.VendorId == long.Parse(vid)).ToList();
+                for (int i = 0; i < allimages.Count; i++)
+                {
+                    gallery g = new gallery();
+                    g.url = "https://api.ahwanam.com/vendorimages/" + allimages[i].ImageName;
+                    g1.Add(g);
+                }
+                vdetail.gallery = g1;
 
                 dict.Add("data", vdetail);
             }
@@ -242,7 +254,7 @@ namespace AhwanamAPI.Controllers
                     dict.Add("rental_packages", rpkgs);
 
                     //Amenities
-                    var amenities = Amenities(id, vid);
+                    var amenities = Amenities(type,id, vid);
                     dict.Add("amenities", amenities);
 
                     //Policy
@@ -262,36 +274,36 @@ namespace AhwanamAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/viewservice/similar")]
-        public IHttpActionResult similar(string type, string param)
+        [Route("api/similarvendors")]
+        public IHttpActionResult similar(string type, string vendor)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
             dict.Add("status", true);
             dict.Add("message", "Success");
             if (type == "venue" || type == null)
             {
-                List<GetVendors_Result> vendor = resultsPageService.GetAllVendors(type).Where(m => m.page_name != param).Take(3).ToList();
-                dict.Add("data", vendor);
+                List<GetVendors_Result> data = resultsPageService.GetAllVendors(type).Where(m => m.page_name != vendor).Take(3).ToList();
+                dict.Add("data", data);
             }
             else if (type == "catering")
             {
-                List<GetCaterers_Result> vendor = resultsPageService.GetAllCaterers().Where(m => m.page_name != param).Take(3).ToList();
-                dict.Add("data", vendor);
+                List<GetCaterers_Result> data = resultsPageService.GetAllCaterers().Where(m => m.page_name != vendor).Take(3).ToList();
+                dict.Add("data", data);
             }
             else if (type == "decorator")
             {
-                List<GetDecorators_Result> vendor = resultsPageService.GetAllDecorators().Where(m => m.page_name != param).Take(3).ToList();
-                dict.Add("data", vendor);
+                List<GetDecorators_Result> data = resultsPageService.GetAllDecorators().Where(m => m.page_name != vendor).Take(3).ToList();
+                dict.Add("data", data);
             }
             else if (type == "photography")
             {
-                List<GetCaterers_Result> vendor = resultsPageService.GetAllCaterers().Where(m => m.page_name != param).Take(3).ToList();
-                dict.Add("data", vendor);
+                List<GetCaterers_Result> data = resultsPageService.GetAllCaterers().Where(m => m.page_name != vendor).Take(3).ToList();
+                dict.Add("data", data);
             }
             else if (type == "pandit")
             {
-                List<GetDecorators_Result> vendor = resultsPageService.GetAllDecorators().Where(m => m.page_name != param).Take(3).ToList();
-                dict.Add("data", vendor);
+                List<GetDecorators_Result> data = resultsPageService.GetAllDecorators().Where(m => m.page_name != vendor).Take(3).ToList();
+                dict.Add("data", data);
             }
             return Json(dict);
         }
@@ -463,83 +475,102 @@ namespace AhwanamAPI.Controllers
 
         //[HttpGet]
         //[Route("api/viewservice/amenity")]
-        public List<string> Amenities(string id, string vid)
+        public List<string> Amenities(string type,string id, string vid)
         {
-            Dictionary<string, object> dict = new Dictionary<string, object>();
-            //try
-            //{
-            // Retrieving Available Amenities
-            var venues = viewservicesss.GetVendorVenue(long.Parse(id)).Where(m => m.Id == long.Parse(vid)).ToList();
-            var allamenities = venues.Where(m => m.Id == long.Parse(vid)).Select(m => new
-            {
-                #region Venue amenities
-                m.AC,
-                m.TV,
-                m.Complimentary_Breakfast,
-                m.Geyser,
-                m.Parking_Facility,
-                m.Card_Payment,
-                m.Lift_or_Elevator,
-                m.Banquet_Hall,
-                m.Laundry,
-                m.CCTV_Cameras,
-                m.Swimming_Pool,
-                m.Conference_Room,
-                m.Bar,
-                m.Dining_Area,
-                m.Power_Backup,
-                m.Wheelchair_Accessible,
-                m.Room_Heater,
-                m.In_Room_Safe,
-                m.Mini_Fridge,
-                m.In_house_Restaurant,
-                m.Gym,
-                m.Hair_Dryer,
-                m.Pet_Friendly,
-                m.HDTV,
-                m.Spa,
-                m.Wellness_Center,
-                m.Electricity,
-                m.Bath_Tub,
-                m.Kitchen,
-                m.Netflix,
-                m.Kindle,
-                m.Coffee_Tea_Maker,
-                m.Sofa_Set,
-                m.Jacuzzi,
-                m.Full_Length_Mirrror,
-                m.Balcony,
-                m.King_Bed,
-                m.Queen_Bed,
-                m.Single_Bed,
-                m.Intercom,
-                m.Sufficient_Room_Size,
-                m.Sufficient_Washroom
-                #endregion
-            }).ToList();
             List<string> famenities = new List<string>();
-            foreach (var item in allamenities)
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            // Retrieving Available Amenities
+            if (type == "venue")
             {
-                string value = string.Join(",", item).Replace("{", "").Replace("}", "");
-                var availableamenities = value.Split(',');
-                value = "";
-                for (int i = 0; i < availableamenities.Length; i++)
+                var venues = viewservicesss.GetVendorVenue(long.Parse(id)).Where(m => m.Id == long.Parse(vid)).ToList();
+                var allamenities = venues.Where(m => m.Id == long.Parse(vid)).Select(m => new
                 {
-                    if (availableamenities[i].Split('=')[1].Trim() == "Yes")
-                        value = value + "," + availableamenities[i].Split('=')[0].Trim();
+                    #region Venue amenities
+                    m.AC,
+                    m.TV,
+                    m.Complimentary_Breakfast,
+                    m.Geyser,
+                    m.Parking_Facility,
+                    m.Card_Payment,
+                    m.Lift_or_Elevator,
+                    m.Banquet_Hall,
+                    m.Laundry,
+                    m.CCTV_Cameras,
+                    m.Swimming_Pool,
+                    m.Conference_Room,
+                    m.Bar,
+                    m.Dining_Area,
+                    m.Power_Backup,
+                    m.Wheelchair_Accessible,
+                    m.Room_Heater,
+                    m.In_Room_Safe,
+                    m.Mini_Fridge,
+                    m.In_house_Restaurant,
+                    m.Gym,
+                    m.Hair_Dryer,
+                    m.Pet_Friendly,
+                    m.HDTV,
+                    m.Spa,
+                    m.Wellness_Center,
+                    m.Electricity,
+                    m.Bath_Tub,
+                    m.Kitchen,
+                    m.Netflix,
+                    m.Kindle,
+                    m.Coffee_Tea_Maker,
+                    m.Sofa_Set,
+                    m.Jacuzzi,
+                    m.Full_Length_Mirrror,
+                    m.Balcony,
+                    m.King_Bed,
+                    m.Queen_Bed,
+                    m.Single_Bed,
+                    m.Intercom,
+                    m.Sufficient_Room_Size,
+                    m.Sufficient_Washroom
+                    #endregion
+                }).ToList();
+                
+                foreach (var item in allamenities)
+                {
+                    string value = string.Join(",", item).Replace("{", "").Replace("}", "");
+                    var availableamenities = value.Split(',');
+                    value = "";
+                    for (int i = 0; i < availableamenities.Length; i++)
+                    {
+                        if (availableamenities[i].Split('=')[1].Trim() == "Yes")
+                            value = value + "," + availableamenities[i].Split('=')[0].Trim();
+                    }
+                    famenities.Add(value.TrimStart(','));
                 }
-                famenities.Add(value.TrimStart(','));
+                if (famenities.Count == 0) famenities.Add("No Amenities Available");
             }
-            if (famenities.Count == 0) famenities.Add("No Amenities Available");
-            //dict.Add("data", famenities);
+            else if (type == "catering")
+            {
+                //Add Amenities Code here just replicate Venue code
+                famenities.Add("No Amenities Available");
+            }
+            else if (type == "decorator")
+            {
+                //Add Amenities Code here just replicate Venue code
+                famenities.Add("No Amenities Available");
+            }
+            else if (type == "photography")
+            {
+                //Add Amenities Code here just replicate Venue code
+                famenities.Add("No Amenities Available");
+            }
+            else if (type == "pandit")
+            {
+                //Add Amenities Code here just replicate Venue code
+                famenities.Add("No Amenities Available");
+            }
+            else if (type == "mehendi")
+            {
+                //Add Amenities Code here just replicate Venue code
+                famenities.Add("No Amenities Available");
+            }
             return famenities;
-            //}
-            //catch (Exception)
-            //{
-            //    dict.Add("status", false);
-            //    dict.Add("message", "Failed");
-            //    return Json(dict);
-            //}
         }
 
         [HttpGet]
