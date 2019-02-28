@@ -142,7 +142,7 @@ namespace AhwanamAPI.Controllers
             dict.Add("message", "Success");
             Dictionary<string, object> d1 = new Dictionary<string, object>();
             d1.Add("results", res);
-            dict.Add("results", d1);
+            dict.Add("data", d1);
             return Json(dict);
         }
 
