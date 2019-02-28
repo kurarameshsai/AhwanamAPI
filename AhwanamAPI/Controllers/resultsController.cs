@@ -215,6 +215,7 @@ namespace AhwanamAPI.Controllers
         #region Venue_Records
         public Dictionary<string, object> VenueRecords(string type, int? city = -1, int? locality = -1, int? page = 0, int? capacity = -1, int? price_per_plate_or_rental = -1, int? offset = 0, int? sortby = -1, int? space_preference = -1, int? rating = -1, int? venue_type = -1)
         {
+            //cookies((int)capacity, "venue");
             string guestsvalue = (capacity != -1) ? cookies((int)capacity, "guests") : null;
             string cityvalue = (city != -1) ? cookies((int)city, "city") : null;
             string localityvalue = (locality != -1) ? cookies((int)locality, "locality") : null;
@@ -959,6 +960,12 @@ namespace AhwanamAPI.Controllers
         public string cookies(int first, string type, int? second = 0)
         {
             string returnvalue = string.Empty;
+            //var filterdata = filters(type).Values.ToList();
+            //if (filterdata.Count > 0)
+            //{
+            //    var rating = filterdata.FirstOrDefault().
+            //    //d1 = filterdata[0];
+            //}
             HttpCookie cookie = HttpContext.Current.Request.Cookies["filters"];
             if (cookie != null)
             {
@@ -1032,6 +1039,8 @@ namespace AhwanamAPI.Controllers
             }
             return returnvalue;
         }
+
+
 
         public int checktoken()
         {
