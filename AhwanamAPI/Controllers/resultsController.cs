@@ -45,7 +45,7 @@ namespace AhwanamAPI.Controllers
             public string category_name { get; set; }
             public string reviews_count { get; set; }
             public string description { get; set; }
-            public string rating { get; set; }
+            public decimal rating { get; set; }
             public string charge_type { get; set; }
             public string latitude { get; set; }
             public string longitude { get; set; }
@@ -215,22 +215,34 @@ namespace AhwanamAPI.Controllers
         #region Venue_Records
         public Dictionary<string, object> VenueRecords(string type, int? city = -1, int? locality = -1, int? page = 0, int? capacity = -1, int? price_per_plate_or_rental = -1, int? offset = 0, int? sortby = -1, int? space_preference = -1, int? rating = -1, int? venue_type = -1)
         {
+            int count = 0;
             //cookies((int)capacity, "venue");
-            string guestsvalue = (capacity != -1) ? cookies((int)capacity, "guests") : null;
-            string cityvalue = (city != -1) ? cookies((int)city, "city") : null;
-            string localityvalue = (locality != -1) ? cookies((int)locality, "locality") : null;
-            string pricevalue = (price_per_plate_or_rental != -1) ? cookies((int)price_per_plate_or_rental, "price") : null;
-            string spacevalue = (space_preference != -1) ? cookies((int)space_preference, "space") : null;
-            string sortbyvalue = (sortby != -1) ? cookies((int)sortby, "sort") : null;
-            string ratingvalue = (rating != -1) ? cookies((int)rating, "rating") : null;
-            string vtypevalue = (venue_type != -1) ? cookies((int)venue_type, "vtype") : null;
+            string guestsvalue = (capacity != -1 && capacity != null) ? getvalue((int)capacity) : null;
+            string cityvalue = (city != -1 && city != null) ? getvalue((int)city) : null;
+            string localityvalue = (locality != -1 && locality != null) ? getvalue((int)locality) : null;
+            string pricevalue = (price_per_plate_or_rental != -1 && price_per_plate_or_rental != null) ? getvalue((int)price_per_plate_or_rental) : null;
+            string spacevalue = (space_preference != -1 && space_preference != null) ? getvalue((int)space_preference) : null;
+            string sortbyvalue = (sortby != -1 && sortby != null) ? getvalue((int)sortby) : null;
+            string ratingvalue = (rating != -1 && rating != null) ? getvalue((int)rating) : null;
+            string vtypevalue = (venue_type != -1 && venue_type != null) ? getvalue((int)venue_type) : null;
             page = (page == null) ? 1 : page;
-            int takecount = (int)page * (int)offset;
+            offset = (offset == null || offset == 0) ? 6 : offset;
+            int takecount = 6;
+            if (((int)page - 1) > 0)
+                takecount = ((int)page - 1) * (int)offset;
+
+            if (ratingvalue == "All Ratings") ratingvalue = "0";
+            else if (ratingvalue == "Rated 3.0+") ratingvalue = "3";
+            else if (ratingvalue == "Rated 4.0+") ratingvalue = "4";
+            else if (ratingvalue == "Rated 5.0+") ratingvalue = "5";
 
             //Retrieve Cookie value
             var data = resultsPageService.GetAllVendors(type);//.Skip(page*6).ToList();
+            count = data.Count();
             if (page > 1)
                 data = data.Skip(takecount).Take((int)offset).ToList();
+            else
+                data = data.Take((int)offset).ToList();
             if (cityvalue != null)
                 data = data.Where(m => m.City == cityvalue).ToList();
             if (localityvalue != null && cityvalue != null)
@@ -263,7 +275,7 @@ namespace AhwanamAPI.Controllers
                     ReviewService reviewService = new ReviewService();
                     p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
                     p.description = item.Description;
-                    p.rating = (trating != 0) ? (trating/3).ToString().Substring(0,4) : "0";
+                    p.rating = (trating != 0) ? decimal.Parse((trating/3).ToString().Substring(0,4)) : 0;
                     p.charge_type = "Per Day";
                     p.latitude = "17.385044";
                     p.longitude = "78.486671";
@@ -278,14 +290,14 @@ namespace AhwanamAPI.Controllers
             }
             var records = param;
             if (ratingvalue != null)
-                records = records.Where(m => m.rating == ratingvalue).ToList();
+                records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).ToList();
             #endregion
 
             Dictionary<string, object> dict = new Dictionary<string, object>();
             dict.Add("results", records);
-            dict.Add("total_count", data.Count);
-            dict.Add("offset", (offset == null) ? 12 : offset);
-            dict.Add("no_of_pages", data.Count / 6);
+            dict.Add("total_count", count);
+            dict.Add("offset", (offset == null) ? 6 : offset);
+            dict.Add("no_of_pages", ((count - 1) / offset) + 1);
             dict.Add("sort_options", (sortby == null) ? 1 : sortby);
             dict.Add("service_type", type);
             return dict;
@@ -295,15 +307,22 @@ namespace AhwanamAPI.Controllers
         #region Caterer_Records
         public Dictionary<string, object> CatererRecords(string type, int? page = 0, int? offset = 0, int? rating = -1,int? budget =-1,int? dietary_prefernces=-1, int? city = -1)
         {
+            int count = 0;
             string cityvalue = (city != -1) ? cookies((int)city, "city") : null;
             string budgetvalue = (budget != -1) ? cookies((int)budget, "budget") : null;
             string ratingvalue = (rating != -1) ? cookies((int)rating, "rating") : null;
             string dietvalue = (dietary_prefernces != -1) ? cookies((int)dietary_prefernces, "dietary_prefernces") : null;
             page = (page == null) ? 1 : page;
-            int takecount = (int)page * (int)offset;
+            offset = (offset == null || offset == 0) ? 6 : offset;
+            int takecount = 6;
+            if (((int)page - 1) > 0)
+                takecount = ((int)page - 1) * (int)offset;
             var data = resultsPageService.GetAllCaterers();
+            count = data.Count();
             if (page > 1)
                 data = data.Skip(takecount).Take((int)offset).ToList();
+            else
+                data = data.Take((int)offset).ToList();
             if (cityvalue != null)
                 data = data.Where(m => m.City == cityvalue).ToList();
             if (budgetvalue != null)
@@ -331,7 +350,7 @@ namespace AhwanamAPI.Controllers
                     ReviewService reviewService = new ReviewService();
                     p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
                     p.description = item.Description;
-                    p.rating = (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0";
+                    p.rating = (trating != 0) ? decimal.Parse((trating / 3).ToString().Substring(0, 4)) : 0;
                     p.charge_type = "Per Day";
                     p.latitude = "17.385044";
                     p.longitude = "78.486671";
@@ -346,14 +365,15 @@ namespace AhwanamAPI.Controllers
             }
             var records = param;
             if (ratingvalue != null)
-                records = records.Where(m => m.rating == ratingvalue).ToList();
+                records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).ToList();
             #endregion
 
             Dictionary<string, object> dict = new Dictionary<string, object>();
             dict.Add("results", records);
-            dict.Add("total_count", data.Count);
-            dict.Add("offset", (offset == null) ? 12 : offset);
-            dict.Add("no_of_pages", data.Count / 6);
+            dict.Add("total_count", count);
+            dict.Add("offset", (offset == null) ? 6 : offset);
+            dict.Add("no_of_pages", ((count - 1) / offset) + 1);
+            //dict.Add("sort_options", (sortby == null) ? 1 : sortby);
             dict.Add("service_type", type);
             return dict;
         }
@@ -362,14 +382,21 @@ namespace AhwanamAPI.Controllers
         #region Decorator_Records
         public Dictionary<string, object> DecoratorRecords(string type, int? page = 0, int? offset = 0, int? rating = -1,int? budget =-1, int? city = -1)
         {
+            int count = 0;
             page = (page == null) ? 1 : page;
-            int takecount = (int)page * (int)offset;
+            offset = (offset == null || offset == 0) ? 6 : offset;
+            int takecount = 6;
+            if (((int)page - 1) > 0)
+                takecount = ((int)page - 1) * (int)offset;
             var data = resultsPageService.GetAllDecorators();
+            count = data.Count();
             string cityvalue = (city != -1) ? cookies((int)city, "city") : null;
             string budgetvalue = (budget != -1) ? cookies((int)budget, "budget") : null;
             string ratingvalue = (rating != -1) ? cookies((int)rating, "rating") : null;
             if (page > 1)
                 data = data.Skip(takecount).Take((int)offset).ToList();
+            else
+                data = data.Take((int)offset).ToList();
             if (cityvalue != null)
                 data = data.Where(m => m.City == cityvalue).ToList();
             if (budgetvalue != null)
@@ -396,7 +423,7 @@ namespace AhwanamAPI.Controllers
                     ReviewService reviewService = new ReviewService();
                     p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
                     p.description = item.Description;
-                    p.rating = (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0";
+                    p.rating = (trating != 0) ? decimal.Parse((trating / 3).ToString().Substring(0, 4)) : 0;
                     p.charge_type = "Per Day";
                     p.latitude = "17.385044";
                     p.longitude = "78.486671";
@@ -411,13 +438,14 @@ namespace AhwanamAPI.Controllers
             }
             var records = param;
             if (ratingvalue != null)
-                records = records.Where(m => m.rating == ratingvalue).ToList();
+                records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).ToList();
             #endregion
             Dictionary<string, object> dict = new Dictionary<string, object>();
             dict.Add("results", records);
-            dict.Add("total_count", data.Count);
-            dict.Add("offset", (offset == null) ? 12 : offset);
-            dict.Add("no_of_pages", data.Count / 6);
+            dict.Add("total_count", count);
+            dict.Add("offset", (offset == null) ? 6 : offset);
+            dict.Add("no_of_pages", ((count - 1) / offset) + 1);
+            //dict.Add("sort_options", (sortby == null) ? 1 : sortby);
             dict.Add("service_type", type);
             return dict;
         }
@@ -426,15 +454,22 @@ namespace AhwanamAPI.Controllers
         #region Photographer_Records
         public Dictionary<string, object> PhotographerRecords(string type, int? page = 0, int? offset = 0, int? rating = -1, int? city = -1, int? services = -1, int? budget = -1)
         {
+            int count = 0;
             string servicesvalue = (services != -1) ? cookies((int)services, "services") : null;
             string cityvalue = (city != -1) ? cookies((int)city, "city") : null;
             string budgetvalue = (budget != -1) ? cookies((int)budget, "budget") : null;
             string ratingvalue = (rating != -1) ? cookies((int)rating, "rating") : null;
             page = (page == null) ? 1 : page;
-            int takecount = (int)page * (int)offset;
+            offset = (offset == null || offset == 0) ? 6 : offset;
+            int takecount = 6;
+            if (((int)page - 1) > 0)
+                takecount = ((int)page - 1) * (int)offset;
             var data = resultsPageService.GetAllPhotographers();
+            count = data.Count();
             if (page > 1)
                 data = data.Skip(takecount).Take((int)offset).ToList();
+            else
+                data = data.Take((int)offset).ToList();
             if (cityvalue != null)
                 data = data.Where(m => m.City == cityvalue).ToList();
             if (budgetvalue != null)
@@ -463,7 +498,7 @@ namespace AhwanamAPI.Controllers
                     ReviewService reviewService = new ReviewService();
                     p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
                     p.description = item.Description;
-                    p.rating = (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0";
+                    p.rating = (trating != 0) ? decimal.Parse((trating / 3).ToString().Substring(0, 4)) : 0;
                     p.charge_type = "Per Day";
                     p.latitude = "17.385044";
                     p.longitude = "78.486671";
@@ -478,13 +513,14 @@ namespace AhwanamAPI.Controllers
             }
             var records = param;
             if (ratingvalue != null)
-                records = records.Where(m => m.rating == ratingvalue).ToList();
+                records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).ToList();
             #endregion
             Dictionary<string, object> dict = new Dictionary<string, object>();
             dict.Add("results", records);
-            dict.Add("total_count", data.Count);
-            dict.Add("offset", (offset == null) ? 12 : offset);
-            dict.Add("no_of_pages", data.Count / 6);
+            dict.Add("total_count", count);
+            dict.Add("offset", (offset == null) ? 6 : offset);
+            dict.Add("no_of_pages", ((count - 1) / offset) + 1);
+            //dict.Add("sort_options", (sortby == null) ? 1 : sortby);
             dict.Add("service_type", type);
             return dict;
         }
@@ -493,11 +529,18 @@ namespace AhwanamAPI.Controllers
         #region Other_Records
         public Dictionary<string, object> OtherRecords(string type, int? page = 0, int? offset = 0, int? rating = -1)
         {
+            int count = 0;
             page = (page == null) ? 1 : page;
-            int takecount = (int)page * (int)offset;
+            offset = (offset == null || offset == 0) ? 6 : offset;
+            int takecount = 6;
+            if (((int)page - 1) > 0)
+                takecount = ((int)page - 1) * (int)offset;
             var data = resultsPageService.GetAllOthers(type);
+            count = data.Count();
             if (page > 1)
                 data = data.Skip(takecount).Take((int)offset).ToList();
+            else
+                data = data.Take((int)offset).ToList();
             #region Format API
             List<param> param = new List<param>();
             if (data.Count > 0)
@@ -520,7 +563,7 @@ namespace AhwanamAPI.Controllers
                     ReviewService reviewService = new ReviewService();
                     p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
                     p.description = item.Description;
-                    p.rating = (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0";
+                    p.rating = (trating != 0) ? decimal.Parse((trating / 3).ToString().Substring(0, 4)) : 0;
                     p.charge_type = "Per Day";
                     p.latitude = "17.385044";
                     p.longitude = "78.486671";
@@ -539,9 +582,10 @@ namespace AhwanamAPI.Controllers
             #endregion
             Dictionary<string, object> dict = new Dictionary<string, object>();
             dict.Add("results", records);
-            dict.Add("total_count", data.Count);
-            dict.Add("offset", (offset == null) ? 12 : offset);
-            dict.Add("no_of_pages", data.Count / 6);
+            dict.Add("total_count", count);
+            dict.Add("offset", (offset == null) ? 6 : offset);
+            dict.Add("no_of_pages", ((count - 1) / offset) + 1);
+            //dict.Add("sort_options", (sortby == null) ? 1 : sortby);
             dict.Add("service_type", type);
             return dict;
         }
@@ -758,6 +802,8 @@ namespace AhwanamAPI.Controllers
         {
             type = (type == null) ? "venue" : type;
             Dictionary<string, object> dict = new Dictionary<string, object>();
+            dict.Add("status", true);
+            dict.Add("message", "Success");
             // Header Section
             header headers = new header();
             if (type == "venue")
@@ -789,35 +835,37 @@ namespace AhwanamAPI.Controllers
                 sort1.Add(sort);
             }
             dict.Add("sort_options", sort1);
-            var data = filters(type);
-            dict.Add("filters", data);
-            //Cookie Section
-            HttpContext.Current.Response.Cookies["filters"].Value = JsonConvert.SerializeObject(dict); //new JavaScriptSerializer().Serialize(dict);
-            Dictionary<string, object> dict1 = new Dictionary<string, object>();
-            dict1.Add("status", true);
-            dict1.Add("message", "Success");
-            dict1.Add("data", dict);
-            return Json(dict1);
+            var data = filters(type,filter,dict);
+            return Json(data);
         }
 
-        public Dictionary<string,object> filters(string type)
+        public Dictionary<string,object> filters(string type,List<newfilter> filter, Dictionary<string, object> dict)
         {
-            Dictionary<string, object> dict = new Dictionary<string, object>();
             FilterServices filterServices = new FilterServices();
-
-            //Retrieving All Categories
-            var categories = filterServices.AllCategories();
-
-            // Retrieving All Filters for a category
-            int value = categories.Where(m => m.display_name == type).FirstOrDefault().servicType_id;
+            var categories = filterServices.AllCategories(); //Retrieving All Categories
+            int value = categories.Where(m => m.display_name == type).FirstOrDefault().servicType_id; // Retrieving All Filters for a category
             var filters = filterServices.AllFilters(value);
-
             // Retrieving All Filter values for a category
-            Dictionary<string, object> d1 = new Dictionary<string, object>();
-
-           
-            //City Section
             newfilter f = new newfilter();
+            for (int i = 0; i < filters.Count; i++)
+            {
+                f = new newfilter();
+                var filtervalue = filterServices.FilterValues(filters[i].filter_id);
+                f.name = filters[i].name;
+                f.display_name = filters[i].display_name;
+                List<values> test = new List<values>();
+                for (int j = 0; j < filtervalue.Count; j++)
+                {
+                    values v = new values();
+                    v.name = filtervalue[j].name;
+                    v.id = filtervalue[j].id;
+                    test.Add(v);
+                }
+                f.values = test;
+                f.is_mutliple_selection = true;
+                filter.Add(f);
+            }
+            //City & Locality Section
             VendorMasterService vendorMasterService = new VendorMasterService();
             var data = vendorMasterService.SearchVendors();
             var citylist = data.Select(m => m.City).Distinct().ToList();
@@ -825,8 +873,6 @@ namespace AhwanamAPI.Controllers
             f.name = "city";
             f.display_name = "City";
             List<value> val1 = new List<value>();
-            //List<newcity> city = new List<newcity>();
-
             for (int i = 0; i < citylist.Count; i++)
             {
                 value c = new value();
@@ -842,28 +888,12 @@ namespace AhwanamAPI.Controllers
                     locality1.Add(loc);
                 }
                 c.localities = locality1;
-                //city.Add(c);
                 val1.Add(c);
             }
-            //f.values = city;
             f.value = val1;
             f.is_mutliple_selection = true;
-            d1.Add("city",f);
-
-            for (int i = 0; i < filters.Count; i++)
-            {
-                List<values> v1 = new List<values>();
-                var filtervalue = filterServices.FilterValues(filters[i].filter_id);
-                for (int j = 0; j < filtervalue.Count; j++)
-                {
-                    values c = new values();
-                    c.id = filtervalue[j].id;
-                    c.name = filtervalue[j].name;
-                    v1.Add(c);
-                }
-                d1.Add(filters[i].display_name,v1);
-            }
-            dict.Add("data",d1);
+            filter.Add(f);
+            dict.Add("filters", filter);
             return dict;
         }
 
@@ -957,6 +987,13 @@ namespace AhwanamAPI.Controllers
         #endregion
 
         #region reference
+        public string getvalue(int id)
+        {
+            FilterServices filterServices = new FilterServices();
+            return filterServices.ParticularFilterValue(id).name;
+        }
+
+
         public string cookies(int first, string type, int? second = 0)
         {
             string returnvalue = string.Empty;

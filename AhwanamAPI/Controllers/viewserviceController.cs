@@ -41,6 +41,19 @@ namespace AhwanamAPI.Controllers
             //Add gallery property
         }
 
+        public class similarvendor
+        {
+            public string category_name { get; set; }
+            public string charge_type { get; set; }
+            public string city { get; set; }
+            public string name { get; set; }
+            public string page_name { get; set; }
+            public string pic_url { get; set; }
+            public price price { get; set; }
+            public string rating { get; set; }
+            public string reviews_count { get; set; }
+        }
+
         public class location
         {
             public string latitude { get; set; }
@@ -75,7 +88,8 @@ namespace AhwanamAPI.Controllers
         public class gallery
         {
             public string url { get; set; }
-            //public string album_id { get; set; }
+            public bool is_favourite { get; set; }
+            public string id { get; set; }
         }
 
         public class Reviews
@@ -97,7 +111,7 @@ namespace AhwanamAPI.Controllers
 
         [HttpGet]
         [Route("api/details")]
-        public IHttpActionResult productdetails(string type, string item)
+        public IHttpActionResult productdetails(string type, string vendor)
         {
             string id = null;
             string vid = null;
@@ -107,26 +121,26 @@ namespace AhwanamAPI.Controllers
             if (type == "venue")
             {
                 //type =(type == "venue") ? "Venue" : type;
-                GetVendors_Result vendor = resultsPageService.GetAllVendors("Venue").Where(m => m.page_name == item).FirstOrDefault();
-                id = vendor.Id.ToString();
-                vid = vendor.subid.ToString();
+                GetVendors_Result data = resultsPageService.GetAllVendors("Venue").Where(m => m.page_name == vendor).FirstOrDefault();
+                id = data.Id.ToString();
+                vid = data.subid.ToString();
                 string image = "https://api.ahwanam.com/images/cover_image.png";
-                string img  = (vendor.logo != null || vendor.logo != "") ? vendor.logo : vendor.image;
+                string img = (data.logo != null || data.logo != "") ? data.logo : data.image;
                 vendordetail vdetail = new vendordetail();
-                vdetail.cover_image = (img != null && img != "") ? "https://api.ahwanam.com/vendorimages/"+img : image;
-                vdetail.page_name = vendor.page_name;
-                vdetail.name = vendor.BusinessName;
-                vdetail.category_name = vendor.ServicType;
+                vdetail.cover_image = (img != null && img != "") ? "https://api.ahwanam.com/dataimages/" + img : image;
+                vdetail.page_name = data.page_name;
+                vdetail.name = data.BusinessName;
+                vdetail.category_name = data.ServicType;
                 ReviewService reviewService = new ReviewService();
-                vdetail.reviews_count = reviewService.GetReview(int.Parse(id)).Where(m=>m.Sid == long.Parse(vid)).Count().ToString();
-                decimal trating = (vendor.fbrating != null && vendor.googlerating != null && vendor.jdrating != null) ? decimal.Parse(vendor.fbrating) + decimal.Parse(vendor.googlerating) + decimal.Parse(vendor.jdrating) : 0;
+                vdetail.reviews_count = reviewService.GetReview(int.Parse(id)).Where(m => m.Sid == long.Parse(vid)).Count().ToString();
+                decimal trating = (data.fbrating != null && data.googlerating != null && data.jdrating != null) ? decimal.Parse(data.fbrating) + decimal.Parse(data.googlerating) + decimal.Parse(data.jdrating) : 0;
                 vdetail.rating = (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0";
-                vdetail.address = vendor.Address + "," + vendor.Landmark + "," + vendor.City + "," + vendor.State;
+                vdetail.address = data.Address + "," + data.Landmark + "," + data.City + "," + data.State;
                 location loc = new location();
-                if (vendor.GeoLocation != null && vendor.GeoLocation != "")
+                if (data.GeoLocation != null && data.GeoLocation != "")
                 {
-                    loc.latitude = vendor.GeoLocation.Split(',')[0];
-                    loc.longitude = vendor.GeoLocation.Split(',')[1];
+                    loc.latitude = data.GeoLocation.Split(',')[0];
+                    loc.longitude = data.GeoLocation.Split(',')[1];
                 }
                 else
                 {
@@ -135,13 +149,13 @@ namespace AhwanamAPI.Controllers
                 }
                 vdetail.location = loc;
                 //vdetail.charge_type=
-                vdetail.city = vendor.City;
+                vdetail.city = data.City;
                 price p = new price();
-                p.actual_price = vendor.cost1.ToString();
-                p.offer_price = vendor.normaldays; // change this price as per the date
-                p.service_price = vendor.ServiceCost.ToString();
+                p.actual_price = data.cost1.ToString();
+                p.offer_price = data.normaldays; // change this price as per the date
+                p.service_price = data.ServiceCost.ToString();
                 vdetail.price = p;
-                vdetail.about = vendor.Description;
+                vdetail.about = data.Description;
                 VenorVenueSignUpService vendorVenueSignUpService = new VenorVenueSignUpService();
                 var subservices = vendorVenueSignUpService.GetVendorVenue(long.Parse(id)).ToList();
                 List<areas> a1 = new List<areas>();
@@ -156,12 +170,12 @@ namespace AhwanamAPI.Controllers
                 vdetail.available_areas = a1;
 
                 List<amenities> amenity1 = new List<amenities>();
-                var amenities = Amenities(type,id, vid).FirstOrDefault().Split(',');
+                var amenities = Amenities(type, id, vid).FirstOrDefault().Split(',');
                 for (int i = 0; i < amenities.Length; i++)
                 {
                     amenities amenity = new amenities();
                     amenity.name = amenities[i];
-                    amenity.icon_url = "https://api.ahwanam.com/Icons/venueicons/"+ amenities[i] + ".png";
+                    amenity.icon_url = "https://api.ahwanam.com/Icons/venueicons/" + amenities[i] + ".png";
                     amenity1.Add(amenity);
                 }
                 vdetail.amenities = amenity1;
@@ -184,6 +198,9 @@ namespace AhwanamAPI.Controllers
                 {
                     gallery g = new gallery();
                     g.url = "https://api.ahwanam.com/vendorimages/" + allimages[i].ImageName;
+                    if (i == 0) g.is_favourite = true;
+                    else g.is_favourite = false;
+                    g.id = allimages[i].ImageId.ToString();
                     g1.Add(g);
                 }
                 vdetail.gallery = g1;
@@ -250,7 +267,7 @@ namespace AhwanamAPI.Controllers
                     dict.Add("rental_packages", rpkgs);
 
                     //Amenities
-                    var amenities = Amenities(type,id, vid);
+                    var amenities = Amenities(type, id, vid);
                     dict.Add("amenities", amenities);
 
                     //Policy
@@ -275,8 +292,8 @@ namespace AhwanamAPI.Controllers
         {
             List<string> d = new List<string>();
             Dictionary<string, object> dict = new Dictionary<string, object>();
-            //Dictionary<string, object> d1 = new Dictionary<string, object>();
-            List<vendordetail> d1 = new List<vendordetail>();
+            Dictionary<string, object> dict1 = new Dictionary<string, object>();
+            List<similarvendor> d1 = new List<similarvendor>();
             dict.Add("status", true);
             dict.Add("message", "Success");
             if (type == "venue" || type == null)
@@ -288,104 +305,146 @@ namespace AhwanamAPI.Controllers
                     string vid = data[i].subid.ToString();
                     string image = "https://api.ahwanam.com/images/cover_image.png";
                     string img = (data[i].logo != null || data[i].logo != "") ? data[i].logo : data[i].image;
-                    vendordetail vdetail = new vendordetail();
-                    vdetail.cover_image = (img != null && img != "") ? "https://api.ahwanam.com/vendorimages/" + img : image;
-                    vdetail.page_name = data[i].page_name;
-                    vdetail.name = data[i].BusinessName;
-                    vdetail.category_name = data[i].ServicType;
-                    ReviewService reviewService = new ReviewService();
-                    vdetail.reviews_count = reviewService.GetReview(int.Parse(id)).Where(m => m.Sid == long.Parse(vid)).Count().ToString();
-                    decimal trating = (data[i].fbrating != null && data[i].googlerating != null && data[i].jdrating != null) ? decimal.Parse(data[i].fbrating) + decimal.Parse(data[i].googlerating) + decimal.Parse(data[i].jdrating) : 0;
-                    vdetail.rating = (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0";
-                    vdetail.address = data[i].Address + "," + data[i].Landmark + "," + data[i].City + "," + data[i].State;
-                    location loc = new location();
-                    if (data[i].GeoLocation != null && data[i].GeoLocation != "")
-                    {
-                        loc.latitude = data[i].GeoLocation.Split(',')[0];
-                        loc.longitude = data[i].GeoLocation.Split(',')[1];
-                    }
-                    else
-                    {
-                        loc.latitude = "17.385044";
-                        loc.longitude = "78.486671";
-                    }
-                    vdetail.location = loc;
-                    //vdetail.charge_type=
-                    vdetail.city = data[i].City;
+                    similarvendor similar = new similarvendor();
+                    similar.category_name = data[i].ServicType;
+                    similar.charge_type = "Per day";
+                    similar.city = data[i].City;
+                    similar.name = data[i].BusinessName;
+                    similar.page_name = data[i].page_name;
+                    similar.pic_url = (img != null && img != "") ? "https://api.ahwanam.com/vendorimages/" + img : image;
                     price p = new price();
                     p.actual_price = data[i].cost1.ToString();
                     p.offer_price = data[i].normaldays; // change this price as per the date
                     p.service_price = data[i].ServiceCost.ToString();
-                    vdetail.price = p;
-                    vdetail.about = data[i].Description;
-                    VenorVenueSignUpService vendorVenueSignUpService = new VenorVenueSignUpService();
-                    var subservices = vendorVenueSignUpService.GetVendorVenue(long.Parse(id)).ToList();
-                    List<areas> a1 = new List<areas>();
-                    for (int j = 0; j < subservices.Count; j++)
-                    {
-                        areas area = new areas();
-                        area.name = subservices[j].name;
-                        area.seating_capacity = subservices[j].Minimumseatingcapacity.ToString();
-                        area.type = subservices[j].VenueType;
-                        a1.Add(area);
-                    }
-                    vdetail.available_areas = a1;
-
-                    List<amenities> amenity1 = new List<amenities>();
-                    var amenities = Amenities(type, id, vid).FirstOrDefault().Split(',');
-                    for (int j = 0; j < amenities.Length; j++)
-                    {
-                        amenities amenity = new amenities();
-                        amenity.name = amenities[j];
-                        amenity.icon_url = "https://api.ahwanam.com/Icons/venueicons/" + amenities[j] + ".png";
-                        amenity1.Add(amenity);
-                    }
-                    vdetail.amenities = amenity1;
-
-                    //vendorpolicies
-                    List<policies> policy1 = new List<policies>();
-                    var policies = vendorpolicies(id, vid).FirstOrDefault().Split(',');
-                    for (int j = 0; j < policies.Length; j++)
-                    {
-                        policies policy = new policies();
-                        policy.name = policies[j];
-                        policy1.Add(policy);
-                    }
-                    vdetail.policies = policy1;
-
-                    // Gallery
-                    List<gallery> g1 = new List<gallery>();
-                    var allimages = viewservicesss.GetVendorAllImages(long.Parse(id)).Where(m => m.VendorId == long.Parse(vid)).ToList();
-                    for (int j = 0; j < allimages.Count; j++)
-                    {
-                        gallery g = new gallery();
-                        g.url = "https://api.ahwanam.com/vendorimages/" + allimages[j].ImageName;
-                        g1.Add(g);
-                    }
-                    vdetail.gallery = g1;
-                    d1.Add(vdetail);
+                    similar.price = p;
+                    decimal trating = (data[i].fbrating != null && data[i].googlerating != null && data[i].jdrating != null) ? decimal.Parse(data[i].fbrating) + decimal.Parse(data[i].googlerating) + decimal.Parse(data[i].jdrating) : 0;
+                    similar.rating = (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0";
+                    ReviewService reviewService = new ReviewService();
+                    similar.reviews_count = reviewService.GetReview(int.Parse(id)).Where(m => m.Sid == long.Parse(vid)).Count().ToString();
+                    d1.Add(similar);
                 }
-                dict.Add("data", d1);
+                dict1.Add("results", d1);
+                dict.Add("data", dict1);
             }
             else if (type == "catering")
             {
                 List<GetCaterers_Result> data = resultsPageService.GetAllCaterers().Where(m => m.page_name != vendor).Take(3).ToList();
-                dict.Add("data", data);
+                for (int i = 0; i < data.Count; i++)
+                {
+                    string id = data[i].Id.ToString();
+                    string vid = data[i].subid.ToString();
+                    string image = "https://api.ahwanam.com/images/cover_image.png";
+                    string img = (data[i].logo != null || data[i].logo != "") ? data[i].logo : data[i].image;
+                    similarvendor similar = new similarvendor();
+                    similar.category_name = data[i].ServicType;
+                    similar.charge_type = "Per day";
+                    similar.city = data[i].City;
+                    similar.name = data[i].BusinessName;
+                    similar.page_name = data[i].page_name;
+                    similar.pic_url = (img != null && img != "") ? "https://api.ahwanam.com/vendorimages/" + img : image;
+                    price p = new price();
+                    p.actual_price = data[i].Veg.ToString();
+                    p.offer_price = data[i].Veg.ToString(); // change this price as per the date
+                    p.service_price = data[i].Veg.ToString();
+                    similar.price = p;
+                    decimal trating = (data[i].fbrating != null && data[i].googlerating != null && data[i].jdrating != null) ? decimal.Parse(data[i].fbrating) + decimal.Parse(data[i].googlerating) + decimal.Parse(data[i].jdrating) : 0;
+                    similar.rating = (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0";
+                    ReviewService reviewService = new ReviewService();
+                    similar.reviews_count = reviewService.GetReview(int.Parse(id)).Where(m => m.Sid == long.Parse(vid)).Count().ToString();
+                    d1.Add(similar);
+                }
+                dict1.Add("results", d1);
+                dict.Add("data", dict1);
             }
             else if (type == "decorator")
             {
                 List<GetDecorators_Result> data = resultsPageService.GetAllDecorators().Where(m => m.page_name != vendor).Take(3).ToList();
-                dict.Add("data", data);
+                for (int i = 0; i < data.Count; i++)
+                {
+                    string id = data[i].Id.ToString();
+                    string vid = data[i].subid.ToString();
+                    string image = "https://api.ahwanam.com/images/cover_image.png";
+                    string img = (data[i].logo != null || data[i].logo != "") ? data[i].logo : data[i].image;
+                    similarvendor similar = new similarvendor();
+                    similar.category_name = data[i].ServicType;
+                    similar.charge_type = "Per day";
+                    similar.city = data[i].City;
+                    similar.name = data[i].BusinessName;
+                    similar.page_name = data[i].page_name;
+                    similar.pic_url = (img != null && img != "") ? "https://api.ahwanam.com/vendorimages/" + img : image;
+                    price p = new price();
+                    p.actual_price = data[i].cost1.ToString();
+                    p.offer_price = data[i].cost1.ToString(); // change this price as per the date
+                    p.service_price = data[i].cost1.ToString();
+                    similar.price = p;
+                    decimal trating = (data[i].fbrating != null && data[i].googlerating != null && data[i].jdrating != null) ? decimal.Parse(data[i].fbrating) + decimal.Parse(data[i].googlerating) + decimal.Parse(data[i].jdrating) : 0;
+                    similar.rating = (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0";
+                    ReviewService reviewService = new ReviewService();
+                    similar.reviews_count = reviewService.GetReview(int.Parse(id)).Where(m => m.Sid == long.Parse(vid)).Count().ToString();
+                    d1.Add(similar);
+                }
+                dict1.Add("results", d1);
+                dict.Add("data", dict1);
             }
             else if (type == "photography")
             {
-                List<GetCaterers_Result> data = resultsPageService.GetAllCaterers().Where(m => m.page_name != vendor).Take(3).ToList();
-                dict.Add("data", data);
+                List<GetPhotographers_Result> data = resultsPageService.GetAllPhotographers().Where(m => m.page_name != vendor).Take(3).ToList();
+                for (int i = 0; i < data.Count; i++)
+                {
+                    string id = data[i].Id.ToString();
+                    string vid = data[i].subid.ToString();
+                    string image = "https://api.ahwanam.com/images/cover_image.png";
+                    string img = (data[i].logo != null || data[i].logo != "") ? data[i].logo : data[i].image;
+                    similarvendor similar = new similarvendor();
+                    similar.category_name = data[i].ServicType;
+                    similar.charge_type = "Per day";
+                    similar.city = data[i].City;
+                    similar.name = data[i].BusinessName;
+                    similar.page_name = data[i].page_name;
+                    similar.pic_url = (img != null && img != "") ? "https://api.ahwanam.com/vendorimages/" + img : image;
+                    price p = new price();
+                    p.actual_price = data[i].cost1.ToString();
+                    p.offer_price = data[i].cost1.ToString(); // change this price as per the date
+                    p.service_price = data[i].cost1.ToString();
+                    similar.price = p;
+                    decimal trating = (data[i].fbrating != null && data[i].googlerating != null && data[i].jdrating != null) ? decimal.Parse(data[i].fbrating) + decimal.Parse(data[i].googlerating) + decimal.Parse(data[i].jdrating) : 0;
+                    similar.rating = (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0";
+                    ReviewService reviewService = new ReviewService();
+                    similar.reviews_count = reviewService.GetReview(int.Parse(id)).Where(m => m.Sid == long.Parse(vid)).Count().ToString();
+                    d1.Add(similar);
+                }
+                dict1.Add("results", d1);
+                dict.Add("data", dict1);
             }
-            else if (type == "pandit")
+            else if (type == "pandit" || type == "mehendi")
             {
-                List<GetDecorators_Result> data = resultsPageService.GetAllDecorators().Where(m => m.page_name != vendor).Take(3).ToList();
-                dict.Add("data", data);
+                List<GetOthers_Result> data = resultsPageService.GetAllOthers(type).Where(m => m.page_name != vendor).Take(3).ToList();
+                for (int i = 0; i < data.Count; i++)
+                {
+                    string id = data[i].Id.ToString();
+                    string vid = data[i].subid.ToString();
+                    string image = "https://api.ahwanam.com/images/cover_image.png";
+                    string img = (data[i].logo != null || data[i].logo != "") ? data[i].logo : data[i].image;
+                    similarvendor similar = new similarvendor();
+                    similar.category_name = data[i].ServicType;
+                    similar.charge_type = "Per day";
+                    similar.city = data[i].City;
+                    similar.name = data[i].BusinessName;
+                    similar.page_name = data[i].page_name;
+                    similar.pic_url = (img != null && img != "") ? "https://api.ahwanam.com/vendorimages/" + img : image;
+                    price p = new price();
+                    p.actual_price = data[i].ItemCost.ToString();
+                    p.offer_price = data[i].ItemCost.ToString(); // change this price as per the date
+                    p.service_price = data[i].ItemCost.ToString();
+                    similar.price = p;
+                    decimal trating = (data[i].fbrating != null && data[i].googlerating != null && data[i].jdrating != null) ? decimal.Parse(data[i].fbrating) + decimal.Parse(data[i].googlerating) + decimal.Parse(data[i].jdrating) : 0;
+                    similar.rating = (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0";
+                    ReviewService reviewService = new ReviewService();
+                    similar.reviews_count = reviewService.GetReview(int.Parse(id)).Where(m => m.Sid == long.Parse(vid)).Count().ToString();
+                    d1.Add(similar);
+                }
+                dict1.Add("results", d1);
+                dict.Add("data", dict1);
             }
 
             //Format API
@@ -395,43 +454,86 @@ namespace AhwanamAPI.Controllers
 
         [HttpGet]
         [Route("api/reviews")]
-        public IHttpActionResult Review(string type, string vendor,int? page = 0,int? offset=0)
+        public IHttpActionResult Review(string type, string vendor, int? page = 0, int? offset = 0)
         {
+            int count = 0;
+            page = (page == null || page == 0) ? 1 : page;
+            offset = (offset == null || offset == 0) ? 6 : offset;
+            int takecount = 6;
+            if (((int)page - 1) > 0)
+                takecount = ((int)page -1) * (int)offset;
             Dictionary<string, object> dict = new Dictionary<string, object>();
             ReviewService reviewService = new ReviewService();
-            if (type=="venue")
+            var reviews = new List<Review>();
+            if (type == "venue")
             {
                 GetVendors_Result data = resultsPageService.GetAllVendors(type).Where(m => m.page_name == vendor).FirstOrDefault();
-                var reviews = reviewService.GetReview(int.Parse(data.Id.ToString())).Where(m => m.Sid == long.Parse(data.subid.ToString())).ToList();
-                if (reviews.Count > 0)
-                {
-                    dict.Add("status", true);
-                    dict.Add("message", "Success");
-                    List<Reviews> r = new List<Reviews>();
-                    for (int i = 0; i < reviews.Count; i++)
-                    {
-                        Reviews re = new Reviews();
-                        re.name = reviews[i].FirstName;
-                        re.review = reviews[i].Comments;
-                        re.rating = "5";
-                        r.Add(re);
-                    }
-                    Dictionary<string, object> d1 = new Dictionary<string, object>();
-                    d1.Add("results", r);
-                    dict.Add("data", d1);
-                    dict.Add("total_review_count",reviews.Count);
-                    dict.Add("offset", (offset == 0) ? 6 : offset);
-                    dict.Add("page", (page == 0) ? 1 : page);
-                    dict.Add("no_of_pages", reviews.Count / 6);
-                }
-                else
-                {
-                    dict.Add("status", false);
-                    dict.Add("message", "No Reviews");
-                    dict.Add("data", null);
-                }
+                reviews = reviewService.GetReview(int.Parse(data.Id.ToString())).Where(m => m.Sid == long.Parse(data.subid.ToString())).ToList();
+                count = reviews.Count();
             }
-            
+            else if (type == "catering")
+            {
+                GetCaterers_Result data = resultsPageService.GetAllCaterers().Where(m => m.page_name == vendor).FirstOrDefault();
+                reviews = reviewService.GetReview(int.Parse(data.Id.ToString())).Where(m => m.Sid == long.Parse(data.subid.ToString())).ToList();
+                count = reviews.Count();
+            }
+            else if (type == "decorator")
+            {
+                GetDecorators_Result data = resultsPageService.GetAllDecorators().Where(m => m.page_name == vendor).FirstOrDefault();
+                reviews = reviewService.GetReview(int.Parse(data.Id.ToString())).Where(m => m.Sid == long.Parse(data.subid.ToString())).ToList();
+                count = reviews.Count();
+            }
+            else if (type == "photographer")
+            {
+                GetPhotographers_Result data = resultsPageService.GetAllPhotographers().Where(m => m.page_name == vendor).FirstOrDefault();
+                reviews = reviewService.GetReview(int.Parse(data.Id.ToString())).Where(m => m.Sid == long.Parse(data.subid.ToString())).ToList();
+                count = reviews.Count();
+            }
+            else if (type == "pandit" || type == "mehendi")
+            {
+                GetOthers_Result data = resultsPageService.GetAllOthers(type).Where(m => m.page_name == vendor).FirstOrDefault();
+                reviews = reviewService.GetReview(int.Parse(data.Id.ToString())).Where(m => m.Sid == long.Parse(data.subid.ToString())).ToList();
+                count = reviews.Count();
+            }
+            if (page > 1)
+                reviews = reviews.Skip(takecount).Take((int)offset).ToList();
+            else
+                reviews = reviews.Take((int)offset).ToList();
+            if (reviews.Count > 0)
+            {
+                dict.Add("status", true);
+                dict.Add("message", "Success");
+                List<Reviews> r = new List<Reviews>();
+                for (int i = 0; i < reviews.Count; i++)
+                {
+                    Reviews re = new Reviews();
+                    re.name = reviews[i].FirstName;
+                    re.review = reviews[i].Comments;
+                    re.rating = reviews[i].rating;
+                    r.Add(re);
+                }
+                Dictionary<string, object> d1 = new Dictionary<string, object>();
+                d1.Add("results", r);
+                d1.Add("total_review_count", count);
+                d1.Add("offset", (offset == 0) ? 6 : offset);
+                d1.Add("page", page);
+                d1.Add("no_of_pages", ((count -1)/ offset)+1);
+                dict.Add("data", d1);
+                
+            }
+            else
+            {
+                Dictionary<string, object> d1 = new Dictionary<string, object>();
+                dict.Add("status", false);
+                dict.Add("message", "No Reviews");
+                //dict.Add("data", null);
+                d1.Add("results", new List<Review>());
+                d1.Add("total_review_count", 0);
+                d1.Add("offset", (offset == 0) ? 6 : offset);
+                d1.Add("page", page);
+                d1.Add("no_of_pages", 0);
+                dict.Add("data", d1);
+            }
             return Json(dict);
         }
 
@@ -560,7 +662,7 @@ namespace AhwanamAPI.Controllers
 
         //[HttpGet]
         //[Route("api/viewservice/amenity")]
-        public List<string> Amenities(string type,string id, string vid)
+        public List<string> Amenities(string type, string id, string vid)
         {
             List<string> famenities = new List<string>();
             Dictionary<string, object> dict = new Dictionary<string, object>();
@@ -615,7 +717,7 @@ namespace AhwanamAPI.Controllers
                     m.Sufficient_Washroom
                     #endregion
                 }).ToList();
-                
+
                 foreach (var item in allamenities)
                 {
                     string value = string.Join(",", item).Replace("{", "").Replace("}", "");
@@ -681,7 +783,7 @@ namespace AhwanamAPI.Controllers
             }
         }
 
-        public List<string> vendorpolicies(string id,string vid)
+        public List<string> vendorpolicies(string id, string vid)
         {
             VendorMasterService vendorMasterService = new VendorMasterService();
             var policy = vendorMasterService.Getpolicy(id, vid);
@@ -723,7 +825,7 @@ namespace AhwanamAPI.Controllers
                 m.Tax,
                 m.Valet_Parking
             }).ToList();
-            
+
             foreach (var item in allpolicies)
             {
                 string value = string.Join(",", item).Replace("{", "").Replace("}", "");

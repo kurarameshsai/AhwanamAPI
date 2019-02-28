@@ -58,6 +58,15 @@ namespace AhwanamAPI.Controllers
             public string description { get; set; }
         }
 
+        public class eventslist
+        {
+            public string event_id { get; set; }
+            public string event_name { get; set; }
+            public string thumb_image { get; set; }
+            public string description { get; set; }
+            public string page_name { get; set; }
+        }
+
         //[HttpGet]
         //[Route("api/home/encrypt")]
         //public IHttpActionResult Encrypt(string val)
@@ -146,7 +155,6 @@ namespace AhwanamAPI.Controllers
             return Json(dict);
         }
 
-
         [HttpGet]
         [Route("api/home/deals")]
         public IHttpActionResult GetPackages()
@@ -197,6 +205,31 @@ namespace AhwanamAPI.Controllers
             dict.Add("status", true);
             dict.Add("message", "Success");
             dict.Add("results", package);
+            return Json(dict);
+        }
+
+        [HttpGet]
+        [Route("api/home/events")]
+        public IHttpActionResult events()
+        {
+            CeremonyServices ceremonyServices = new CeremonyServices();
+            var list = ceremonyServices.Getall();
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            List<eventslist> c1 = new List<eventslist>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                eventslist c = new eventslist();
+                c.event_id = list[i].Id.ToString();
+                c.event_name = list[i].Title;
+                c.thumb_image = list[i].Image;
+                c.description = list[i].Description;
+                c.page_name = "name";
+                c1.Add(c);
+            }
+            Dictionary<string, object> d1 = new Dictionary<string, object>();
+            d1.Add("results", c1);
+            dict.Add("status",true);
+            dict.Add("data", d1);
             return Json(dict);
         }
 
