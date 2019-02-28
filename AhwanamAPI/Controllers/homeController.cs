@@ -21,6 +21,7 @@ namespace AhwanamAPI.Controllers
         UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
         VenorVenueSignUpService venorvenuesignupservice = new VenorVenueSignUpService();
         TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+     
         public class services
         {
             public string name { get; set; }
@@ -320,5 +321,6 @@ namespace AhwanamAPI.Controllers
             dict.Add("message", status);
             return Json(dict);
         }
+
     }
 }
