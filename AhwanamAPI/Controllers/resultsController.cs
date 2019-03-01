@@ -967,6 +967,7 @@ namespace AhwanamAPI.Controllers
             return Json(dict);
         }
 
+
         public List<GetVendors_Result> vendorlist(int count, string[] selectedservices, string command, int takecount)
         {
             List<GetVendors_Result> list = new List<GetVendors_Result>();
@@ -984,6 +985,7 @@ namespace AhwanamAPI.Controllers
             }
             return list;
         }
+
         #endregion
 
         #region reference

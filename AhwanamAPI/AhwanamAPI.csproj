@@ -149,6 +149,10 @@
     <Content Include="images\header2.png" />
     <Content Include="images\homepageslider.png" />
     <Content Include="images\package.png" />
+    <Content Include="images\popular_sangeeth.jpg" />
+    <Content Include="images\reception_caterers.jpg" />
+    <Content Include="images\wedding_dashboard.jpg" />
+    <Content Include="images\wedding_photographers.jpg" />
     <Content Include="mailtemplate\cancelordeleteorder.html" />
     <Content Include="mailtemplate\change-email.html" />
     <Content Include="mailtemplate\Contest.html" />
@@ -174,6 +178,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\cartController.cs" />
+    <Compile Include="Controllers\ceremoniesController.cs" />
     <Compile Include="Controllers\customerController.cs" />
     <Compile Include="Controllers\homeController.cs" />
     <Compile Include="Controllers\invoiceController.cs" />
@@ -199,6 +204,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="images\WS_FTP.LOG" />
+    <Content Include="images\Thumbs.db" />
     <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
