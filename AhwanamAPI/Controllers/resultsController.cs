@@ -190,7 +190,7 @@ namespace AhwanamAPI.Controllers
             int status = checktoken(); // Checking Token
             Dictionary<string, object> dict = new Dictionary<string, object>();
             Dictionary<string, object> dict1 = new Dictionary<string, object>();
-            type = (type == null) ? "Venue" : type;
+            
             //Type Venue
             if (type == "venue")
                 dict = VenueRecords(type, city, locality, page, capacity, price_per_plate_or_rental, offset, sortby, space_preference, rating, venue_type);
@@ -215,6 +215,7 @@ namespace AhwanamAPI.Controllers
         #region Venue_Records
         public Dictionary<string, object> VenueRecords(string type, int? city = -1, int? locality = -1, int? page = 0, int? capacity = -1, int? price_per_plate_or_rental = -1, int? offset = 0, int? sortby = -1, int? space_preference = -1, int? rating = -1, int? venue_type = -1)
         {
+            type = (type == "venue") ? "Venue" : type;
             int count = 0;
             //cookies((int)capacity, "venue");
             string guestsvalue = (capacity != -1 && capacity != null) ? getvalue((int)capacity) : null;
