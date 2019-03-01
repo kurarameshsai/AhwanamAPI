@@ -206,6 +206,339 @@ namespace AhwanamAPI.Controllers
                 vdetail.gallery = g1;
                 dict.Add("data", vdetail);
             }
+            else if (type == "catering")
+            {
+                GetCaterers_Result data = resultsPageService.GetAllCaterers().Where(m => m.page_name == vendor).FirstOrDefault();
+                id = data.Id.ToString();
+                vid = data.subid.ToString();
+                string image = "https://api.ahwanam.com/images/cover_image.png";
+                string img = (data.logo != null || data.logo != "") ? data.logo : data.image;
+                vendordetail vdetail = new vendordetail();
+                vdetail.cover_image = (img != null && img != "") ? "https://api.ahwanam.com/dataimages/" + img : image;
+                vdetail.page_name = data.page_name;
+                vdetail.name = data.BusinessName;
+                vdetail.category_name = data.ServicType;
+                ReviewService reviewService = new ReviewService();
+                vdetail.reviews_count = reviewService.GetReview(int.Parse(id)).Where(m => m.Sid == long.Parse(vid)).Count().ToString();
+                decimal trating = (data.fbrating != null && data.googlerating != null && data.jdrating != null) ? decimal.Parse(data.fbrating) + decimal.Parse(data.googlerating) + decimal.Parse(data.jdrating) : 0;
+                vdetail.rating = (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0";
+                vdetail.address = data.Address + "," + data.Landmark + "," + data.City + "," + data.State;
+                location loc = new location();
+                if (data.GeoLocation != null && data.GeoLocation != "")
+                {
+                    loc.latitude = data.GeoLocation.Split(',')[0];
+                    loc.longitude = data.GeoLocation.Split(',')[1];
+                }
+                else
+                {
+                    loc.latitude = "17.385044";
+                    loc.longitude = "78.486671";
+                }
+                vdetail.location = loc;
+                //vdetail.charge_type=
+                vdetail.city = data.City;
+                price p = new price();
+                p.actual_price = data.Veg.ToString();
+                p.offer_price = data.Veg.ToString(); // change this price as per the date
+                p.service_price = data.Veg.ToString();
+                vdetail.price = p;
+                vdetail.about = data.Description;
+                VenorVenueSignUpService vendorVenueSignUpService = new VenorVenueSignUpService();
+                var subservices = vendorVenueSignUpService.GetVendorVenue(long.Parse(id)).ToList();
+                List<areas> a1 = new List<areas>();
+                for (int i = 0; i < subservices.Count; i++)
+                {
+                    areas area = new areas();
+                    area.name = subservices[i].name;
+                    area.seating_capacity = subservices[i].Minimumseatingcapacity.ToString();
+                    area.type = subservices[i].VenueType;
+                    a1.Add(area);
+                }
+                vdetail.available_areas = a1;
+
+                List<amenities> amenity1 = new List<amenities>();
+                //var amenities = Amenities(type, id, vid).FirstOrDefault().Split(',');
+                //for (int i = 0; i < amenities.Length; i++)
+                //{
+                //    amenities amenity = new amenities();
+                //    amenity.name = amenities[i];
+                //    amenity.icon_url = "https://api.ahwanam.com/Icons/venueicons/" + amenities[i] + ".png";
+                //    amenity1.Add(amenity);
+                //}
+                vdetail.amenities = amenity1;
+
+                //vendorpolicies
+                List<policies> policy1 = new List<policies>();
+                var policies = vendorpolicies(id, vid).FirstOrDefault().Split(',');
+                for (int i = 0; i < policies.Length; i++)
+                {
+                    policies policy = new policies();
+                    policy.name = policies[i];
+                    policy1.Add(policy);
+                }
+                vdetail.policies = policy1;
+
+                // Gallery
+                List<gallery> g1 = new List<gallery>();
+                var allimages = viewservicesss.GetVendorAllImages(long.Parse(id)).Where(m => m.VendorId == long.Parse(vid)).ToList();
+                for (int i = 0; i < allimages.Count; i++)
+                {
+                    gallery g = new gallery();
+                    g.url = "https://api.ahwanam.com/vendorimages/" + allimages[i].ImageName;
+                    if (i == 0) g.is_favourite = true;
+                    else g.is_favourite = false;
+                    g.id = allimages[i].ImageId.ToString();
+                    g1.Add(g);
+                }
+                vdetail.gallery = g1;
+                dict.Add("data", vdetail);
+            }
+            else if (type == "decorator")
+            {
+                GetDecorators_Result data = resultsPageService.GetAllDecorators().Where(m => m.page_name == vendor).FirstOrDefault();
+                id = data.Id.ToString();
+                vid = data.subid.ToString();
+                string image = "https://api.ahwanam.com/images/cover_image.png";
+                string img = (data.logo != null || data.logo != "") ? data.logo : data.image;
+                vendordetail vdetail = new vendordetail();
+                vdetail.cover_image = (img != null && img != "") ? "https://api.ahwanam.com/dataimages/" + img : image;
+                vdetail.page_name = data.page_name;
+                vdetail.name = data.BusinessName;
+                vdetail.category_name = data.ServicType;
+                ReviewService reviewService = new ReviewService();
+                vdetail.reviews_count = reviewService.GetReview(int.Parse(id)).Where(m => m.Sid == long.Parse(vid)).Count().ToString();
+                decimal trating = (data.fbrating != null && data.googlerating != null && data.jdrating != null) ? decimal.Parse(data.fbrating) + decimal.Parse(data.googlerating) + decimal.Parse(data.jdrating) : 0;
+                vdetail.rating = (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0";
+                vdetail.address = data.Address + "," + data.Landmark + "," + data.City + "," + data.State;
+                location loc = new location();
+                if (data.GeoLocation != null && data.GeoLocation != "")
+                {
+                    loc.latitude = data.GeoLocation.Split(',')[0];
+                    loc.longitude = data.GeoLocation.Split(',')[1];
+                }
+                else
+                {
+                    loc.latitude = "17.385044";
+                    loc.longitude = "78.486671";
+                }
+                vdetail.location = loc;
+                //vdetail.charge_type=
+                vdetail.city = data.City;
+                price p = new price();
+                p.actual_price = data.cost1.ToString();
+                p.offer_price = data.cost1.ToString(); // change this price as per the date
+                p.service_price = data.cost1.ToString();
+                vdetail.price = p;
+                vdetail.about = data.Description;
+                VenorVenueSignUpService vendorVenueSignUpService = new VenorVenueSignUpService();
+                var subservices = vendorVenueSignUpService.GetVendorVenue(long.Parse(id)).ToList();
+                List<areas> a1 = new List<areas>();
+                for (int i = 0; i < subservices.Count; i++)
+                {
+                    areas area = new areas();
+                    area.name = subservices[i].name;
+                    area.seating_capacity = subservices[i].Minimumseatingcapacity.ToString();
+                    area.type = subservices[i].VenueType;
+                    a1.Add(area);
+                }
+                vdetail.available_areas = a1;
+
+                List<amenities> amenity1 = new List<amenities>();
+                vdetail.amenities = amenity1;
+
+                //vendorpolicies
+                List<policies> policy1 = new List<policies>();
+                var policies = vendorpolicies(id, vid).FirstOrDefault().Split(',');
+                for (int i = 0; i < policies.Length; i++)
+                {
+                    policies policy = new policies();
+                    policy.name = policies[i];
+                    policy1.Add(policy);
+                }
+                vdetail.policies = policy1;
+
+                // Gallery
+                List<gallery> g1 = new List<gallery>();
+                var allimages = viewservicesss.GetVendorAllImages(long.Parse(id)).Where(m => m.VendorId == long.Parse(vid)).ToList();
+                for (int i = 0; i < allimages.Count; i++)
+                {
+                    gallery g = new gallery();
+                    g.url = "https://api.ahwanam.com/vendorimages/" + allimages[i].ImageName;
+                    if (i == 0) g.is_favourite = true;
+                    else g.is_favourite = false;
+                    g.id = allimages[i].ImageId.ToString();
+                    g1.Add(g);
+                }
+                vdetail.gallery = g1;
+                dict.Add("data", vdetail);
+            }
+            else if (type == "photography")
+            {
+                GetPhotographers_Result data = resultsPageService.GetAllPhotographers().Where(m => m.page_name == vendor).FirstOrDefault();
+                id = data.Id.ToString();
+                vid = data.subid.ToString();
+                string image = "https://api.ahwanam.com/images/cover_image.png";
+                string img = (data.logo != null || data.logo != "") ? data.logo : data.image;
+                vendordetail vdetail = new vendordetail();
+                vdetail.cover_image = (img != null && img != "") ? "https://api.ahwanam.com/dataimages/" + img : image;
+                vdetail.page_name = data.page_name;
+                vdetail.name = data.BusinessName;
+                vdetail.category_name = data.ServicType;
+                ReviewService reviewService = new ReviewService();
+                vdetail.reviews_count = reviewService.GetReview(int.Parse(id)).Where(m => m.Sid == long.Parse(vid)).Count().ToString();
+                decimal trating = (data.fbrating != null && data.googlerating != null && data.jdrating != null) ? decimal.Parse(data.fbrating) + decimal.Parse(data.googlerating) + decimal.Parse(data.jdrating) : 0;
+                vdetail.rating = (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0";
+                vdetail.address = data.Address + "," + data.Landmark + "," + data.City + "," + data.State;
+                location loc = new location();
+                if (data.GeoLocation != null && data.GeoLocation != "")
+                {
+                    loc.latitude = data.GeoLocation.Split(',')[0];
+                    loc.longitude = data.GeoLocation.Split(',')[1];
+                }
+                else
+                {
+                    loc.latitude = "17.385044";
+                    loc.longitude = "78.486671";
+                }
+                vdetail.location = loc;
+                //vdetail.charge_type=
+                vdetail.city = data.City;
+                price p = new price();
+                p.actual_price = data.cost1.ToString();
+                p.offer_price = data.cost1.ToString(); // change this price as per the date
+                p.service_price = data.cost1.ToString();
+                vdetail.price = p;
+                vdetail.about = data.Description;
+                VenorVenueSignUpService vendorVenueSignUpService = new VenorVenueSignUpService();
+                var subservices = vendorVenueSignUpService.GetVendorVenue(long.Parse(id)).ToList();
+                List<areas> a1 = new List<areas>();
+                for (int i = 0; i < subservices.Count; i++)
+                {
+                    areas area = new areas();
+                    area.name = subservices[i].name;
+                    area.seating_capacity = subservices[i].Minimumseatingcapacity.ToString();
+                    area.type = subservices[i].VenueType;
+                    a1.Add(area);
+                }
+                vdetail.available_areas = a1;
+
+                List<amenities> amenity1 = new List<amenities>();
+                vdetail.amenities = amenity1;
+
+                //vendorpolicies
+                List<policies> policy1 = new List<policies>();
+                var policies = vendorpolicies(id, vid).FirstOrDefault().Split(',');
+                for (int i = 0; i < policies.Length; i++)
+                {
+                    policies policy = new policies();
+                    policy.name = policies[i];
+                    policy1.Add(policy);
+                }
+                vdetail.policies = policy1;
+
+                // Gallery
+                List<gallery> g1 = new List<gallery>();
+                var allimages = viewservicesss.GetVendorAllImages(long.Parse(id)).Where(m => m.VendorId == long.Parse(vid)).ToList();
+                for (int i = 0; i < allimages.Count; i++)
+                {
+                    gallery g = new gallery();
+                    g.url = "https://api.ahwanam.com/vendorimages/" + allimages[i].ImageName;
+                    if (i == 0) g.is_favourite = true;
+                    else g.is_favourite = false;
+                    g.id = allimages[i].ImageId.ToString();
+                    g1.Add(g);
+                }
+                vdetail.gallery = g1;
+                dict.Add("data", vdetail);
+            }
+            else if (type == "pandit" || type == "mehendi")
+            {
+                type = (type == "pandit") ? "Pandit" : type;
+                type = (type == "mehendi") ? "Mehendi" : type;
+                GetOthers_Result data = resultsPageService.GetAllOthers(type).Where(m => m.page_name == vendor).FirstOrDefault();
+                id = data.Id.ToString();
+                vid = data.subid.ToString();
+                string image = "https://api.ahwanam.com/images/cover_image.png";
+                string img = (data.logo != null || data.logo != "") ? data.logo : data.image;
+                vendordetail vdetail = new vendordetail();
+                vdetail.cover_image = (img != null && img != "") ? "https://api.ahwanam.com/dataimages/" + img : image;
+                vdetail.page_name = data.page_name;
+                vdetail.name = data.BusinessName;
+                vdetail.category_name = data.ServicType;
+                ReviewService reviewService = new ReviewService();
+                vdetail.reviews_count = reviewService.GetReview(int.Parse(id)).Where(m => m.Sid == long.Parse(vid)).Count().ToString();
+                decimal trating = (data.fbrating != null && data.googlerating != null && data.jdrating != null) ? decimal.Parse(data.fbrating) + decimal.Parse(data.googlerating) + decimal.Parse(data.jdrating) : 0;
+                vdetail.rating = (trating != 0) ? (trating / 3).ToString().Substring(0, 4) : "0";
+                vdetail.address = data.Address + "," + data.Landmark + "," + data.City + "," + data.State;
+                location loc = new location();
+                if (data.GeoLocation != null && data.GeoLocation != "")
+                {
+                    loc.latitude = data.GeoLocation.Split(',')[0];
+                    loc.longitude = data.GeoLocation.Split(',')[1];
+                }
+                else
+                {
+                    loc.latitude = "17.385044";
+                    loc.longitude = "78.486671";
+                }
+                vdetail.location = loc;
+                //vdetail.charge_type=
+                vdetail.city = data.City;
+                price p = new price();
+                p.actual_price = data.ItemCost.ToString();
+                p.offer_price = data.ItemCost.ToString(); // change this price as per the date
+                p.service_price = data.ItemCost.ToString();
+                vdetail.price = p;
+                vdetail.about = data.Description;
+                VenorVenueSignUpService vendorVenueSignUpService = new VenorVenueSignUpService();
+                var subservices = vendorVenueSignUpService.GetVendorVenue(long.Parse(id)).ToList();
+                List<areas> a1 = new List<areas>();
+                for (int i = 0; i < subservices.Count; i++)
+                {
+                    areas area = new areas();
+                    area.name = subservices[i].name;
+                    area.seating_capacity = subservices[i].Minimumseatingcapacity.ToString();
+                    area.type = subservices[i].VenueType;
+                    a1.Add(area);
+                }
+                vdetail.available_areas = a1;
+
+                List<amenities> amenity1 = new List<amenities>();
+                vdetail.amenities = amenity1;
+
+                //vendorpolicies
+                List<policies> policy1 = new List<policies>();
+                var policies = vendorpolicies(id, vid).FirstOrDefault().Split(',');
+                for (int i = 0; i < policies.Length; i++)
+                {
+                    policies policy = new policies();
+                    policy.name = policies[i];
+                    policy1.Add(policy);
+                }
+                vdetail.policies = policy1;
+
+                // Gallery
+                List<gallery> g1 = new List<gallery>();
+                var allimages = viewservicesss.GetVendorAllImages(long.Parse(id)).Where(m => m.VendorId == long.Parse(vid)).ToList();
+                for (int i = 0; i < allimages.Count; i++)
+                {
+                    gallery g = new gallery();
+                    g.url = "https://api.ahwanam.com/vendorimages/" + allimages[i].ImageName;
+                    if (i == 0) g.is_favourite = true;
+                    else g.is_favourite = false;
+                    g.id = allimages[i].ImageId.ToString();
+                    g1.Add(g);
+                }
+                vdetail.gallery = g1;
+                dict.Add("data", vdetail);
+            }
+            else
+            {
+                dict.Clear();
+                dict.Add("status", false);
+                dict.Add("message", "Failed");
+                dict.Add("data", null);
+            }
             return Json(dict);
         }
 
