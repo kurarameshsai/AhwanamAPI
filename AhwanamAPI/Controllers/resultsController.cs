@@ -187,7 +187,8 @@ namespace AhwanamAPI.Controllers
         [Route("api/results/getall")]                                                                                                                                                                                                                                       //Catering                                  //photography
         public IHttpActionResult getrecords(string type, int? city = -1, int? locality = -1, int? page = 0, int? capacity = -1, int? price_per_plate_or_rental = -1, int? offset = 0, int? sortby = -1, int? space_preference = -1, int? rating = -1, int? venue_type = -1,int? budget=-1,int? dietary_prefernces = -1,int? services = -1)
         {
-            int status = checktoken(); // Checking Token
+            string IP = HttpContext.Current.Request.UserHostAddress;
+            int status = checktoken(IP); // Checking Token
             Dictionary<string, object> dict = new Dictionary<string, object>();
             Dictionary<string, object> dict1 = new Dictionary<string, object>();
             
@@ -219,11 +220,11 @@ namespace AhwanamAPI.Controllers
             int count = 0;
             //cookies((int)capacity, "venue");
             string guestsvalue = (capacity != -1 && capacity != null) ? getvalue((int)capacity) : null;
-            string cityvalue = (city != -1 && city != null) ? getvalue((int)city) : null;
+            string cityvalue = (city != -1 && city != null) ? getcity((int)city) : null;
             string localityvalue = (locality != -1 && locality != null) ? getvalue((int)locality) : null;
             string pricevalue = (price_per_plate_or_rental != -1 && price_per_plate_or_rental != null) ? getvalue((int)price_per_plate_or_rental) : null;
             string spacevalue = (space_preference != -1 && space_preference != null) ? getvalue((int)space_preference) : null;
-            string sortbyvalue = (sortby != -1 && sortby != null) ? getvalue((int)sortby) : null;
+            //string sortbyvalue = (sortby != -1 && sortby != null) ? getvalue((int)sortby) : null;
             string ratingvalue = (rating != -1 && rating != null) ? getvalue((int)rating) : null;
             string vtypevalue = (venue_type != -1 && venue_type != null) ? getvalue((int)venue_type) : null;
             page = (page == null) ? 1 : page;
@@ -252,6 +253,12 @@ namespace AhwanamAPI.Controllers
                 data = data.Where(m => m.Minimumseatingcapacity > int.Parse(guestsvalue)).ToList();
             if (pricevalue != null)
                 data = data.Where(m => m.cost1 > decimal.Parse(pricevalue)).ToList();
+            if (sortby != null)
+            {
+                if(sortby == 1)
+                //if (sortbyvalue == "price-high-to-low")
+                    data = data.OrderByDescending(m => m.cost1).ToList();
+            }
             //if (ratingvalue != null)
             //    data = data.Where(m => m.rat == localityvalue).ToList();
             #region Format API
@@ -309,10 +316,10 @@ namespace AhwanamAPI.Controllers
         public Dictionary<string, object> CatererRecords(string type, int? page = 0, int? offset = 0, int? rating = -1,int? budget =-1,int? dietary_prefernces=-1, int? city = -1)
         {
             int count = 0;
-            string cityvalue = (city != -1) ? cookies((int)city, "city") : null;
-            string budgetvalue = (budget != -1) ? cookies((int)budget, "budget") : null;
-            string ratingvalue = (rating != -1) ? cookies((int)rating, "rating") : null;
-            string dietvalue = (dietary_prefernces != -1) ? cookies((int)dietary_prefernces, "dietary_prefernces") : null;
+            string cityvalue = (city != -1 && city != null) ? getcity((int)city) : null;
+            string budgetvalue = (budget != -1) ? getvalue((int)budget) : null;
+            string ratingvalue = (rating != -1) ? getvalue((int)rating) : null;
+            string dietvalue = (dietary_prefernces != -1) ? getvalue((int)dietary_prefernces) : null;
             page = (page == null) ? 1 : page;
             offset = (offset == null || offset == 0) ? 6 : offset;
             int takecount = 6;
@@ -391,9 +398,9 @@ namespace AhwanamAPI.Controllers
                 takecount = ((int)page - 1) * (int)offset;
             var data = resultsPageService.GetAllDecorators();
             count = data.Count();
-            string cityvalue = (city != -1) ? cookies((int)city, "city") : null;
-            string budgetvalue = (budget != -1) ? cookies((int)budget, "budget") : null;
-            string ratingvalue = (rating != -1) ? cookies((int)rating, "rating") : null;
+            string cityvalue = (city != -1 && city != null) ? getcity((int)city) : null;
+            string budgetvalue = (budget != -1) ? getvalue((int)budget) : null;
+            string ratingvalue = (rating != -1) ? getvalue((int)rating) : null;
             if (page > 1)
                 data = data.Skip(takecount).Take((int)offset).ToList();
             else
@@ -456,10 +463,10 @@ namespace AhwanamAPI.Controllers
         public Dictionary<string, object> PhotographerRecords(string type, int? page = 0, int? offset = 0, int? rating = -1, int? city = -1, int? services = -1, int? budget = -1)
         {
             int count = 0;
-            string servicesvalue = (services != -1) ? cookies((int)services, "services") : null;
-            string cityvalue = (city != -1) ? cookies((int)city, "city") : null;
-            string budgetvalue = (budget != -1) ? cookies((int)budget, "budget") : null;
-            string ratingvalue = (rating != -1) ? cookies((int)rating, "rating") : null;
+            string servicesvalue = (services != -1) ? getcity((int)services) : null;
+            string cityvalue = (city != -1 && city != null) ? getcity((int)city) : null;
+            string budgetvalue = (budget != -1) ? getvalue((int)budget) : null;
+            string ratingvalue = (rating != -1) ? getvalue((int)rating) : null;
             page = (page == null) ? 1 : page;
             offset = (offset == null || offset == 0) ? 6 : offset;
             int takecount = 6;
@@ -803,6 +810,7 @@ namespace AhwanamAPI.Controllers
         {
             type = (type == null) ? "venue" : type;
             Dictionary<string, object> dict = new Dictionary<string, object>();
+            Dictionary<string, object> d1 = new Dictionary<string, object>();
             dict.Add("status", true);
             dict.Add("message", "Success");
             // Header Section
@@ -821,7 +829,7 @@ namespace AhwanamAPI.Controllers
                 headers.header_text = "Best Mehendi Vendors";
             headers.sub_text = "Sub Text";
             headers.image = "https://api.ahwanam.com/images/header1.png";
-            dict.Add("header", headers);
+            d1.Add("header", headers);
 
             List<newfilter> filter = new List<newfilter>();
             newfilter f = new newfilter();
@@ -835,11 +843,66 @@ namespace AhwanamAPI.Controllers
                 sort.id = i;
                 sort1.Add(sort);
             }
-            dict.Add("sort_options", sort1);
-            var data = filters(type,filter,dict);
-            return Json(data);
+            d1.Add("sort_options", sort1);
+            FilterServices filterServices = new FilterServices();
+            var categories = filterServices.AllCategories(); //Retrieving All Categories
+            int value = categories.Where(m => m.display_name == type).FirstOrDefault().servicType_id; // Retrieving All Filters for a category
+            var filters = filterServices.AllFilters(value);
+            // Retrieving All Filter values for a category
+           // newfilter f = new newfilter();
+            for (int i = 0; i < filters.Count; i++)
+            {
+                f = new newfilter();
+                var filtervalue = filterServices.FilterValues(filters[i].filter_id);
+                f.name = filters[i].name;
+                f.display_name = filters[i].display_name;
+                List<values> test = new List<values>();
+                for (int j = 0; j < filtervalue.Count; j++)
+                {
+                    values v = new values();
+                    v.name = filtervalue[j].name;
+                    v.id = filtervalue[j].id;
+                    test.Add(v);
+                }
+                f.values = test;
+                f.is_mutliple_selection = true;
+                filter.Add(f);
+            }
+            //City & Locality Section
+            VendorMasterService vendorMasterService = new VendorMasterService();
+            var data = vendorMasterService.SearchVendors();
+            var citylist = data.Select(m => m.City).Distinct().ToList();
+            f = new newfilter();
+            f.name = "city";
+            f.display_name = "City";
+            List<value> val1 = new List<value>();
+            for (int i = 0; i < citylist.Count; i++)
+            {
+                value c = new value();
+                c.name = citylist[i];
+                c.id = i;
+                var landmark = data.Where(m => m.City == c.name).Select(m => m.Landmark).Distinct().ToList();
+                List<localities> locality1 = new List<localities>();
+                for (int j = 0; j < landmark.Count; j++)
+                {
+                    localities loc = new localities();
+                    loc.name = landmark[j];
+                    loc.id = j;
+                    locality1.Add(loc);
+                }
+                c.localities = locality1;
+                val1.Add(c);
+            }
+            f.value = val1;
+            f.is_mutliple_selection = true;
+            filter.Add(f);
+            d1.Add("filters", filter);
+            //var data = filters(type,filter,dict);
+            dict.Add("data", d1);
+            return Json(dict);
         }
 
+        //you can remove this code if not needed
         public Dictionary<string,object> filters(string type,List<newfilter> filter, Dictionary<string, object> dict)
         {
             FilterServices filterServices = new FilterServices();
@@ -897,8 +960,6 @@ namespace AhwanamAPI.Controllers
             dict.Add("filters", filter);
             return dict;
         }
-
-
 
         [HttpGet]
         [Route("api/results/getallsearch")]
@@ -996,7 +1057,24 @@ namespace AhwanamAPI.Controllers
             return filterServices.ParticularFilterValue(id).name;
         }
 
+        public string getcity(int id)
+        {
+            VendorMasterService vendorMasterService = new VendorMasterService();
+            var data = vendorMasterService.SearchVendors();
+            var citylist = data.Select(m => m.City).Distinct().ToList();
+            List<value> val1 = new List<value>();
+            for (int i = 0; i < citylist.Count; i++)
+            {
+                value c = new value();
+                c.name = citylist[i];
+                c.id = i;
+                val1.Add(c);
+            }
+            string city = val1.Where(m => m.id == id).FirstOrDefault().name;
+            return city;
+        }
 
+        //can remove this methos if not needed just kept for reference purpose
         public string cookies(int first, string type, int? second = 0)
         {
             string returnvalue = string.Empty;
@@ -1082,18 +1160,16 @@ namespace AhwanamAPI.Controllers
 
 
 
-        public int checktoken()
+        public int checktoken(string IP)
         {
             var re = Request;
             var customheader = re.Headers;
             if (customheader.Contains("token"))
             {
                 string token = customheader.GetValues("token").First();
-                encptdecpt encrypt = new encptdecpt();
-                string descrypt = encrypt.Decrypt(token);
                 UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
-                long data = userlogindetailsservice.GetLoginDetailsByEmail(descrypt);
-                if (data != 0) return 1;
+                int count = userlogindetailsservice.checktoken(token, IP);
+                if (count != 0) return 1;
             }
             return 0;
         }

@@ -52,19 +52,19 @@
     </Reference>
     <Reference Include="MaaAahwanam.Models, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Models.dll</HintPath>
+      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Models.dll</HintPath>
     </Reference>
     <Reference Include="MaaAahwanam.Repository, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Repository.dll</HintPath>
+      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Repository.dll</HintPath>
     </Reference>
     <Reference Include="MaaAahwanam.Service, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Service.dll</HintPath>
+      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Service.dll</HintPath>
     </Reference>
     <Reference Include="MaaAahwanam.Utility, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Utility.dll</HintPath>
+      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Utility.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
@@ -143,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="images\browse_all_vendors.jpg" />
     <Content Include="images\category.png" />
     <Content Include="images\cover_image.png" />
     <Content Include="images\header1.png" />
@@ -178,7 +179,6 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\cartController.cs" />
-    <Compile Include="Controllers\ceremoniesController.cs" />
     <Compile Include="Controllers\customerController.cs" />
     <Compile Include="Controllers\homeController.cs" />
     <Compile Include="Controllers\invoiceController.cs" />
@@ -204,8 +204,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="images\WS_FTP.LOG" />
-    <Content Include="images\Thumbs.db" />
     <None Include="packages.config" />
+    <None Include="Properties\PublishProfiles\API.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

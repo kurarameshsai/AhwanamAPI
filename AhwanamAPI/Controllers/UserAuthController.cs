@@ -167,19 +167,25 @@ namespace AhwanamAPI.Controllers
                 }
                 UserLoginDetailsService userLoginDetailsService = new UserLoginDetailsService();
                 var userdetails = userLoginDetailsService.GetUser((int)userResponce.UserLoginId);
-                 encptdecpt encrypt = new encptdecpt();
-                string encrypted = encrypt.Encrypt(userResponce.UserName);
-                //string encrypted= Guid.NewGuid().ToString();
+                // encptdecpt encrypt = new encptdecpt();
+                //string encrypted = encrypt.Encrypt(userResponce.UserName);
+                UserToken usertoken = new UserToken();
+                usertoken.IPAddress = HttpContext.Current.Request.UserHostAddress;
+                usertoken.Token = Guid.NewGuid().ToString();
+                usertoken.UserLoginID = userlogin.UserLoginId;
+                TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+                usertoken.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+                usertoken.LastLogin = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+                usertoken = userLoginDetailsService.addtoken(usertoken); // Saving Token
                 dict.Add("status", true);
                 dict.Add("message", "Login Success");
                 loginuser loginuser = new loginuser();
                 loginuser.email = userlogin.UserName;
                 loginuser.name = userdetails.FirstName;
                 loginuser.phoneno = userdetails.UserPhone;
-                u1.Add("token", encrypted);
+                u1.Add("token", usertoken.Token);
                 u1.Add("user", loginuser);
                 dict.Add("data", u1);
-              
             }
             else
             {
@@ -246,9 +252,10 @@ namespace AhwanamAPI.Controllers
             Dictionary<string, object> dict = new Dictionary<string, object>();
             if (activation_code == "") { activation_code = null; }
             var userresponce = venorvenuesignupservice.GetUserdetails(email);
-            DateTime regdate = (DateTime)userresponce.RegDate;
-            int count = (DateTime.Now.Date - regdate.Date).Days;
-            if (activation_code == userresponce.ActivationCode && count <=1)
+            //uncomment this code if you want to restrict email activation to 24hrs
+            //DateTime regdate = (DateTime)userresponce.RegDate;
+            //int count = (DateTime.Now.Date - regdate.Date).Days;
+            if (activation_code == userresponce.ActivationCode) // add this logic  && count <=1 if you want to restrict Email Activation to 24hrs
             {
                 dict.Add("status", true);
                 dict.Add("message", "Email successfully verified");
@@ -401,8 +408,15 @@ namespace AhwanamAPI.Controllers
                     dict.Add("message", "Successfully registered");
                 }
             }
-            encptdecpt encrypt = new encptdecpt();
-            string encrypted = encrypt.Encrypt(sloginresponse.email);
+            UserLoginDetailsService userLoginDetailsService = new UserLoginDetailsService();
+            UserToken usertoken = new UserToken();
+            usertoken.IPAddress = HttpContext.Current.Request.UserHostAddress;
+            usertoken.Token = Guid.NewGuid().ToString();
+            usertoken.UserLoginID = 1000;
+            TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+            usertoken.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+            usertoken.LastLogin = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+            usertoken = userLoginDetailsService.addtoken(usertoken); // Saving Token
             dict.Add("status", true);
             dict.Add("message", "Login Success");
             loginuser loginuser = new loginuser();
@@ -414,7 +428,7 @@ namespace AhwanamAPI.Controllers
                 loginuser.name = sloginresponse.name;
             loginuser.phoneno = sloginresponse.phoneno;
             Dictionary<string, object> u1 = new Dictionary<string, object>();
-            u1.Add("token", encrypted);
+            u1.Add("token", usertoken.Token);
             u1.Add("user", loginuser);
             dict.Add("data", u1);
             return dict;
@@ -542,14 +556,32 @@ namespace AhwanamAPI.Controllers
         }
         #endregion
 
-        //#region Signout
-        //public IHttpActionResult SignOut()
-        //{
-        //    // Response.Cookies.Clear();
-        //    FormsAuthentication.SignOut();
-        //    return Json("logout");
-        //}
-        //#endregion
+        #region Signout
+        public IHttpActionResult SignOut()
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            long userloginid = 0; //pass userloginid here
+            var re = Request;
+            var customheader = re.Headers;
+            if (customheader.Contains("token"))
+            {
+                string token = customheader.GetValues("token").First();
+                UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
+                int count = userlogindetailsservice.RemoveToken(token,userloginid);
+                if (count != 0)
+                {
+                    dict.Add("status", true);
+                    dict.Add("message", "Logout");
+                }
+                else
+                {
+                    dict.Add("status", false);
+                    dict.Add("message", "Failed");
+                }
+            }
+            return Json("logout");
+        }
+        #endregion
     }
 }
 
