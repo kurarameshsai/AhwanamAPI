@@ -180,6 +180,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\cartController.cs" />
+    <Compile Include="Controllers\ceremoniesController.cs" />
     <Compile Include="Controllers\customerController.cs" />
     <Compile Include="Controllers\homeController.cs" />
     <Compile Include="Controllers\invoiceController.cs" />
