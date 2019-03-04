@@ -132,7 +132,7 @@ namespace AhwanamAPI.Controllers
                         //prices Section
                         price price = new price();
                         price.actual_price = item.cost1.ToString();
-                        price.offer_price = item.normaldays;
+                        price.offer_price = item.cost1.ToString(); // Add Normal Days price here
                         price.service_price = "";
                         p.filters = f1;
                         //Data Section
