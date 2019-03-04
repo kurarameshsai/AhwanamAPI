@@ -133,7 +133,7 @@ namespace AhwanamAPI.Controllers
                         //prices Section
                         price price = new price();
                         price.actual_price = item.cost1.ToString();
-                        price.offer_price = item.normaldays;
+                        price.offer_price = item.cost1.ToString();
                         price.service_price = "";
                         p.filters = f1;
                         //Data Section
@@ -170,7 +170,6 @@ namespace AhwanamAPI.Controllers
                         p.category_name = item.ServicType;
                         ReviewService reviewService = new ReviewService();
                         p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
-                        p.description = item.Description;
                         p.rating = (trating != 0) ? decimal.Parse((trating / 3).ToString().Substring(0, 4)) : 0;
                         p.charge_type = "Per Day";
                         p.city = item.City;
@@ -200,7 +199,6 @@ namespace AhwanamAPI.Controllers
                         p.category_name = item.ServicType;
                         ReviewService reviewService = new ReviewService();
                         p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
-                        p.description = item.Description;
                         p.rating = (trating != 0) ? decimal.Parse((trating / 3).ToString().Substring(0, 4)) : 0;
                         p.charge_type = "Per Day";
                         p.city = item.City;
@@ -230,7 +228,6 @@ namespace AhwanamAPI.Controllers
                         p.category_name = item.ServicType;
                         ReviewService reviewService = new ReviewService();
                         p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
-                        p.description = item.Description;
                         p.rating = (trating != 0) ? decimal.Parse((trating / 3).ToString().Substring(0, 4)) : 0;
                         p.charge_type = "Per Day";
                         p.city = item.City;
