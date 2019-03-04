@@ -70,6 +70,7 @@ namespace AhwanamAPI.Controllers
             CeremonyServices ceremonyServices = new CeremonyServices();
             Dictionary<string, object> dict = new Dictionary<string, object>();
             //long eventname = long.Parse(ceremony.Split('-')[1]);
+
             var details = ceremonyServices.getceremonydetails(eventname).ToList();
             for (int i = 0; i < details.Count; i++)
             {
