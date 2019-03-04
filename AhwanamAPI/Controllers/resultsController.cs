@@ -628,7 +628,7 @@ namespace AhwanamAPI.Controllers
             //Sort Section
             List<sortby> sort1 = new List<sortby>();
             //string slist = "price-low-to-high!price-high-to-low";
-            string slist = "price low to high!price high to low";
+            string slist = "Price low to high!Price high to low";
             for (int i = 0; i < slist.Split('!').Count(); i++)
             {
                 sortby sort = new sortby();
@@ -837,7 +837,7 @@ namespace AhwanamAPI.Controllers
             //Sort Section
             List<sortby> sort1 = new List<sortby>();
             //string slist = "price-low-to-high!price-high-to-low";
-            string slist = "price low to high!price high to low";
+            string slist = "Price low to high!Price high to low";
             for (int i = 0; i < slist.Split('!').Count(); i++)
             {
                 sortby sort = new sortby();
