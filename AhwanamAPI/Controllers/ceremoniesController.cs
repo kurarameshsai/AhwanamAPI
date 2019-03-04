@@ -36,6 +36,7 @@ namespace AhwanamAPI.Controllers
 
         public class categories
         {
+            
             public string category_name { get; set; }
             //public string 
         }
