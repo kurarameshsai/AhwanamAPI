@@ -149,10 +149,10 @@
     <Content Include="images\header1.png" />
     <Content Include="images\header2.png" />
     <Content Include="images\homepageslider.png" />
-    <Content Include="images\Mask Group 21.png" />
     <Content Include="images\package.png" />
     <Content Include="images\popular_sangeeth.jpg" />
     <Content Include="images\reception_caterers.jpg" />
+    <Content Include="images\wedding_ceremony.png" />
     <Content Include="images\wedding_dashboard.jpg" />
     <Content Include="images\wedding_photographers.jpg" />
     <Content Include="mailtemplate\cancelordeleteorder.html" />
