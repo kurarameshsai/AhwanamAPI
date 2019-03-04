@@ -61,8 +61,8 @@ namespace AhwanamAPI.Controllers
 
         public class eventslist
         {
-            public string event_id { get; set; }
-            public string event_name { get; set; }
+            public string ceremony_id { get; set; }
+            public string ceremony_name { get; set; }
             public string thumb_image { get; set; }
             public string short_description { get; set; }
             public string page_name { get; set; }
@@ -210,7 +210,7 @@ namespace AhwanamAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/home/events")]
+        [Route("api/home/ceremonies")]
         public IHttpActionResult events()
         {
             CeremonyServices ceremonyServices = new CeremonyServices();
@@ -220,8 +220,8 @@ namespace AhwanamAPI.Controllers
             for (int i = 0; i < list.Count; i++)
             {
                 eventslist c = new eventslist();
-                c.event_id = list[i].Id.ToString();
-                c.event_name = list[i].Title;
+                c.ceremony_id = list[i].Id.ToString();
+                c.ceremony_name = list[i].Title;
                 c.thumb_image = list[i].Image;
                 c.short_description = list[i].Description;
                 c.page_name = list[i].page_name;
