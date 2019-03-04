@@ -91,7 +91,6 @@ namespace AhwanamAPI.Controllers
                 }
                 f.values = test;
                 f1.Add(f);
-
                 ResultsPageService resultsPageService = new ResultsPageService();
                 if (details[i].Category == "venue")
                 {
