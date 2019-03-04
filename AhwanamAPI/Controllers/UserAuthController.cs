@@ -557,6 +557,8 @@ namespace AhwanamAPI.Controllers
         #endregion
 
         #region Signout
+        [HttpGet]
+        [Route("api/UserAuth/logout")]
         public IHttpActionResult SignOut()
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
@@ -579,7 +581,8 @@ namespace AhwanamAPI.Controllers
                     dict.Add("message", "Failed");
                 }
             }
-            return Json("logout");
+            //return Json("logout");
+            return Json(dict);
         }
         #endregion
     }

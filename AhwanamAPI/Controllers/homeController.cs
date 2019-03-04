@@ -64,7 +64,7 @@ namespace AhwanamAPI.Controllers
             public string event_id { get; set; }
             public string event_name { get; set; }
             public string thumb_image { get; set; }
-            public string description { get; set; }
+            public string short_description { get; set; }
             public string page_name { get; set; }
         }
 
@@ -223,8 +223,8 @@ namespace AhwanamAPI.Controllers
                 c.event_id = list[i].Id.ToString();
                 c.event_name = list[i].Title;
                 c.thumb_image = list[i].Image;
-                c.description = list[i].Description;
-                c.page_name = "name";
+                c.short_description = list[i].Description;
+                c.page_name = list[i].page_name;
                 c1.Add(c);
             }
             Dictionary<string, object> d1 = new Dictionary<string, object>();
