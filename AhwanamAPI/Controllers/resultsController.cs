@@ -884,7 +884,7 @@ namespace AhwanamAPI.Controllers
                 c.name = citylist[i];
                 c.id = i;
                 var landmark = data.Where(m => m.City == c.name).Select(m => m.Landmark).Distinct().ToList();
-                List<localities> locality1 = new List<localities>();
+                List<localities> locality1 = new List<localities>(); //locality
                 for (int j = 0; j < landmark.Count; j++)
                 {
                     localities loc = new localities();
