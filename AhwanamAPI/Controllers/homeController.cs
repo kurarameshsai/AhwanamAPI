@@ -234,6 +234,32 @@ namespace AhwanamAPI.Controllers
             return Json(dict);
         }
 
+        [HttpGet]
+        [Route("api/home/diffceremonies")]
+        public IHttpActionResult ceremonybsdtype(string type)
+        {
+            CeremonyServices ceremonyServices = new CeremonyServices();
+            int ceremonytype = Convert.ToInt32(type);
+            var list = ceremonyServices.Getallbasedtype(ceremonytype);
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            List<eventslist> c1 = new List<eventslist>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                eventslist c = new eventslist();
+                c.ceremony_id = list[i].Id.ToString();
+                c.ceremony_name = list[i].Title;
+                c.thumb_image = list[i].Image;
+                c.short_description = list[i].Description;
+                c.page_name = list[i].page_name;
+                c1.Add(c);
+            }
+            Dictionary<string, object> d1 = new Dictionary<string, object>();
+            d1.Add("results", c1);
+            dict.Add("status", true);
+            dict.Add("data", d1);
+            return Json(dict);
+        }
+
         public class Quote
         {
             public string name { get; set; }
