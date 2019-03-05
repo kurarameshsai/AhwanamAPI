@@ -82,7 +82,7 @@ namespace AhwanamAPI.Controllers
             public string display_name { get; set; }
             public List<values> values { get; set; }
             //public List<value> value { get; set; }
-            public bool is_mutliple_selection { get; set; }
+            //public bool is_mutliple_selection { get; set; }
         }
 
         public class newcity
@@ -650,7 +650,7 @@ namespace AhwanamAPI.Controllers
                 val.Add(v);
             }
             f.values = val;
-            f.is_mutliple_selection = true;
+            //f.is_mutliple_selection = true;
             filter.Add(f);
 
             if (type == "venue" || type == "Photography" || type == "Catering")
@@ -685,7 +685,7 @@ namespace AhwanamAPI.Controllers
                     val.Add(v);
                 }
                 f.values = val;
-                f.is_mutliple_selection = true;
+                //f.is_mutliple_selection = true;
                 filter.Add(f);
             }
 
@@ -705,7 +705,7 @@ namespace AhwanamAPI.Controllers
                     val.Add(v);
                 }
                 f.values = val;
-                f.is_mutliple_selection = true;
+                //f.is_mutliple_selection = true;
                 filter.Add(f);
 
                 //Price per plate Section
@@ -722,7 +722,7 @@ namespace AhwanamAPI.Controllers
                     val.Add(v);
                 }
                 f.values = val;
-                f.is_mutliple_selection = true;
+                //f.is_mutliple_selection = true;
                 filter.Add(f);
 
                 //Space preference Section
@@ -739,7 +739,7 @@ namespace AhwanamAPI.Controllers
                     val.Add(v);
                 }
                 f.values = val;
-                f.is_mutliple_selection = true;
+                //f.is_mutliple_selection = true;
                 filter.Add(f);
             }
             if (type == "Photography" || type == "Decorator" || type == "Catering")
@@ -758,7 +758,7 @@ namespace AhwanamAPI.Controllers
                     val.Add(v);
                 }
                 f.values = val;
-                f.is_mutliple_selection = true;
+                //f.is_mutliple_selection = true;
                 filter.Add(f);
             }
 
@@ -792,7 +792,7 @@ namespace AhwanamAPI.Controllers
             }
             //f.values = city;
             f.values = val1;
-            f.is_mutliple_selection = true;
+            //f.is_mutliple_selection = true;
             filter.Add(f);
 
             dict.Add("filters", filter);
@@ -851,25 +851,7 @@ namespace AhwanamAPI.Controllers
             int value = categories.Where(m => m.display_name == type).FirstOrDefault().servicType_id; // Retrieving All Filters for a category
             var filters = filterServices.AllFilters(value);
             // Retrieving All Filter values for a category
-           // newfilter f = new newfilter();
-            for (int i = 0; i < filters.Count; i++)
-            {
-                f = new newfilter();
-                var filtervalue = filterServices.FilterValues(filters[i].filter_id);
-                f.name = filters[i].name;
-                f.display_name = filters[i].display_name;
-                List<values> test = new List<values>();
-                for (int j = 0; j < filtervalue.Count; j++)
-                {
-                    values v = new values();
-                    v.name = filtervalue[j].name;
-                    v.id = filtervalue[j].id;
-                    test.Add(v);
-                }
-                f.values = test;
-                f.is_mutliple_selection = true;
-                filter.Add(f);
-            }
+            // newfilter f = new newfilter();
             //City & Locality Section
             VendorMasterService vendorMasterService = new VendorMasterService();
             var data = vendorMasterService.SearchVendors();
@@ -896,8 +878,27 @@ namespace AhwanamAPI.Controllers
                 val1.Add(c);
             }
             f.values = val1;
-            f.is_mutliple_selection = true;
+            //f.is_mutliple_selection = true;
             filter.Add(f);
+
+            for (int i = 0; i < filters.Count; i++)
+            {
+                f = new newfilter();
+                var filtervalue = filterServices.FilterValues(filters[i].filter_id);
+                f.name = filters[i].name;
+                f.display_name = filters[i].display_name;
+                List<values> test = new List<values>();
+                for (int j = 0; j < filtervalue.Count; j++)
+                {
+                    values v = new values();
+                    v.name = filtervalue[j].name;
+                    v.id = filtervalue[j].id;
+                    test.Add(v);
+                }
+                f.values = test;
+                //f.is_mutliple_selection = true;
+                filter.Add(f);
+            }
             d1.Add("filters", filter);
             //var data = filters(type,filter,dict);
             dict.Add("data", d1);
@@ -928,7 +929,7 @@ namespace AhwanamAPI.Controllers
                     test.Add(v);
                 }
                 f.values = test;
-                f.is_mutliple_selection = true;
+                //f.is_mutliple_selection = true;
                 filter.Add(f);
             }
             //City & Locality Section
@@ -957,7 +958,7 @@ namespace AhwanamAPI.Controllers
                 val1.Add(c);
             }
             f.values = val1;
-            f.is_mutliple_selection = true;
+            //f.is_mutliple_selection = true;
             filter.Add(f);
             dict.Add("filters", filter);
             return dict;
