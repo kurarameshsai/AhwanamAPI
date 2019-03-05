@@ -81,7 +81,7 @@ namespace AhwanamAPI.Controllers
             public string name { get; set; }
             public string display_name { get; set; }
             public List<values> values { get; set; }
-            public List<value> value { get; set; }
+            //public List<value> value { get; set; }
             public bool is_mutliple_selection { get; set; }
         }
 
@@ -769,29 +769,29 @@ namespace AhwanamAPI.Controllers
             f = new newfilter();
             f.name = "city";
             f.display_name = "City";
-            List<value> val1 = new List<value>();
+            List<values> val1 = new List<values>();
             //List<newcity> city = new List<newcity>();
 
             for (int i = 0; i < citylist.Count; i++)
             {
-                value c = new value();
+                values c = new values();
                 c.name = citylist[i];
                 c.id = i;
-                var landmark = data.Where(m => m.City == c.name).Select(m => m.Landmark).Distinct().ToList();
-                List<localities> locality1 = new List<localities>();
-                for (int j = 0; j < landmark.Count; j++)
-                {
-                    localities loc = new localities();
-                    loc.name = landmark[j];
-                    loc.id = j;
-                    locality1.Add(loc);
-                }
-                c.localities = locality1;
+                //var landmark = data.Where(m => m.City == c.name).Select(m => m.Landmark).Distinct().ToList();
+                //List<localities> locality1 = new List<localities>();
+                //for (int j = 0; j < landmark.Count; j++)
+                //{
+                //    localities loc = new localities();
+                //    loc.name = landmark[j];
+                //    loc.id = j;
+                //    locality1.Add(loc);
+                //}
+                //c.localities = locality1;
                 //city.Add(c);
                 val1.Add(c);
             }
             //f.values = city;
-            f.value = val1;
+            f.values = val1;
             f.is_mutliple_selection = true;
             filter.Add(f);
 
@@ -877,25 +877,25 @@ namespace AhwanamAPI.Controllers
             f = new newfilter();
             f.name = "city";
             f.display_name = "City";
-            List<value> val1 = new List<value>();
+            List<values> val1 = new List<values>();
             for (int i = 0; i < citylist.Count; i++)
             {
-                value c = new value();
+                values c = new values();
                 c.name = citylist[i];
                 c.id = i;
-                var landmark = data.Where(m => m.City == c.name).Select(m => m.Landmark).Distinct().ToList();
-                List<localities> locality1 = new List<localities>(); //locality
-                for (int j = 0; j < landmark.Count; j++)
-                {
-                    localities loc = new localities();
-                    loc.name = landmark[j];
-                    loc.id = j;
-                    locality1.Add(loc);
-                }
-                c.localities = locality1;
+                //var landmark = data.Where(m => m.City == c.name).Select(m => m.Landmark).Distinct().ToList();
+                //List<localities> locality1 = new List<localities>(); //locality
+                //for (int j = 0; j < landmark.Count; j++)
+                //{
+                //    localities loc = new localities();
+                //    loc.name = landmark[j];
+                //    loc.id = j;
+                //    locality1.Add(loc);
+                //}
+                //c.localities = locality1;
                 val1.Add(c);
             }
-            f.value = val1;
+            f.values = val1;
             f.is_mutliple_selection = true;
             filter.Add(f);
             d1.Add("filters", filter);
@@ -938,25 +938,25 @@ namespace AhwanamAPI.Controllers
             f = new newfilter();
             f.name = "city";
             f.display_name = "City";
-            List<value> val1 = new List<value>();
+            List<values> val1 = new List<values>();
             for (int i = 0; i < citylist.Count; i++)
             {
-                value c = new value();
+                values c = new values();
                 c.name = citylist[i];
                 c.id = i;
-                var landmark = data.Where(m => m.City == c.name).Select(m => m.Landmark).Distinct().ToList();
-                List<localities> locality1 = new List<localities>();
-                for (int j = 0; j < landmark.Count; j++)
-                {
-                    localities loc = new localities();
-                    loc.name = landmark[j];
-                    loc.id = j;
-                    locality1.Add(loc);
-                }
-                c.localities = locality1;
+                //var landmark = data.Where(m => m.City == c.name).Select(m => m.Landmark).Distinct().ToList();
+                //List<localities> locality1 = new List<localities>();
+                //for (int j = 0; j < landmark.Count; j++)
+                //{
+                //    localities loc = new localities();
+                //    loc.name = landmark[j];
+                //    loc.id = j;
+                //    locality1.Add(loc);
+                //}
+                //c.localities = locality1;
                 val1.Add(c);
             }
-            f.value = val1;
+            f.values = val1;
             f.is_mutliple_selection = true;
             filter.Add(f);
             dict.Add("filters", filter);
@@ -1136,7 +1136,7 @@ namespace AhwanamAPI.Controllers
                 city city = new city();
                 city.name = fil[5].name;
                 city.display_name = fil[5].display_name;
-                city.value = fil[5].value;
+                //city.value = fil[5].value;
                 coki.city = city;
 
                 // Cookie filter Section
