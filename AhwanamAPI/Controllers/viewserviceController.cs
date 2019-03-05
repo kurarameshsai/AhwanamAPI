@@ -536,7 +536,7 @@ namespace AhwanamAPI.Controllers
             {
                 dict.Clear();
                 dict.Add("status", false);
-                dict.Add("message", "Failed");
+                dict.Add("message", "error message");
                 dict.Add("data", null);
             }
             return Json(dict);
