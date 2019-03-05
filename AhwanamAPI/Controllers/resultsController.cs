@@ -306,7 +306,7 @@ namespace AhwanamAPI.Controllers
             dict.Add("total_count", count);
             dict.Add("offset", (offset == null) ? 6 : offset);
             dict.Add("no_of_pages", ((count - 1) / offset) + 1);
-            dict.Add("sort_options", (sortby == null || sortby == 0) ? 1 : sortby);
+            dict.Add("sort_options", (sortby == null) ? 0 : sortby);
             dict.Add("service_type", type);
             return dict;
         }
