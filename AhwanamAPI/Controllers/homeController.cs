@@ -90,7 +90,15 @@ namespace AhwanamAPI.Controllers
         //    }
         //    return Json(dict);
         //}
+        
 
+        
+            [HttpGet]
+            [Route("api/message")]
+         public IHttpActionResult message()
+        {
+            return Json("success");
+        }
         [HttpGet]
         [Route("api/home/encrypt")]
         public IHttpActionResult Decrypt(string val)

@@ -143,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="html\index.html" />
     <Content Include="images\browse_all_vendors.jpg" />
     <Content Include="images\category.png" />
     <Content Include="images\cover_image.png" />
