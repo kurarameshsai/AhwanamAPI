@@ -42,7 +42,7 @@ namespace AhwanamAPI.Controllers
             public string thumb_image { get; set; }
             public string page_name { get; set; }
             public long serviceId { get; set; }
-            public Dictionary<string,object> vendors { get; set;}
+          public List<vendors> vendors { get; set; }
             
         }
 
@@ -54,7 +54,7 @@ namespace AhwanamAPI.Controllers
 
         }
 
-        public class vendors1
+        public class vendors
         {
             public string category_name { get; set; }
             public string charge_type { get; set; }
@@ -114,15 +114,16 @@ namespace AhwanamAPI.Controllers
                 categories1.page_name = "name";
                 categories1.serviceId = details[i].Id;
                 ResultsPageService resultsPageService = new ResultsPageService();
-                Dictionary<string, object> dict1 = new Dictionary<string, object>();
+                
+                List<vendors> param = new List<vendors>();
                 if (details[i].Category == "venue")
                 {
-                    List<vendors1> param = new List<vendors1>();
+                   
                     var data1 = resultsPageService.GetAllVendors("Venue");
                     foreach (var item in data1)
                     {
                         decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
-                        vendors1 p = new vendors1();
+                        vendors p = new vendors();
                         //prices Section
                         price price = new price();
                         price.actual_price = item.cost1.ToString();
@@ -142,17 +143,17 @@ namespace AhwanamAPI.Controllers
                         p.price = price;
                         param.Add(p);
                     }
-                    dict1.Add("Vendors", param);
+                    //dict1.Add("Vendors", param);
                 }
                 else if (details[i].Category == "decorator")
                 {
-                    List<vendors1> param = new List<vendors1>();
+                    //List<vendors> param = new List<vendors>();
                     var data1 = resultsPageService.GetAllDecorators();
                     foreach (var item in data1)
                     {
                        
                         decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
-                        vendors1 p = new vendors1();
+                        vendors p = new vendors();
                         //prices Section
                         price price = new price();
                         price.actual_price = item.cost1.ToString();
@@ -172,16 +173,16 @@ namespace AhwanamAPI.Controllers
                         p.price = price;
                         param.Add(p);
                     }
-                    dict1.Add("Vendors", param);
+                    //dict1.Add("Vendors", param);
                 }
                 else if (details[i].Category == "catering")
                 {
-                    List<vendors1> param = new List<vendors1>();
+                    //List<vendors> param = new List<vendors>();
                     var data1 = resultsPageService.GetAllCaterers();
                     foreach (var item in data1)
                     {
                         decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
-                        vendors1 p = new vendors1();
+                        vendors p = new vendors();
                         //prices Section
                         price price = new price();
                         price.actual_price = item.Veg.ToString();
@@ -201,18 +202,18 @@ namespace AhwanamAPI.Controllers
                         p.price = price;
                         param.Add(p);
                     }
-                    dict1.Add("Vendors", param);
+                    //dict1.Add("Vendors", param);
                 }
 
                 else if (details[i].Category == "photography")
                 {
-                    List<vendors1> param = new List<vendors1>();
+                    //List<vendors> param = new List<vendors>();
                     var data1 = resultsPageService.GetAllPhotographers();
                     foreach (var item in data1)
                     {
                        
                         decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
-                        vendors1 p = new vendors1();
+                        vendors p = new vendors();
                         //prices Section
                         price price = new price();
                         price.actual_price = item.cost1.ToString();
@@ -232,16 +233,16 @@ namespace AhwanamAPI.Controllers
                         p.price = price;
                         param.Add(p);
                     }
-                    dict1.Add("Vendors", param);
+                    //dict1.Add("Vendors", param);
                 }
                 else if (details[i].Category == "pandit" || details[i].Category == "mehendi")
                 {
-                    List<vendors1> param = new List<vendors1>();
+                    //List<vendors> param = new List<vendors>();
                     var data1 = resultsPageService.GetAllOthers(details[i].Category);
                     foreach (var item in data1)
                     {
                         decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
-                        vendors1 p = new vendors1();
+                        vendors p = new vendors();
 
                         //prices Section
                         price price = new price();
@@ -262,10 +263,12 @@ namespace AhwanamAPI.Controllers
                         p.price = price;
                         param.Add(p);
 
-                    }
-                    dict1.Add("Vendors", param);
+                    }  
+                    //dict1.Add("Vendors", param);
                 }
-              
+                //Dictionary<string, object> dict1 = new Dictionary<string, object>();
+                //dict1.Add("results", param);
+                categories1.vendors = param;
                 categories.Add(categories1);
             }
             d.categories = categories;
