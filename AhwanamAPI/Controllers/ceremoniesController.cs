@@ -97,6 +97,7 @@ namespace AhwanamAPI.Controllers
         [Route("api/ceremonies/details")]
         public IHttpActionResult ceremonydetails(string ceremony, int? city = -1)
         {
+            int count = 0;
             FilterServices filterServices = new FilterServices();
             string cityvalue = (city != -1 && city != null) ? getcity((int)city) : null;
             CeremonyServices ceremonyServices = new CeremonyServices();
@@ -144,6 +145,8 @@ namespace AhwanamAPI.Controllers
                 if (details[i].Category == "venue")
                 {
                     var data1 = resultsPageService.GetAllVendors("Venue");
+                    if(data1.Count>0)
+                    { 
                     foreach (var item in data1)
                     {
                         decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
@@ -167,130 +170,140 @@ namespace AhwanamAPI.Controllers
                         p.price = price;
                         param.Add(p);
                     }
-                    //dict1.Add("Vendors", param);
+                    }
+                    
                 }
                 else if (details[i].Category == "decorator")
                 {
                     var data1 = resultsPageService.GetAllDecorators();
-                    foreach (var item in data1)
+                    if (data1.Count > 0)
                     {
-                       
-                        decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
-                        vendors p = new vendors();
-                        //prices Section
-                        price price = new price();
-                        price.actual_price = item.cost1.ToString();
-                        price.offer_price = item.cost1.ToString();
-                        price.service_price = "";
-                        //p.filters = f1;
-                        //Data Section
-                        p.name = item.BusinessName;
-                        p.page_name = item.page_name;
-                        p.category_name = item.ServicType;
-                        ReviewService reviewService = new ReviewService();
-                        p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
-                        p.rating = (trating != 0) ? decimal.Parse((trating / 3).ToString().Substring(0, 4)) : 0;
-                        p.charge_type = "Per Day";
-                        p.city = item.City;
-                        p.pic_url = "https://api.ahwanam.com/vendorimages/" + item.image;
-                        p.price = price;
-                        param.Add(p);
-                    }
-                    //dict1.Add("Vendors", param);
+                        foreach (var item in data1)
+                        {
+
+                            decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
+                            vendors p = new vendors();
+                            //prices Section
+                            price price = new price();
+                            price.actual_price = item.cost1.ToString();
+                            price.offer_price = item.cost1.ToString();
+                            price.service_price = "";
+                            //p.filters = f1;
+                            //Data Section
+                            p.name = item.BusinessName;
+                            p.page_name = item.page_name;
+                            p.category_name = item.ServicType;
+                            ReviewService reviewService = new ReviewService();
+                            p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
+                            p.rating = (trating != 0) ? decimal.Parse((trating / 3).ToString().Substring(0, 4)) : 0;
+                            p.charge_type = "Per Day";
+                            p.city = item.City;
+                            p.pic_url = "https://api.ahwanam.com/vendorimages/" + item.image;
+                            p.price = price;
+                            param.Add(p);
+                        }
+                    };
                 }
                 else if (details[i].Category == "catering")
                 {
                     var data1 = resultsPageService.GetAllCaterers();
-                    foreach (var item in data1)
+                    if (data1.Count > 0)
                     {
-                        decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
-                        vendors p = new vendors();
-                        //prices Section
-                        price price = new price();
-                        price.actual_price = item.Veg.ToString();
-                        price.offer_price = item.Veg.ToString(); // Add Normal Days price here
-                        price.service_price = "";
-                        //p.filters = f1;
-                        //Data Section
-                        p.name = item.BusinessName;
-                        p.page_name = item.page_name;
-                        p.category_name = item.ServicType;
-                        ReviewService reviewService = new ReviewService();
-                        p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
-                        p.rating = (trating != 0) ? decimal.Parse((trating / 3).ToString().Substring(0, 4)) : 0;
-                        p.charge_type = "Per Day";
-                        p.city = item.City;
-                        p.pic_url = "https://api.ahwanam.com/vendorimages/" + item.image;
-                        p.price = price;
-                        param.Add(p);
+                        foreach (var item in data1)
+                        {
+                            decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
+                            vendors p = new vendors();
+                            //prices Section
+                            price price = new price();
+                            price.actual_price = item.Veg.ToString();
+                            price.offer_price = item.Veg.ToString(); // Add Normal Days price here
+                            price.service_price = "";
+                            //p.filters = f1;
+                            //Data Section
+                            p.name = item.BusinessName;
+                            p.page_name = item.page_name;
+                            p.category_name = item.ServicType;
+                            ReviewService reviewService = new ReviewService();
+                            p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
+                            p.rating = (trating != 0) ? decimal.Parse((trating / 3).ToString().Substring(0, 4)) : 0;
+                            p.charge_type = "Per Day";
+                            p.city = item.City;
+                            p.pic_url = "https://api.ahwanam.com/vendorimages/" + item.image;
+                            p.price = price;
+                            param.Add(p);
+                        }
                     }
-                    //dict1.Add("Vendors", param);
                 }
 
                 else if (details[i].Category == "photography")
                 {
                     var data1 = resultsPageService.GetAllPhotographers();
-                    foreach (var item in data1)
+                    if (data1.Count > 0)
                     {
-                       
-                        decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
-                        vendors p = new vendors();
-                        //prices Section
-                        price price = new price();
-                        price.actual_price = item.cost1.ToString();
-                        price.offer_price = item.cost1.ToString(); // Add Normal Days price here
-                        price.service_price = "";
-                        //p.filters = f1;
-                        //Data Section
-                        p.name = item.BusinessName;
-                        p.page_name = item.page_name;
-                        p.category_name = item.ServicType;
-                        ReviewService reviewService = new ReviewService();
-                        p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
-                        p.rating = (trating != 0) ? decimal.Parse((trating / 3).ToString().Substring(0, 4)) : 0;
-                        p.charge_type = "Per Day";
-                        p.city = item.City;
-                        p.pic_url = "https://api.ahwanam.com/vendorimages/" + item.image;
-                        p.price = price;
-                        param.Add(p);
+                        foreach (var item in data1)
+                        {
+
+                            decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
+                            vendors p = new vendors();
+                            //prices Section
+                            price price = new price();
+                            price.actual_price = item.cost1.ToString();
+                            price.offer_price = item.cost1.ToString(); // Add Normal Days price here
+                            price.service_price = "";
+                            //p.filters = f1;
+                            //Data Section
+                            p.name = item.BusinessName;
+                            p.page_name = item.page_name;
+                            p.category_name = item.ServicType;
+                            ReviewService reviewService = new ReviewService();
+                            p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
+                            p.rating = (trating != 0) ? decimal.Parse((trating / 3).ToString().Substring(0, 4)) : 0;
+                            p.charge_type = "Per Day";
+                            p.city = item.City;
+                            p.pic_url = "https://api.ahwanam.com/vendorimages/" + item.image;
+                            p.price = price;
+                            param.Add(p);
+                        }
                     }
-                    //dict1.Add("Vendors", param);
                 }
                 else if (details[i].Category == "pandit" || details[i].Category == "mehendi")
                 {
                     //List<vendors> param = new List<vendors>();
                     var data1 = resultsPageService.GetAllOthers(details[i].Category);
-                    foreach (var item in data1)
+                    if (data1.Count > 0)
                     {
-                        decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
-                        vendors p = new vendors();
+                        foreach (var item in data1)
+                        {
+                            decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
+                            vendors p = new vendors();
 
-                        //prices Section
-                        price price = new price();
-                        price.actual_price = item.ItemCost.ToString();
-                        price.offer_price = item.ItemCost.ToString(); // Add Normal Days price here
-                        price.service_price = "";
-                        //p.filters = f1;
-                        //Data Section
-                        p.name = item.BusinessName;
-                        p.page_name = item.page_name;
-                        p.category_name = item.ServicType;
-                        ReviewService reviewService = new ReviewService();
-                        p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
-                        p.rating = (trating != 0) ? decimal.Parse((trating / 3).ToString().Substring(0, 4)) : 0;
-                        p.charge_type = "Per Day";
-                        p.city = item.City;
-                        p.pic_url = "https://api.ahwanam.com/vendorimages/" + item.image;
-                        p.price = price;
-                        param.Add(p);
+                            //prices Section
+                            price price = new price();
+                            price.actual_price = item.ItemCost.ToString();
+                            price.offer_price = item.ItemCost.ToString(); // Add Normal Days price here
+                            price.service_price = "";
+                            //p.filters = f1;
+                            //Data Section
+                            p.name = item.BusinessName;
+                            p.page_name = item.page_name;
+                            p.category_name = item.ServicType;
+                            ReviewService reviewService = new ReviewService();
+                            p.reviews_count = reviewService.GetReview(int.Parse(item.Id.ToString())).Where(m => m.Sid == long.Parse(item.subid.ToString())).Count().ToString();
+                            p.rating = (trating != 0) ? decimal.Parse((trating / 3).ToString().Substring(0, 4)) : 0;
+                            p.charge_type = "Per Day";
+                            p.city = item.City;
+                            p.pic_url = "https://api.ahwanam.com/vendorimages/" + item.image;
+                            p.price = price;
+                            param.Add(p);
 
-                    }  
-                    //dict1.Add("Vendors", param);
+                        }
+                    }
                 }
-                //Dictionary<string, object> dict1 = new Dictionary<string, object>();
-                //dict1.Add("results", param);
-                categories1.vendors = param;
-                categories.Add(categories1);
+                if(param.Count!= 0)
+                {
+                    categories1.vendors = param;
+                }
+               categories.Add(categories1);
                 /*categories.Add(f1)*/;
             }
             d.filters = f1;
