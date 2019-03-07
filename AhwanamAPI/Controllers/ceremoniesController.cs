@@ -95,7 +95,7 @@ namespace AhwanamAPI.Controllers
 
         [HttpGet]
         [Route("api/ceremonies/details")]
-        public IHttpActionResult ceremonydetails(string ceremony, int? city)
+        public IHttpActionResult ceremonydetails(string ceremony, int? city = -1)
         {
             FilterServices filterServices = new FilterServices();
             string cityvalue = (city != -1 && city != null) ? getcity((int)city) : null;
