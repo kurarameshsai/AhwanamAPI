@@ -91,8 +91,6 @@ namespace AhwanamAPI.Controllers
             string city = val1.Where(m => m.id == id).FirstOrDefault().name;
             return city;
         }
-
-
         [HttpGet]
         [Route("api/ceremonies/details")]
         public IHttpActionResult ceremonydetails(string ceremony, int? city = -1)
@@ -138,11 +136,11 @@ namespace AhwanamAPI.Controllers
                 categories1.name = details[i].Category;
                 categories1.thumb_image = details[i].image;
                 categories1.sub_title = details[i].Description;
-                categories1.page_name = details[i].Category; 
+                categories1.page_name = details[i].page_name; 
                 categories1.serviceId = details[i].Id;
                 ResultsPageService resultsPageService = new ResultsPageService();
                 List<vendors> param = new List<vendors>();
-                if (details[i].Category == "venue")
+                if (details[i].page_name == "venue")
                 {
                     var data1 = resultsPageService.GetAllVendors("Venue");
                     if(data1.Count>0)
@@ -173,7 +171,7 @@ namespace AhwanamAPI.Controllers
                     }
                     
                 }
-                else if (details[i].Category == "decorator")
+                else if (details[i].page_name == "decorator")
                 {
                     var data1 = resultsPageService.GetAllDecorators();
                     if (data1.Count > 0)
@@ -204,7 +202,7 @@ namespace AhwanamAPI.Controllers
                         }
                     };
                 }
-                else if (details[i].Category == "catering")
+                else if (details[i].page_name == "catering")
                 {
                     var data1 = resultsPageService.GetAllCaterers();
                     if (data1.Count > 0)
@@ -234,8 +232,7 @@ namespace AhwanamAPI.Controllers
                         }
                     }
                 }
-
-                else if (details[i].Category == "photography")
+                else if (details[i].page_name == "photography")
                 {
                     var data1 = resultsPageService.GetAllPhotographers();
                     if (data1.Count > 0)
@@ -266,10 +263,9 @@ namespace AhwanamAPI.Controllers
                         }
                     }
                 }
-                else if (details[i].Category == "pandit" || details[i].Category == "mehendi")
+                else if (details[i].page_name == "pandit" || details[i].page_name == "mehendi")
                 {
-                    //List<vendors> param = new List<vendors>();
-                    var data1 = resultsPageService.GetAllOthers(details[i].Category);
+                    var data1 = resultsPageService.GetAllOthers(details[i].page_name);
                     if (data1.Count > 0)
                     {
                         foreach (var item in data1)
