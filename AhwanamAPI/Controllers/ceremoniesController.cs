@@ -130,8 +130,7 @@ namespace AhwanamAPI.Controllers
             List<categories> categories = new List<categories>();
             var details = ceremonyServices.getceremonydetails(d.ceremony_id).ToList();
             for (int i = 0; i < details.Count; i++)
-            { 
-               
+            {  
                categories categories1 = new categories();
                 categories1.name = details[i].Category;
                 categories1.thumb_image = details[i].image;
@@ -142,11 +141,12 @@ namespace AhwanamAPI.Controllers
                 List<vendors> param = new List<vendors>();
                 if (details[i].page_name == "venue")
                 {
-                    var data1 = resultsPageService.GetAllVendors("Venue");
+                    var data1 = resultsPageService.GetAllVendors("Venue").Take(7).ToList();
                     if(data1.Count>0)
                     { 
                     foreach (var item in data1)
                     {
+                          
                         decimal trating = (item.fbrating != null && item.googlerating != null && item.jdrating != null) ? decimal.Parse(item.fbrating) + decimal.Parse(item.googlerating) + decimal.Parse(item.jdrating) : 0;
                         vendors p = new vendors();
                         //prices Section
@@ -168,12 +168,11 @@ namespace AhwanamAPI.Controllers
                         p.price = price;
                         param.Add(p);
                     }
-                    }
-                    
+                    }                    
                 }
                 else if (details[i].page_name == "decorator")
                 {
-                    var data1 = resultsPageService.GetAllDecorators();
+                    var data1 = resultsPageService.GetAllDecorators().Take(7).ToList();
                     if (data1.Count > 0)
                     {
                         foreach (var item in data1)
@@ -204,8 +203,8 @@ namespace AhwanamAPI.Controllers
                 }
                 else if (details[i].page_name == "catering")
                 {
-                    var data1 = resultsPageService.GetAllCaterers();
-                    if (data1.Count > 0)
+                    var data1 = resultsPageService.GetAllCaterers().Take(7).ToList();
+                    if (data1.Count > 0 && data1.Count <= 7)
                     {
                         foreach (var item in data1)
                         {
@@ -234,8 +233,8 @@ namespace AhwanamAPI.Controllers
                 }
                 else if (details[i].page_name == "photography")
                 {
-                    var data1 = resultsPageService.GetAllPhotographers();
-                    if (data1.Count > 0)
+                    var data1 = resultsPageService.GetAllPhotographers().Take(7).ToList();
+                    if (data1.Count > 0 && data1.Count <= 7)
                     {
                         foreach (var item in data1)
                         {
@@ -265,8 +264,8 @@ namespace AhwanamAPI.Controllers
                 }
                 else if (details[i].page_name == "pandit" || details[i].page_name == "mehendi")
                 {
-                    var data1 = resultsPageService.GetAllOthers(details[i].page_name);
-                    if (data1.Count > 0)
+                    var data1 = resultsPageService.GetAllOthers(details[i].page_name).Take(7).ToList();
+                    if (data1.Count > 0 && data1.Count <= 7)
                     {
                         foreach (var item in data1)
                         {
@@ -300,7 +299,6 @@ namespace AhwanamAPI.Controllers
                     categories1.vendors = param;
                 }
                categories.Add(categories1);
-                /*categories.Add(f1)*/;
             }
             d.filters = f1;
             d.categories = categories;
