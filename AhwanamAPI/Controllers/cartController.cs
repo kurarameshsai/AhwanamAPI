@@ -371,10 +371,8 @@ namespace AhwanamAPI.Controllers
             return Json("error");
         }
     
-
-
-    class payees
-        {
+public class payees
+           {
             public string id { get; set; }
             public string entity { get; set; }
             public string amount { get; set; }

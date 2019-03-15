@@ -54,6 +54,13 @@ namespace AhwanamAPI.Controllers
             public string name { get; set; }
         }
 
+        public class user
+        {
+            public string email { get; set; }
+            public string phoneno { get; set; }
+            public string name { get; set; }
+        }
+
         public class loginresponse
         {
             public string status { get; set; }
@@ -540,7 +547,7 @@ namespace AhwanamAPI.Controllers
                 userLogin.ActivationCode = Guid.NewGuid().ToString();
                 userLogin.UpdatedDate = DateTime.Now;
                 var data = userlogindetailsservice.UpdateActivationCode(userLogin);
-                string url = "https://ahwanam-sandbox.herokuapp.com/resetpassword?code=" + userLogin.ActivationCode;
+                string url= "https://ahwanam-sandbox.herokuapp.com/resetpassword?code=" + userLogin.ActivationCode + "&email=" + userLogin.UserName;
                 FileInfo File = new FileInfo(HttpContext.Current.Server.MapPath("/mailtemplate/mailer.html"));
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);
@@ -585,6 +592,40 @@ namespace AhwanamAPI.Controllers
             return Json(dict);
         }
         #endregion
+        [HttpGet]
+        [Route("api/myprofile")]
+        public IHttpActionResult MyProfile()
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            Dictionary<string, object> u1 = new Dictionary<string, object>();
+            var re = Request;
+            var customheader = re.Headers;
+            UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
+            if (customheader.Contains("access-token"))
+            {
+                string token = customheader.GetValues("access-token").First();
+                var userloginid = userlogindetailsservice.userloginId(token);
+                user user = new user();
+                var details = userlogindetailsservice.GetUserProfilebyUserLoginId(userloginid);
+                user.email = details.AlternativeEmailID;
+                user.phoneno = details.UserPhone;
+                user.name = details.FirstName + ' ' + details.LastName;
+                u1.Add("user", user);
+                if (user != null)
+                {
+                    dict.Add("status", true);
+                    dict.Add("message", "Success");
+                    dict.Add("data", u1);
+                }
+                else
+                {
+                    dict.Add("status", false);
+                    dict.Add("message", "Failed");
+                }
+            }
+            return Json(dict);
+        }
+            
     }
 }
 

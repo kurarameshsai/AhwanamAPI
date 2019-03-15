@@ -185,7 +185,7 @@ namespace AhwanamAPI.Controllers
         #region API
         [HttpGet]
         [Route("api/results/getall")]                                                                                                                                                                                                                                       //Catering                                  //photography
-        public IHttpActionResult getrecords(string type, int? city = -1, int? locality = -1, int? page = 0, int? capacity = -1, int? price_per_plate_or_rental = -1, int? offset = 0, int? sortby = -1, int? space_preference = -1, int? rating = -1, int? venue_type = -1,int? budget=-1,int? dietary_prefernces = -1,int? services = -1)
+        public IHttpActionResult getrecords(string type, int? city = 0, int? locality = 0, int? page = 0, int? capacity = 0, int? price_per_plate_or_rental = 0, int? offset = 0, int? sortby = 0, int? space_preference = 0, int? rating = 0, int? venue_type = 0,int? budget=0,int? dietary_prefernces = 0,int? services = 0)
         {
             string IP = HttpContext.Current.Request.UserHostAddress;
             int status = checktoken(IP); // Checking Token
@@ -214,26 +214,26 @@ namespace AhwanamAPI.Controllers
         }
 
         #region Venue_Records
-        public Dictionary<string, object> VenueRecords(string type, int? city = -1, int? locality = -1, int? page = 0, int? capacity = -1, int? price_per_plate_or_rental = -1, int? offset = 0, int? sortby = -1, int? space_preference = -1, int? rating = -1, int? venue_type = -1)
+        public Dictionary<string, object> VenueRecords(string type, int? city = 0, int? locality = 0, int? page = 0, int? capacity = 0, int? price_per_plate_or_rental = 0, int? offset = 0, int? sortby = -1, int? space_preference = 0, int? rating = 0, int? venue_type = 0)
         {
             type = (type == "venue") ? "Venue" : type;
             int count = 0;
             //cookies((int)capacity, "venue");
-            string guestsvalue = (capacity != -1 && capacity != null) ? getvalue((int)capacity) : null;
-            string cityvalue = (city != -1 && city != null) ? getcity((int)city) : null;
-            string localityvalue = (locality != -1 && locality != null) ? getvalue((int)locality) : null;
-            string pricevalue = (price_per_plate_or_rental != -1 && price_per_plate_or_rental != null) ? getvalue((int)price_per_plate_or_rental) : null;
-            string spacevalue = (space_preference != -1 && space_preference != null) ? getvalue((int)space_preference) : null;
+            string guestsvalue = (capacity != 0 && capacity != null) ? getvalue((int)capacity) : null;
+            string cityvalue = (city != 0 && city != null) ? getcity((int)city) : null;
+            string localityvalue = (locality != 0 && locality != null) ? getvalue((int)locality) : null;
+            string pricevalue = (price_per_plate_or_rental != 0 && price_per_plate_or_rental != null) ? getvalue((int)price_per_plate_or_rental) : null;
+            string spacevalue = (space_preference != 0 && space_preference != null) ? getvalue((int)space_preference) : null;
             //string sortbyvalue = (sortby != -1 && sortby != null) ? getvalue((int)sortby) : null;
-            string ratingvalue = (rating != -1 && rating != null) ? getvalue((int)rating) : null;
-            string vtypevalue = (venue_type != -1 && venue_type != null) ? getvalue((int)venue_type) : null;
+            string ratingvalue = (rating != 0 && rating != null) ? getvalue((int)rating) : null;
+            string vtypevalue = (venue_type != 0 && venue_type != null) ? getvalue((int)venue_type) : null;
             page = (page == null) ? 1 : page;
             offset = (offset == null || offset == 0) ? 6 : offset;
             int takecount = 6;
             if (((int)page - 1) > 0)
                 takecount = ((int)page - 1) * (int)offset;
 
-            if (ratingvalue == "All Ratings") ratingvalue = "0";
+            if (ratingvalue == "All Ratings") ratingvalue = "2";
             else if (ratingvalue == "Rated 3.0+") ratingvalue = "3";
             else if (ratingvalue == "Rated 4.0+") ratingvalue = "4";
             else if (ratingvalue == "Rated 5.0+") ratingvalue = "5";
@@ -291,8 +291,7 @@ namespace AhwanamAPI.Controllers
                     p.pic_url = "https://api.ahwanam.com/vendorimages/" + item.image;
                     p.price = price;
                     p.min_guest = item.Minimumseatingcapacity.ToString();
-                    p.max_guest = item.Maximumcapacity.ToString();
-                    
+                    p.max_guest = item.Maximumcapacity.ToString();                    
                     param.Add(p);
                 }
             }
@@ -313,18 +312,24 @@ namespace AhwanamAPI.Controllers
         #endregion
 
         #region Caterer_Records
-        public Dictionary<string, object> CatererRecords(string type, int? page = 0, int? offset = 0, int? rating = -1,int? budget =-1,int? dietary_prefernces=-1, int? city = -1)
+        public Dictionary<string, object> CatererRecords(string type, int? page = 0, int? offset = 0, int? rating = 0,int? budget =0,int? dietary_prefernces=0, int? city = 0)
         {
             int count = 0;
-            string cityvalue = (city != -1 && city != null) ? getcity((int)city) : null;
-            string budgetvalue = (budget != -1) ? getvalue((int)budget) : null;
-            string ratingvalue = (rating != -1) ? getvalue((int)rating) : null;
-            string dietvalue = (dietary_prefernces != -1) ? getvalue((int)dietary_prefernces) : null;
+            string cityvalue = (city != 0 && city != null) ? getcity((int)city) : null;
+            string budgetvalue = (budget != 0) ? getvalue((int)budget) : null;
+            string ratingvalue = (rating != 0) ? getvalue((int)rating) : null;
+            string dietvalue = (dietary_prefernces != 0) ? getvalue((int)dietary_prefernces) : null;
             page = (page == null) ? 1 : page;
             offset = (offset == null || offset == 0) ? 6 : offset;
             int takecount = 6;
             if (((int)page - 1) > 0)
                 takecount = ((int)page - 1) * (int)offset;
+
+            if (ratingvalue == "All Ratings") ratingvalue = "2";
+            else if (ratingvalue == "Rated 3.0+") ratingvalue = "3";
+            else if (ratingvalue == "Rated 4.0+") ratingvalue = "4";
+            else if (ratingvalue == "Rated 5.0+") ratingvalue = "5";
+            //retrive the data
             var data = resultsPageService.GetAllCaterers();
             count = data.Count();
             if (page > 1)
@@ -388,7 +393,7 @@ namespace AhwanamAPI.Controllers
         #endregion
 
         #region Decorator_Records
-        public Dictionary<string, object> DecoratorRecords(string type, int? page = 0, int? offset = 0, int? rating = -1,int? budget =-1, int? city = -1)
+        public Dictionary<string, object> DecoratorRecords(string type, int? page = 0, int? offset = 0, int? rating = 0,int? budget =0, int? city = 0)
         {
             int count = 0;
             page = (page == null) ? 1 : page;
@@ -398,13 +403,19 @@ namespace AhwanamAPI.Controllers
                 takecount = ((int)page - 1) * (int)offset;
             var data = resultsPageService.GetAllDecorators();
             count = data.Count();
-            string cityvalue = (city != -1 && city != null) ? getcity((int)city) : null;
-            string budgetvalue = (budget != -1) ? getvalue((int)budget) : null;
-            string ratingvalue = (rating != -1) ? getvalue((int)rating) : null;
+            string cityvalue = (city != 0 && city != null) ? getcity((int)city) : null;
+            string budgetvalue = (budget != 0) ? getvalue((int)budget) : null;
+            string ratingvalue = (rating != 0) ? getvalue((int)rating) : null;
             if (page > 1)
                 data = data.Skip(takecount).Take((int)offset).ToList();
             else
                 data = data.Take((int)offset).ToList();
+
+            if (ratingvalue == "All Ratings") ratingvalue = "2";
+            else if (ratingvalue == "Rated 3.0+") ratingvalue = "3";
+            else if (ratingvalue == "Rated 4.0+") ratingvalue = "4";
+            else if (ratingvalue == "Rated 5.0+") ratingvalue = "5";
+
             if (cityvalue != null)
                 data = data.Where(m => m.City == cityvalue).ToList();
             if (budgetvalue != null)
@@ -460,24 +471,32 @@ namespace AhwanamAPI.Controllers
         #endregion
 
         #region Photographer_Records
-        public Dictionary<string, object> PhotographerRecords(string type, int? page = 0, int? offset = 0, int? rating = -1, int? city = -1, int? services = -1, int? budget = -1)
+        public Dictionary<string, object> PhotographerRecords(string type, int? page = 0, int? offset = 0, int? rating = 0, int? city = 0, int? services = 0, int? budget = 0)
         {
             int count = 0;
-            string servicesvalue = (services != -1) ? getcity((int)services) : null;
-            string cityvalue = (city != -1 && city != null) ? getcity((int)city) : null;
-            string budgetvalue = (budget != -1) ? getvalue((int)budget) : null;
-            string ratingvalue = (rating != -1) ? getvalue((int)rating) : null;
+            string servicesvalue = (services != 0) ? getcity((int)services) : null;
+            string cityvalue = (city != 0 && city != null) ? getcity((int)city) : null;
+            string budgetvalue = (budget != 0) ? getvalue((int)budget) : null;
+            string ratingvalue = (rating != 0) ? getvalue((int)rating) : null;
             page = (page == null) ? 1 : page;
             offset = (offset == null || offset == 0) ? 6 : offset;
             int takecount = 6;
             if (((int)page - 1) > 0)
                 takecount = ((int)page - 1) * (int)offset;
+
+            if (ratingvalue == "All Ratings") ratingvalue = "2";
+            else if (ratingvalue == "Rated 3.0+") ratingvalue = "3";
+            else if (ratingvalue == "Rated 4.0+") ratingvalue = "4";
+            else if (ratingvalue == "Rated 5.0+") ratingvalue = "5";
+
             var data = resultsPageService.GetAllPhotographers();
             count = data.Count();
             if (page > 1)
                 data = data.Skip(takecount).Take((int)offset).ToList();
             else
                 data = data.Take((int)offset).ToList();
+
+          
             if (cityvalue != null)
                 data = data.Where(m => m.City == cityvalue).ToList();
             if (budgetvalue != null)
@@ -535,14 +554,19 @@ namespace AhwanamAPI.Controllers
         #endregion
 
         #region Other_Records
-        public Dictionary<string, object> OtherRecords(string type, int? page = 0, int? offset = 0, int? rating = -1)
+        public Dictionary<string, object> OtherRecords(string type, int? page = 0, int? offset = 0, int? rating = 0)
         {
             int count = 0;
+            string ratingvalue = (rating != 0) ? getvalue((int)rating) : null;
             page = (page == null) ? 1 : page;
             offset = (offset == null || offset == 0) ? 6 : offset;
             int takecount = 6;
             if (((int)page - 1) > 0)
                 takecount = ((int)page - 1) * (int)offset;
+            if (ratingvalue == "All Ratings") ratingvalue = "2";
+            else if (ratingvalue == "Rated 3.0+") ratingvalue = "3";
+            else if (ratingvalue == "Rated 4.0+") ratingvalue = "4";
+            else if (ratingvalue == "Rated 5.0+") ratingvalue = "5";
             var data = resultsPageService.GetAllOthers(type);
             count = data.Count();
             if (page > 1)
@@ -586,7 +610,9 @@ namespace AhwanamAPI.Controllers
             }
             var records = param;
             //if (ratingvalue != null)
-            //    records = records.Where(m => m.rating == ratingvalue).ToList();
+            //  records = records.Where(m => m.rating == ratingvalue).ToList();
+            if (ratingvalue != null)
+                records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).ToList();
             #endregion
             Dictionary<string, object> dict = new Dictionary<string, object>();
             dict.Add("results", records);
@@ -860,7 +886,7 @@ namespace AhwanamAPI.Controllers
             f.name = "city";
             f.display_name = "City";
             List<values> val1 = new List<values>();
-            for (int i = 0; i < citylist.Count; i++)
+            for (int i = 1; i < citylist.Count; i++)
             {
                 values c = new values();
                 c.name = citylist[i];
@@ -940,7 +966,7 @@ namespace AhwanamAPI.Controllers
             f.name = "city";
             f.display_name = "City";
             List<values> val1 = new List<values>();
-            for (int i = 0; i < citylist.Count; i++)
+            for (int i = 1; i < citylist.Count; i++)
             {
                 values c = new values();
                 c.name = citylist[i];
@@ -1066,7 +1092,7 @@ namespace AhwanamAPI.Controllers
             var data = vendorMasterService.SearchVendors();
             var citylist = data.Select(m => m.City).Distinct().ToList();
             List<value> val1 = new List<value>();
-            for (int i = 0; i < citylist.Count; i++)
+            for (int i = 1; i < citylist.Count; i++)
             {
                 value c = new value();
                 c.name = citylist[i];

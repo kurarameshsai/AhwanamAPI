@@ -195,6 +195,7 @@
     <Compile Include="Controllers\vdbController.cs" />
     <Compile Include="Controllers\VendorAuthController.cs" />
     <Compile Include="Controllers\viewserviceController.cs" />
+    <Compile Include="Controllers\wishlistController.cs" />
     <Compile Include="Custom\CustomPrincipal.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
