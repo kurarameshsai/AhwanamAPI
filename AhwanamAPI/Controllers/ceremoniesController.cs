@@ -101,7 +101,8 @@ namespace AhwanamAPI.Controllers
             CeremonyServices ceremonyServices = new CeremonyServices();
             Dictionary<string, object> dict = new Dictionary<string, object>();
             ceremony d = new ceremony();
-            var detail = ceremonyServices.Getdetails(ceremony).FirstOrDefault();
+            var details = ceremonyServices.Getdetails(ceremony).ToList();
+            var detail = details.FirstOrDefault();
             d.ceremony_id = detail.Id;
             d.ceremony_name = detail.Title;
             d.thumb_image = detail.Image;
@@ -109,27 +110,23 @@ namespace AhwanamAPI.Controllers
             d.description = detail.Description;
             d.cermony_image = detail.ceremonyImage;
             d.city = cityvalue;
-            var details = ceremonyServices.Getdetails(ceremony).ToList();
-            VendorMasterService vendorMasterService = new VendorMasterService();
-            var result = vendorMasterService.SearchVendors();
-            var citylist = result.Select(m => m.City).Distinct().ToList();
-            if (city != null)
-                result = result.Where(m => m.City == cityvalue).ToList();
-            filters f = new filters();
-            List<filters> f1 = new List<filters>();
-            f.name = "City";
-            f.display_name = "city"; List<values> test = new List<values>();
-            for (int j = 1; j < citylist.Count; j++)
-            {
-                values v = new values();
-                 v.name = citylist[j];
-                 v.id = j;
-                test.Add(v);
-            }
-            f.values = test;
-            f1.Add(f);
+            //VendorMasterService vendorMasterService = new VendorMasterService();
+            //var result = vendorMasterService.SearchVendors();
+            //var citylist = result.Select(m => m.City).Distinct().ToList();
+            //filters f = new filters();
+            //List<filters> f1 = new List<filters>();
+            //f.name = "City";
+            //f.display_name = "city"; List<values> test = new List<values>();
+            //for (int j = 1; j < citylist.Count; j++)
+            //{
+            //    values v = new values();
+            //    v.name = citylist[j];
+            //    v.id = j;
+            //    test.Add(v);
+            //}
+            //f.values = test;
+            //f1.Add(f);
             List<categories> categories = new List<categories>();
-            //var details = ceremonyServices.getceremonydetails(d.ceremony_id).ToList();
             for (int i = 0; i < details.Count; i++)
             {
                 categories categories1 = new categories();
@@ -141,26 +138,26 @@ namespace AhwanamAPI.Controllers
                 {
                     categories1.vendors = venuedetails(details[i].page_name2, city);
                 }
-                else if (details[i].page_name2 == "photography")
+             if (details[i].page_name2 == "photography")
                 {
                     categories1.vendors = photographerdetails(details[i].page_name2, city);
                 }
-                else if (details[i].page_name2 == "decorator")
+              if (details[i].page_name2 == "decorator")
                 {
                     categories1.vendors = decoratordetails(details[i].page_name2, city);
                 }
-                else if (details[i].page_name2 == "catering")
+             if (details[i].page_name2 == "catering")
                 {
                     categories1.vendors = catererdetails(details[i].page_name2, city);
                 }
 
-                else if (details[i].page_name2 == "pandit" || details[i].page_name2 == "mehendi")
+              if (details[i].page_name2 == "pandit" || details[i].page_name2 == "mehendi")
                 {
                     categories1.vendors = otherdetails(details[i].page_name2, city);
                 }
                     categories.Add(categories1);
             }
-            d.filters = f1;
+            //d.filters = f1;
             d.categories = categories;
             dict.Add("status", true);
             dict.Add("message", "Success");
@@ -205,8 +202,8 @@ namespace AhwanamAPI.Controllers
             var records = param;
             var ratingvalue = "4";
             if (ratingvalue != null)
-                records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).Take(7).ToList();
-            return records;
+                records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).ToList();
+            return records.Take(7).ToList();
         }
         public List<vendors> photographerdetails(string type, int? city = 0)
         {
@@ -246,8 +243,8 @@ namespace AhwanamAPI.Controllers
             var records = param;
             var ratingvalue = "4";
             if (ratingvalue != null)
-                records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).Take(7).ToList();
-            return records;
+                records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).ToList();
+            return records.Take(7).ToList();
         }
 
         public List<vendors> decoratordetails(string type, int? city = 0)
@@ -287,8 +284,8 @@ namespace AhwanamAPI.Controllers
             var records = param;
             var ratingvalue = "4";
             if (ratingvalue != null)
-                records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).Take(7).ToList();
-            return records;
+                records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).ToList();
+            return records.Take(7).ToList();
         }
         public List<vendors> catererdetails(string type, int? city = 0)
         {
@@ -310,7 +307,6 @@ namespace AhwanamAPI.Controllers
                     price.actual_price = item.Veg.ToString();
                     price.offer_price = item.Veg.ToString(); // Add Normal Days price here
                     price.service_price = "";
-                    //p.filters = f1;
                     //Data Section
                     p.name = item.BusinessName;
                     p.page_name = item.page_name;
@@ -329,8 +325,8 @@ namespace AhwanamAPI.Controllers
             var records = param;
             var ratingvalue = "4";
             if (ratingvalue != null)
-                records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).Take(7).ToList();
-            return records;
+                records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).ToList();
+            return records.Take(7).ToList();
         }
 
         public List<vendors> otherdetails(string type, int? city = 0)
@@ -354,7 +350,6 @@ namespace AhwanamAPI.Controllers
                     price.actual_price = item.ItemCost.ToString();
                     price.offer_price = item.ItemCost.ToString(); // Add Normal Days price here
                     price.service_price = "";
-                    //p.filters = f1;
                     //Data Section
                     p.name = item.BusinessName;
                     p.page_name = item.page_name;
@@ -373,8 +368,8 @@ namespace AhwanamAPI.Controllers
             var records = param;
             var ratingvalue = "4";
             if (ratingvalue != null)
-                records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).Take(7).ToList();
-            return records;
+                records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).ToList();
+            return records.Take(7).ToList();
         }
 
     }

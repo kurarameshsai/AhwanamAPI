@@ -56,6 +56,7 @@ namespace AhwanamAPI.Controllers
 
         public class user
         {
+            public long UserId { get; set; }
             public string email { get; set; }
             public string phoneno { get; set; }
             public string name { get; set; }
@@ -572,9 +573,9 @@ namespace AhwanamAPI.Controllers
             long userloginid = 0; //pass userloginid here
             var re = Request;
             var customheader = re.Headers;
-            if (customheader.Contains("token"))
+            if (customheader.Contains("access-token"))
             {
-                string token = customheader.GetValues("token").First();
+                string token = customheader.GetValues("access-token").First();
                 UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
                 int count = userlogindetailsservice.RemoveToken(token,userloginid);
                 if (count != 0)
@@ -601,12 +602,13 @@ namespace AhwanamAPI.Controllers
             var re = Request;
             var customheader = re.Headers;
             UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
-            if (customheader.Contains("access-token"))
+            if (customheader.Contains("Authorization"))
             {
-                string token = customheader.GetValues("access-token").First();
+                string token = customheader.GetValues("Authorization").First();
                 var userloginid = userlogindetailsservice.userloginId(token);
                 user user = new user();
                 var details = userlogindetailsservice.GetUserProfilebyUserLoginId(userloginid);
+                user.UserId = details.UserLoginId;
                 user.email = details.AlternativeEmailID;
                 user.phoneno = details.UserPhone;
                 user.name = details.FirstName + ' ' + details.LastName;
