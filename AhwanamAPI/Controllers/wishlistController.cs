@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MaaAahwanam.Service;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -10,7 +11,7 @@ namespace AhwanamAPI.Controllers
     public class wishlistController : ApiController
     {
 
-        public class wishlist
+        public class WishList
         {
             public long UserId { get; set; }
             public string Name { get; set; }
@@ -19,15 +20,12 @@ namespace AhwanamAPI.Controllers
             public DateTime? EndDate { get; set; }
             public string Description { get; set; }
             public DateTime UpdatedDate { get; set; }
-        }
-        public class wishlistItems
-        {
-            public long wishlistId { get; set; }
+             public long wishlistId { get; set; }
             public long vendorId { get; set; }
             public long vendorsubId { get; set; }
             public string BusinessName { get; set; }
             public string servicetype { get; set; }
-            public long UserId { get; set; }
+            //public long userlistUserId { get; set; }
             public DateTime WhishListedDate { get; set; }
             public string IPAddress { get; set; }
             public string Status { get; set; }
@@ -37,6 +35,14 @@ namespace AhwanamAPI.Controllers
             public DateTime? EventStartDate { get; set; }
             public DateTime? EventEndDate { get; set; }
             public long collabratorid { get; set; }
+        }
+         
+        public IHttpActionResult Addwishlist(WishList list)
+        {
+
+            WhishListService wishlistservice = new WhishListService();
+
+            wishlistservice.Addwishlist(list);
         }
     }
 }
