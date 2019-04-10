@@ -56,7 +56,7 @@ namespace AhwanamAPI.Controllers
 
         public class user
         {
-            public long UserId { get; set; }
+            public long user_id { get; set; }
             public string email { get; set; }
             public string phoneno { get; set; }
             public string name { get; set; }
@@ -71,6 +71,7 @@ namespace AhwanamAPI.Controllers
 
         public class loginuser
         {
+            public long user_id { get; set; }
             public string email { get; set; }
             public string password { get; set; }
             public string phoneno { get; set; }
@@ -99,6 +100,8 @@ namespace AhwanamAPI.Controllers
             public string name { get; set; }
             public string phoneno { get; set; }
         }
+
+
 
         [HttpGet]
         [Route("api/UserAuth/check")]
@@ -133,6 +136,7 @@ namespace AhwanamAPI.Controllers
             if (response.IsSuccessStatusCode)
             {
                 sloginresponse data = response.Content.ReadAsAsync<sloginresponse>().Result;
+                //dict.Add("result", data) ;
                 dict = checkemail(data, login);
             }
             else
@@ -168,19 +172,19 @@ namespace AhwanamAPI.Controllers
                 if (userResponce.Status == "InActive")
                 {
                     dict.Add("status", false);
-                    dict.Add("message", "email id not verified");
+                    dict.Add("message", "Account is not activated");
                     u1.Add("user", null);
                     dict.Add("data", u1);
                     return Json(dict);
                 }
                 UserLoginDetailsService userLoginDetailsService = new UserLoginDetailsService();
                 var userdetails = userLoginDetailsService.GetUser((int)userResponce.UserLoginId);
-                // encptdecpt encrypt = new encptdecpt();
+                //encptdecpt encrypt = new encptdecpt();
                 //string encrypted = encrypt.Encrypt(userResponce.UserName);
                 UserToken usertoken = new UserToken();
                 usertoken.IPAddress = HttpContext.Current.Request.UserHostAddress;
                 usertoken.Token = Guid.NewGuid().ToString();
-                usertoken.UserLoginID = userlogin.UserLoginId;
+                usertoken.UserLoginID = userResponce.UserLoginId;
                 TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
                 usertoken.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
                 usertoken.LastLogin = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
@@ -188,6 +192,7 @@ namespace AhwanamAPI.Controllers
                 dict.Add("status", true);
                 dict.Add("message", "Login Success");
                 loginuser loginuser = new loginuser();
+                loginuser.user_id = userlogin.UserLoginId;
                 loginuser.email = userlogin.UserName;
                 loginuser.name = userdetails.FirstName;
                 loginuser.phoneno = userdetails.UserPhone;
@@ -212,7 +217,7 @@ namespace AhwanamAPI.Controllers
         public IHttpActionResult register([FromBody]registerdetails details)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
-            if (details.name == null || details.email == null || details.phoneno == null || details.password == null)
+            if (details.name == null || details.email == null || details.phoneno == null || details.password == null || details.name == "" || details.email == "" || details.phoneno == "" || details.password == "")
             {
                 dict.Add("status", false);
                 dict.Add("message", "Field missing");
@@ -222,6 +227,7 @@ namespace AhwanamAPI.Controllers
             UserDetail userdetail = new UserDetail();
             userlogin.ActivationCode = Guid.NewGuid().ToString();
             userdetail.FirstName = details.name;
+            userdetail.name = details.name;
             userdetail.UserPhone = details.phoneno;
             userdetail.AlternativeEmailID = details.email;
             userlogin.Password = details.password;
@@ -239,7 +245,8 @@ namespace AhwanamAPI.Controllers
             }
             if (responce == "sucess")
             {
-                string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
+                //string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
+                string url = "http://sandbox.ahwanam.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
                 FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);
@@ -261,16 +268,31 @@ namespace AhwanamAPI.Controllers
             if (activation_code == "") { activation_code = null; }
             var userresponce = venorvenuesignupservice.GetUserdetails(email);
             //uncomment this code if you want to restrict email activation to 24hrs
-            //DateTime regdate = (DateTime)userresponce.RegDate;
-            //int count = (DateTime.Now.Date - regdate.Date).Days;
-            if (activation_code == userresponce.ActivationCode) // add this logic  && count <=1 if you want to restrict Email Activation to 24hrs
+              //DateTime regdate = (DateTime)userresponce.RegDate;
+                //int count = (DateTime.Now.Date - regdate.Date).Days;
+             // add this logic  && count <=1 if you want to restrict Email Activation to 24hrs
+            if (activation_code == userresponce.ActivationCode)
             {
-                dict.Add("status", true);
-                dict.Add("message", "Email successfully verified");
-                return Json(dict);
+                if (userresponce.Status == "InActive")
+                {
+                    string Status = "Active";
+                     int count = userlogindetailsservice.Updatestatus(email, Status);
+                     if(count!=0)
+                    {
+                        dict.Add("status", true);
+                        dict.Add("message", "Email successfully verified");
+                        return Json(dict);
+                    }
+                }
+                else
+                {
+                    dict.Add("status", true);
+                    dict.Add("message", "Email already verified");
+                    return Json(dict);
+                }
             }
             dict.Add("status", false);
-            dict.Add("message", "Link Expired");
+            dict.Add("message", "Failed");
             return Json(dict);
 
         }
@@ -396,7 +418,15 @@ namespace AhwanamAPI.Controllers
                 userlogin.ActivationCode = Guid.NewGuid().ToString();
                 userdetail.FirstName = sloginresponse.first_name;
                 userdetail.LastName = sloginresponse.last_name;
-                userdetail.UserPhone = sloginresponse.phoneno;
+                if (slogin.auth_type == "facebook")
+                {
+                    userdetail.name = sloginresponse.first_name + ' ' + sloginresponse.last_name;
+                }
+                else
+                {
+                    userdetail.name = sloginresponse.name;
+                }
+                    userdetail.UserPhone = sloginresponse.phoneno;
                 userdetail.AlternativeEmailID = sloginresponse.email;
                 userlogin.Password =
                 userlogin.UserName = sloginresponse.email;
@@ -405,7 +435,8 @@ namespace AhwanamAPI.Controllers
                 var responce = userlogindetailsservice.AddUserDetails(userlogin, userdetail);
                 if (responce == "sucess")
                 {
-                    string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
+                    //string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
+                    string url = "http://sandbox.ahwanam.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
                     FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
                     string readFile = File.OpenText().ReadToEnd();
                     readFile = readFile.Replace("[ActivationLink]", url);
@@ -420,7 +451,7 @@ namespace AhwanamAPI.Controllers
             UserToken usertoken = new UserToken();
             usertoken.IPAddress = HttpContext.Current.Request.UserHostAddress;
             usertoken.Token = Guid.NewGuid().ToString();
-            usertoken.UserLoginID = 1000;
+            usertoken.UserLoginID = data;
             TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
             usertoken.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
             usertoken.LastLogin = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
@@ -431,8 +462,12 @@ namespace AhwanamAPI.Controllers
             loginuser.email = sloginresponse.email;
             //loginuser.password = userlogin.Password;
             if (slogin.auth_type == "facebook")
-                loginuser.name = sloginresponse.first_name + " " + sloginresponse.last_name;
+            { 
+            loginuser.user_id = data;
+            loginuser.name = sloginresponse.first_name + " " + sloginresponse.last_name;
+            }
             else
+                loginuser.user_id = data;
                 loginuser.name = sloginresponse.name;
             loginuser.phoneno = sloginresponse.phoneno;
             Dictionary<string, object> u1 = new Dictionary<string, object>();
@@ -462,7 +497,7 @@ namespace AhwanamAPI.Controllers
         }
 
         [HttpPost]
-        [Route("api/UserAuth/reset")]
+        [Route("api/UserAuth/resetpassword")]
         public IHttpActionResult changepassword([FromBody]registerdetails details)
         {
             VenorVenueSignUpService venorVenueSignUpService = new VenorVenueSignUpService();
@@ -495,7 +530,7 @@ namespace AhwanamAPI.Controllers
             else
             {
                 dict.Add("status", false);
-                dict.Add("message", "Link Expired");
+                dict.Add("message", "failed");
                 return Json(dict);
             }
         }
@@ -548,7 +583,8 @@ namespace AhwanamAPI.Controllers
                 userLogin.ActivationCode = Guid.NewGuid().ToString();
                 userLogin.UpdatedDate = DateTime.Now;
                 var data = userlogindetailsservice.UpdateActivationCode(userLogin);
-                string url= "https://ahwanam-sandbox.herokuapp.com/resetpassword?code=" + userLogin.ActivationCode + "&email=" + userLogin.UserName;
+                //string url= "https://ahwanam-sandbox.herokuapp.com/resetpassword?code=" + userLogin.ActivationCode + "&email=" + userLogin.UserName;
+                string url = "http://sandbox.ahwanam.com/resetpassword?code=" + userLogin.ActivationCode + "&email=" + userLogin.UserName;
                 FileInfo File = new FileInfo(HttpContext.Current.Server.MapPath("/mailtemplate/mailer.html"));
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);
@@ -559,7 +595,7 @@ namespace AhwanamAPI.Controllers
                 return Json(dict);
             }
             dict.Add("status", false);
-            dict.Add("message", "Failure");
+            dict.Add("message", "Email ID is not registered");
             return Json(dict);
         }
         #endregion
@@ -604,30 +640,34 @@ namespace AhwanamAPI.Controllers
             UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
             if (customheader.Contains("Authorization"))
             {
-                string token = customheader.GetValues("Authorization").First();
-                var userloginid = userlogindetailsservice.userloginId(token);
                 user user = new user();
-                var details = userlogindetailsservice.GetUserProfilebyUserLoginId(userloginid);
-                user.UserId = details.UserLoginId;
-                user.email = details.AlternativeEmailID;
-                user.phoneno = details.UserPhone;
-                user.name = details.FirstName + ' ' + details.LastName;
-                u1.Add("user", user);
-                if (user != null)
+                string token = customheader.GetValues("Authorization").First();
+                var details = userlogindetailsservice.Getmyprofile(token);
+                if (details != null)
                 {
+                    user.user_id = details.UserLoginId;
+                    user.email = details.AlternativeEmailID;
+                    user.phoneno = details.UserPhone;
+                    //user.name = details.FirstName + ' ' + details.LastName;
+                    user.name = details.name;
+                    u1.Add("user", user);
                     dict.Add("status", true);
                     dict.Add("message", "Success");
                     dict.Add("data", u1);
                 }
                 else
                 {
+                    u1.Add("user", null);
                     dict.Add("status", false);
                     dict.Add("message", "Failed");
+                    dict.Add("data", u1);
                 }
             }
             return Json(dict);
         }
-            
+
+   
+
     }
 }
 

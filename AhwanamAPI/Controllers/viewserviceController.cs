@@ -627,9 +627,12 @@ namespace AhwanamAPI.Controllers
             Dictionary<string, object> dict = new Dictionary<string, object>();
             Dictionary<string, object> dict1 = new Dictionary<string, object>();
             List<similarvendor> d1 = new List<similarvendor>();
-            dict.Add("status", true);
-            dict.Add("message", "Success");
-            if (type == "venue" || type == null)
+
+            if(type == "venue" || type == null || type == "catering" || type == "decorator" || type == "photography" || type == "pandit" || type == "mehendi")
+            {
+                dict.Add("status", true);
+                dict.Add("message", "Success");
+                if (type == "venue" || type == null)
             {
                 var data = resultsPageService.GetAllVendors(type).Where(m => m.page_name != vendor).Take(3).ToList(); //List<GetVendors_Result>
                 for (int i = 0; i < data.Count; i++)
@@ -779,9 +782,14 @@ namespace AhwanamAPI.Controllers
                 dict1.Add("results", d1);
                 dict.Add("data", dict1);
             }
+           }
+            else
+            {
+                dict.Add("status", false);
+                dict.Add("message", "Failed");
+            }
 
             //Format API
-
             return Json(dict);
         }
 
