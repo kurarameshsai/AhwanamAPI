@@ -14,7 +14,7 @@ using System.Web.Http.Cors;
 
 namespace AhwanamAPI.Controllers
 {
-    //[EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
+    //[EnableCors(origins: "https://api.ahwanam.com", headers: "*", methods: "*")]
     public class homeController : ApiController
     {
         VendorMasterService vendorMasterService = new VendorMasterService();
@@ -26,7 +26,7 @@ namespace AhwanamAPI.Controllers
         {
             public string name { get; set; }
             public string page_name { get; set; }
-            public int serviceId { get; set; }
+            public int category_id { get; set; }
             public string image { get; set; }
         }
 
@@ -128,7 +128,7 @@ namespace AhwanamAPI.Controllers
                 services result = new services();
                 result.name = categories[i].name;
                 result.page_name = categories[i].display_name;
-                result.serviceId = categories[i].servicType_id;
+                result.category_id = categories[i].servicType_id;
                 result.image = categories[i].image;
                 res.Add(result);
             }
@@ -141,18 +141,18 @@ namespace AhwanamAPI.Controllers
 
         [HttpGet]
         [Route("api/category/relatedcategories")]
-        public IHttpActionResult GetVendorOtherServiceList([FromUri] string type)
+        public IHttpActionResult GetVendorOtherServiceList([FromUri] long category_id)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
             FilterServices filterServices = new FilterServices();
-            var categories = filterServices.AllCategories().Where(m => m.display_name != type).Take(3).ToList();
+            var categories = filterServices.AllCategories().Where(m => m.servicType_id != category_id).Take(3).ToList();
             List<services> res = new List<services>();
             for (int i = 0; i < categories.Count(); i++)
             {
                 services result = new services();
                 result.name = categories[i].name;
                 result.page_name = categories[i].display_name;
-                result.serviceId = categories[i].servicType_id;
+                result.category_id = categories[i].servicType_id;
                 result.image = categories[i].image;
                 res.Add(result);
             }

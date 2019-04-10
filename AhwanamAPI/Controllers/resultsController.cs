@@ -38,8 +38,20 @@ namespace AhwanamAPI.Controllers
             public string service_price { get; set; }
         }
 
+        public class price1
+        {
+            public string Rentalprice { get; set; }
+            public string minprice { get; set; }
+            public string maxprice { get; set; }
+            public string vegprice { get; set; }
+            public string nonvegprice { get; set; }
+        }
+
         public class param
         {
+            public long vendor_masterId { get; set; }
+            public long vendor_serviceId { get; set; }
+            //public int category_Id { get; set; }
             public string name { get; set; }
             public string page_name { get; set; }
             public string category_name { get; set; }
@@ -55,6 +67,22 @@ namespace AhwanamAPI.Controllers
             public string min_guest { get; set; }
             public string max_guest { get; set; }
         }
+
+        //public class param2
+        //{
+        //    public long vendor_Id { get; set; }
+        //    //public long vendor_serviceId { get; set; }
+        //    public int category_Id { get; set; }
+        //    public string name { get; set; }
+        //    public string category_name { get; set; }
+        //    public string reviews_count { get; set; }
+        //    public string description { get; set; }
+        //    public decimal rating { get; set; }
+        //    public string charge_type { get; set; }
+        //    public string city { get; set; }
+        //    public price1 price { get; set; }
+        //    public string pic_url { get; set; }
+        //}
 
         public class localities
         {
@@ -277,6 +305,8 @@ namespace AhwanamAPI.Controllers
                     price.service_price = item.ServiceCost.ToString();
 
                     //Data Section
+                    p.vendor_masterId = item.Id;
+                    p.vendor_serviceId = item.subid;
                     p.name = item.BusinessName;
                     p.page_name = item.page_name;
                     p.category_name = item.ServicType;
@@ -357,6 +387,8 @@ namespace AhwanamAPI.Controllers
                     price.service_price = "";
 
                     //Data Section
+                    p.vendor_masterId = item.Id;
+                    p.vendor_serviceId = item.subid;
                     p.name = item.BusinessName;
                     p.page_name = item.page_name;
                     p.category_name = item.ServicType;
@@ -436,6 +468,8 @@ namespace AhwanamAPI.Controllers
                     price.service_price = "";
 
                     //Data Section
+                    p.vendor_masterId = item.Id;
+                    p.vendor_serviceId = item.subid;
                     p.name = item.BusinessName;
                     p.page_name = item.page_name;
                     p.category_name = item.ServicType;
@@ -519,6 +553,8 @@ namespace AhwanamAPI.Controllers
                     price.service_price = "";
 
                     //Data Section
+                    p.vendor_masterId = item.Id;
+                    p.vendor_serviceId = item.subid;
                     p.name = item.BusinessName;
                     p.page_name = item.page_name;
                     p.category_name = item.ServicType;
@@ -589,6 +625,8 @@ namespace AhwanamAPI.Controllers
                     price.service_price = "";
 
                     //Data Section
+                    p.vendor_masterId = item.Id;
+                    p.vendor_serviceId = item.subid;
                     p.name = item.BusinessName;
                     p.page_name = item.page_name;
                     p.category_name = item.ServicType;
@@ -1361,5 +1399,8 @@ namespace AhwanamAPI.Controllers
         //    dict.Add("filters", filter);
         //    return Json(dict);
         //}
+
+
+      
     }
 }
