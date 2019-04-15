@@ -45,6 +45,11 @@ namespace AhwanamAPI.Controllers
             public string message { get; set; }
             public userdata userdata { get; set; }
         }
+        public class userdetails
+        {
+            public string name { get; set; }
+            public string phoneno { get; set; }
+        }
 
         public class userdata
         {
@@ -192,7 +197,7 @@ namespace AhwanamAPI.Controllers
                 dict.Add("status", true);
                 dict.Add("message", "Login Success");
                 loginuser loginuser = new loginuser();
-                loginuser.user_id = userlogin.UserLoginId;
+                loginuser.user_id = userResponce.UserLoginId;
                 loginuser.email = userlogin.UserName;
                 loginuser.name = userdetails.FirstName;
                 loginuser.phoneno = userdetails.UserPhone;
@@ -203,7 +208,7 @@ namespace AhwanamAPI.Controllers
             else
             {
                 dict.Add("status", false);
-                dict.Add("message", "email and password doesnot match");
+                dict.Add("message", "Email ID and password do not match");
                 u1.Add("user", null);
                 dict.Add("data", u1);
             }
@@ -461,15 +466,23 @@ namespace AhwanamAPI.Controllers
             loginuser loginuser = new loginuser();
             loginuser.email = sloginresponse.email;
             //loginuser.password = userlogin.Password;
-            if (slogin.auth_type == "facebook")
-            { 
-            loginuser.user_id = data;
-            loginuser.name = sloginresponse.first_name + " " + sloginresponse.last_name;
+            //if (slogin.auth_type == "facebook")
+            //{ 
+            //loginuser.user_id = data;
+            //loginuser.name = sloginresponse.first_name + " " + sloginresponse.last_name;
+            //}
+            //else
+            //    loginuser.user_id = data;
+            //    loginuser.name = sloginresponse.name;
+            //loginuser.phoneno = sloginresponse.phoneno;
+            var details = userlogindetailsservice.Getmyprofile(usertoken.Token);
+            if(details!=null)
+            {
+                loginuser.user_id = details.UserLoginId;
+                loginuser.name = details.name;
+                loginuser.phoneno =details.UserPhone;
             }
-            else
-                loginuser.user_id = data;
-                loginuser.name = sloginresponse.name;
-            loginuser.phoneno = sloginresponse.phoneno;
+            loginuser.user_id = data;
             Dictionary<string, object> u1 = new Dictionary<string, object>();
             u1.Add("token", usertoken.Token);
             u1.Add("user", loginuser);
@@ -523,7 +536,7 @@ namespace AhwanamAPI.Controllers
                 catch (Exception)
                 {
                     dict.Add("status", false);
-                    dict.Add("message", "Link Expired");
+                    dict.Add("message", "Failed");
                     return Json(dict);
                 }
             }
@@ -666,6 +679,55 @@ namespace AhwanamAPI.Controllers
             return Json(dict);
         }
 
+        [HttpPost]
+       [Route("api/UserAuth/updateprofile")]
+        public IHttpActionResult Updateprofile([FromBody]userdetails userdetails)
+        {
+            TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            Dictionary<string, object> u1 = new Dictionary<string, object>();
+            var re = Request;
+            var customheader = re.Headers;
+            UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
+            if (customheader.Contains("Authorization"))
+            {
+                user user = new user();
+                string token = customheader.GetValues("Authorization").First();
+                var details = userlogindetailsservice.Getmyprofile(token);
+                if(details.Token == token)
+                {
+                    UserDetail userdetail = new UserDetail();
+                    userdetail.FirstName = userdetails.name;
+                    userdetail.UserPhone = userdetails.phoneno;
+                    userdetail.name = userdetails.name;
+                    userdetail.UpdatedDate= TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+                    var data = userlogindetailsservice.updateprofile(userdetail, details.UserLoginId);
+                    
+                    if (data!=null)
+                    {
+                        user.user_id = data.UserLoginId;
+                        user.email = data.AlternativeEmailID;
+                        user.phoneno = data.UserPhone;
+                        //user.name = details.FirstName + ' ' + details.LastName;
+                        user.name = data.name;
+                        u1.Add("user", user);
+                        dict.Add("status", true);
+                        dict.Add("message", "Success");
+                        dict.Add("data", u1);
+                    }
+                    else
+                    {
+                        u1.Add("user", null);
+                        dict.Add("status", false);
+                        dict.Add("message", "Failed");
+                        dict.Add("data", u1);
+                    }
+                }
+
+
+            }
+            return Json(dict);
+        }
    
 
     }

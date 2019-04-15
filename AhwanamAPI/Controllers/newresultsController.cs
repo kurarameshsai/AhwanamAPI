@@ -8,6 +8,7 @@ using System.Web.Http;
 using System.Web;
 using Newtonsoft.Json;
 using System.Web.Http.Cors;
+using MaaAahwanam.Models;
 
 namespace AhwanamAPI.Controllers
 {
@@ -145,10 +146,21 @@ namespace AhwanamAPI.Controllers
 
         public class header
         {
+            public string category_name { get; set; }
             public string header_text { get; set; }
             public string sub_text { get; set; }
             public string image { get; set; }
         }
+        public class Reviews
+        {
+            public string rating { get; set; }
+            public string name { get; set; }
+            public string review { get; set; }
+            //public DateTime addeddate { get; set; }
+            //public string email { get; set; }
+          
+        }
+
 
 
         public class localities
@@ -233,6 +245,23 @@ namespace AhwanamAPI.Controllers
             public List<values> value { get; set; }
         }
 
+        //public class packages
+        //{
+        //    public string name { get; set; }
+        //    public string charge_type { get; set; }
+        //    public decimal price { get; set; }
+        //}
+
+        //public class prices2
+
+        public class services
+        {
+            public string name { get; set; }
+            public string page_name { get; set; }
+            public int category_id { get; set; }
+            //public string image { get; set; }
+            public List<param5> vendors { get; set; }
+        }
         public class packages
         {
             public string Rentalprice { get; set; }
@@ -241,6 +270,14 @@ namespace AhwanamAPI.Controllers
             public decimal veg_price { get; set; }
             public decimal nonveg_price { get; set; }
         }
+
+        public class VImages
+        {
+            //public long vendor_id { get; set; }
+            public string image { get; set; }
+        }
+
+       
 
         public class price_per_plate
         {
@@ -291,6 +328,7 @@ namespace AhwanamAPI.Controllers
                 headers.header_text = "Best Mehendi Vendors";
             headers.sub_text = "Sub Text";
             headers.image = "https://api.ahwanam.com/images/header1.png";
+            headers.category_name = categories1.name;
             d1.Add("header", headers);
 
             List<newfilter> filter = new List<newfilter>();
@@ -577,7 +615,7 @@ namespace AhwanamAPI.Controllers
             p.rating = details.Rating;
             p.reviews_count = details.ReviewsCount.ToString();
             p.charge_type = details.Type_of_price;
-            p.pic_url = details.Image;
+            p.pic_url = "https://api.ahwanam.com/vendorimages/" + details.Image;
             location lc = new location();
             lc.latitude = "17.385044";
             lc.langitude = "78.486671";
@@ -791,6 +829,156 @@ namespace AhwanamAPI.Controllers
             }
             return Json(dict);
         }
+
+
+        [HttpGet]
+        [Route("api/allvendors")]
+        public IHttpActionResult Browseallvendors()
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            Dictionary<string, object> dict1 = new Dictionary<string, object>();
+            FilterServices filterServices = new FilterServices();
+            var categories = filterServices.AllCategories();
+            List<services> res = new List<services>();
+            for (int i = 0; i < categories.Count(); i++)
+            {
+                services result = new services();
+                result.name = categories[i].name;
+                result.page_name = categories[i].display_name;
+                result.category_id = categories[i].servicType_id;
+                var data = resultsPageService.GetvendorbycategoryId(categories[i].servicType_id);
+                List<param5> param = new List<param5>();
+                if(data!=null)
+                {
+                //for (int j = 0; j < data.Count; j++)
+                foreach(var item in data)
+                {
+                    param5 p = new param5();
+                    p.vendor_id = item.VendorId;
+                    p.category_id = item.Category_TypeId;
+                    p.category_name = item.name.Trim();
+                    p.name = item.BusinessName.Trim();
+                    p.rating = item.Rating;
+                    p.reviews_count = item.ReviewsCount.ToString();
+                    //p.description = data[i].Description.Trim();
+                    p.charge_type = item.Type_of_price;
+                    p.city = item.City;
+                    p.pic_url = "https://api.ahwanam.com/vendorimages/" + item.Image;
+                    //prices Section
+                    prices price = new prices();
+                    //price.Rentalprice = item.RentAmount.ToString();
+                    if (p.category_name == "Venues" || p.category_name == "Caterers")
+                    {
+                        price.minimum_price = item.VegPrice;
+                        //price.maxprice = item.NonvegPrice.ToString();
+                    }
+                    else
+                    {
+                        price.minimum_price = item.MinPrice;
+                        //price.maxprice = item.MaxPrice.ToString();
+                    }
+                    p.price = price;
+
+                    param.Add(p);
+                }
+                }
+                var records = param;
+                var rating = "4";
+                if (rating != null)
+                    records = records.Where(m => m.rating >= decimal.Parse(rating)).Take(7).ToList();
+                result.vendors = records;
+                res.Add(result);
+            }
+            dict1.Add("categories", res);
+            dict.Add("status", true);
+            dict.Add("message", "Success");
+            dict.Add("data", dict1);
+            return Json(dict);
+
+        }
+
+        [HttpGet]
+        [Route("api/gallery")]
+        public IHttpActionResult Getgalleryimages(long vendor_id)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            Dictionary<string, object> dict1 = new Dictionary<string, object>();
+            List<VImages> ilist = new List<VImages>();
+            var gallaryimages = resultsPageService.Getimages(vendor_id);
+            if(gallaryimages!=null)
+            {
+                foreach(var item in gallaryimages)
+                {
+                    VImages i = new VImages();
+                    //i.vendor_id = item.VendorId;
+                    i.image = "https://api.ahwanam.com/vendorimages/" + item.MainImageUrl;
+                    ilist.Add(i);
+                }
+                dict1.Add("gallery", ilist);
+                dict.Add("status", true);
+                dict.Add("message", "Success");
+                dict.Add("data", dict1);
+            }
+            return Json(dict);
+
+        }
+        [HttpGet]
+        [Route("api/reviews")]
+        public IHttpActionResult Getreviews(long vendor_id, int? page = 0, int? offset = 0)
+        {
+            int count = 0;
+            page = (page == null || page == 0) ? 1 : page;
+            offset = (offset == null || offset == 0) ? 6 : offset;
+            int takecount = 6;
+            if (((int)page - 1) > 0)
+                takecount = ((int)page - 1) * (int)offset;
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            Dictionary<string, object> dict1 = new Dictionary<string, object>();
+            var data = resultsPageService.Getreviews(vendor_id);
+            count = data.Count();
+            if (page > 1)
+                data = data.Skip(takecount).Take((int)offset).ToList();
+            else
+                data = data.Take((int)offset).ToList();
+            List<Reviews> reviewlist = new List<Reviews>();
+            if (data.Count > 0)
+            {
+                dict.Add("status", true);
+                dict.Add("message", "Success");
+                foreach (var item in data)
+                {
+                    Reviews r = new Reviews();
+                    r.name = item.FirstName;
+                    r.review = item.Comments;
+                    r.rating = item.rating;
+                    reviewlist.Add(r);
+                }
+                Dictionary<string, object> d1 = new Dictionary<string, object>();
+                d1.Add("results", reviewlist);
+                d1.Add("total_review_count", count);
+                d1.Add("offset", (offset == 0) ? 6 : offset);
+                d1.Add("page", page);
+                d1.Add("no_of_pages", ((count - 1) / offset) + 1);
+                dict.Add("data", d1);
+            }
+            else
+            {
+                Dictionary<string, object> d1 = new Dictionary<string, object>();
+                dict.Add("status", false);
+                dict.Add("message", "No Reviews");
+                //dict.Add("data", null);
+                d1.Add("results", new List<Review>());
+                d1.Add("total_review_count", 0);
+                d1.Add("offset", (offset == 0) ? 6 : offset);
+                d1.Add("page", page);
+                d1.Add("no_of_pages", 0);
+                dict.Add("data", d1);
+            }
+
+            return Json(dict);
+
+        }
+
 
     }
 }

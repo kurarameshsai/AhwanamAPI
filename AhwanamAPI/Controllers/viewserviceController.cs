@@ -794,7 +794,7 @@ namespace AhwanamAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/reviews")]
+        [Route("api/allreviews")]
         public IHttpActionResult Review(string type, string vendor, int? page = 0, int? offset = 0)
         {
             int count = 0;

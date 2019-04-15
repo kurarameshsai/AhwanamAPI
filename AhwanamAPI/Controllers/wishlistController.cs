@@ -5,6 +5,10 @@ using System.Net;
 using System.Net.Http;
 using System.Web;
 using System.Web.Http;
+using MaaAahwanam.Service;
+using MaaAahwanam.Models;
+using MaaAahwanam.Utility;
+using System.IO;
 
 namespace AhwanamAPI.Controllers
 {
@@ -31,13 +35,13 @@ namespace AhwanamAPI.Controllers
         {
             public long wishlist_id { get; set; }
             public long vendor_id { get; set; }
-            public string Notes { get; set; }
+            public string note { get; set; }
         }
 
         public class EditNote
         {
-            public long notes_id { get; set; }
-            public string notes { get; set; }
+            public long note_id { get; set; }
+            public string note { get; set; }
         }
 
         public class detailids
@@ -152,7 +156,9 @@ namespace AhwanamAPI.Controllers
             public long notes_id { get; set; }
             public long wishlist_id { get; set; }
             public  long vendor_id { get; set; }
-            public string notes { get; set; }
+            public string note { get; set; }
+            public long contributorId { get; set; }
+            public string author_name { get; set; }
             public DateTime added_datetime { get; set; }
             public DateTime edited_datetime { get; set; }
         }
@@ -385,9 +391,9 @@ namespace AhwanamAPI.Controllers
             return Json(dict);
         }
 
-        [HttpDelete]
+        [HttpPost]
         [Route("api/wishlist/removeitem")]
-        public IHttpActionResult RemoveWishList([FromBody]detailids ids)
+        public IHttpActionResult RemoveWishList(long vendor_id, long wishlist_id)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
             WhishListService wishlistservices = new WhishListService();
@@ -403,7 +409,7 @@ namespace AhwanamAPI.Controllers
                 {
                     if (userdetails != null)
                     {
-                        int count = wishlistservice.Removeitem(ids.vendor_id, ids.wishlist_id, userdetails.UserLoginId);
+                        int count = wishlistservice.Removeitem(vendor_id, wishlist_id, userdetails.UserLoginId);
                         if (count != 0)
                         {
                             dict.Add("status", true);
@@ -444,7 +450,7 @@ namespace AhwanamAPI.Controllers
 
         [HttpGet]
         [Route("api/getallnotes")]
-        public IHttpActionResult Getnote(long wishlist_id,long vendor_id)
+        public IHttpActionResult Getnote(long wishlist_id, long vendor_id)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
             var re = Request;
@@ -466,7 +472,9 @@ namespace AhwanamAPI.Controllers
                             usernote.notes_id = item.NotesId;
                             usernote.wishlist_id = item.wishlistId;
                             usernote.vendor_id = item.VendorId;
-                            usernote.notes = item.Notes;
+                            usernote.note = item.Notes;
+                            usernote.contributorId = userdetails.UserLoginId;
+                            usernote.author_name = userdetails.name;
                             usernote.added_datetime = item.AddedDate;
                             usernote.edited_datetime = item.UpdatedDate;
                             usernotes.Add(usernote);
@@ -488,7 +496,7 @@ namespace AhwanamAPI.Controllers
         }
 
         [HttpPost]
-        [Route("api/addnote")]
+        [Route("api/wishlist/addnote")]
         public IHttpActionResult AddNotes([FromBody]AddNote note)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
@@ -506,8 +514,8 @@ namespace AhwanamAPI.Controllers
                     notes.wishlistId = note.wishlist_id;
                     notes.VendorId = note.vendor_id;
                     notes.UserId = userdetails.UserLoginId;
-                    notes.Notes = note.Notes;
-                    notes.Name = userdetails.FirstName.Trim()+" "+userdetails.LastName;
+                    notes.Notes = note.note;
+                    notes.Name = userdetails.name;
                     notes.AddedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
                     notes.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
                     var notedata = wishlistservice.AddNotes(notes);
@@ -515,7 +523,9 @@ namespace AhwanamAPI.Controllers
                     usernotes.notes_id = notedata.NotesId;
                     usernotes.wishlist_id = notedata.wishlistId;
                     usernotes.vendor_id = notedata.VendorId;
-                    usernotes.notes = notedata.Notes;
+                    usernotes.note = notedata.Notes;
+                    usernotes.contributorId = userdetails.UserLoginId;
+                    usernotes.author_name = userdetails.name;
                     usernotes.added_datetime = notedata.AddedDate;
                     if (notedata != null)
                     {
@@ -536,7 +546,7 @@ namespace AhwanamAPI.Controllers
         }
 
         [HttpPost]
-        [Route("api/updatenote")]
+        [Route("api/wishlist/updatenote")]
         public IHttpActionResult UpdateNote([FromBody] EditNote enote)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
@@ -551,18 +561,21 @@ namespace AhwanamAPI.Controllers
                 var userdetails = userlogindetailsservice.Getmyprofile(token);
                 if (userdetails.Token == token)
                 {
-                    var notedata = wishlistservice.UpdateNotes(enote.notes_id, enote.notes);
+                    var notedata = wishlistservice.UpdateNotes(enote.note_id, enote.note,userdetails.UserLoginId);
                     if (notedata != null)
                     {
                         UseNotes usernotes = new UseNotes();
                         usernotes.notes_id = notedata.NotesId;
                         usernotes.wishlist_id = notedata.wishlistId;
                         usernotes.vendor_id = notedata.VendorId;
-                        usernotes.notes = notedata.Notes;
-                        usernotes.added_datetime = notedata.AddedDate;
+                        usernotes.note = notedata.Notes;
+                        usernotes.contributorId = userdetails.UserLoginId;
+                        usernotes.author_name = userdetails.name;
+                        //usernotes.added_datetime = notedata.AddedDate;
                         usernotes.edited_datetime = notedata.UpdatedDate;
                         dict.Add("status", true);
                         dict.Add("message", "Success");
+                        dict.Add("data", usernotes);
                         return Json(dict);
                     }
                 }
@@ -575,26 +588,51 @@ namespace AhwanamAPI.Controllers
           
             return Json(dict);
         }
-        [HttpDelete]
-        [Route("api/removenote")]
-        public IHttpActionResult RemoveNotes(long notes_id)
+        [HttpPost]
+        [Route("api/wishlist/removenote")]
+        public IHttpActionResult RemoveNotes(long note_id)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
-           int count= wishlistservice.RemoveNotes(notes_id);
-            if (count != 0)
+
+            var re = Request;
+            var customheader = re.Headers;
+            UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
+            if (customheader.Contains("Authorization"))
             {
-                dict.Add("status", true);
-                dict.Add("message", "Success");
+                string token = customheader.GetValues("Authorization").First();
+                var userdetails = userlogindetailsservice.Getmyprofile(token);
+                if (userdetails.Token == token)
+                {
+                    int count = wishlistservice.RemoveNotes(note_id);
+                    if (count != 0)
+                    {
+                        dict.Add("status", true);
+                        dict.Add("message", "Success");
+                    }
+                    else
+                    {
+                        dict.Add("status", false);
+                        dict.Add("message", "note already removed");
+                    }
+                }
+                else
+                {
+                    dict.Add("status", false);
+                    dict.Add("message", "Failed");
+                }
             }
-            else
-            {
-                dict.Add("status", false);
-                dict.Add("message", "Failed");
-            }
+                   
             return Json(dict);
 
         }
-        
+
+
+        public void TriggerEmail(string txtto, string txtmsg, string subject, HttpPostedFileBase attachment)
+        {
+            EmailSendingUtility emailSendingUtility = new EmailSendingUtility();
+            emailSendingUtility.Wordpress_Email(txtto, txtmsg, subject, attachment);
+        }
+
         [HttpPost]
         [Route("api/addcollabrator")]
         public IHttpActionResult Addcollabrator(UserCollabrator collabrator)
@@ -626,6 +664,15 @@ namespace AhwanamAPI.Controllers
                         DetailsCollabrator cdetails = new DetailsCollabrator();
                         if (data!=null)
                         {
+
+                            //string url = "http://sandbox.ahwanam.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
+                            string url = "http://sandbox.ahwanam.com/addcollabrator?wishlist_id=" + data.wishlistid + "&email=" + data.Email;
+                            FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
+                            string readFile = File.OpenText().ReadToEnd();
+                            readFile = readFile.Replace("[ActivationLink]", url);
+                            readFile = readFile.Replace("[name]", data.Email);
+                            readFile = readFile.Replace("[phoneno]", data.PhoneNo);
+                            TriggerEmail(data.Email, readFile, "Account Invitation", null);
                             cdetails.email = data.Email;
                             cdetails.phoneNo = data.PhoneNo;
                             cdetails.user_id = data.UserId;
@@ -633,7 +680,7 @@ namespace AhwanamAPI.Controllers
                             cdetails.wishlist_id = data.wishlistid;
                             cdetails.code = data.wishlistlink;
                             dict.Add("status", true);
-                            dict.Add("message", "Success");
+                            dict.Add("message", "email send successfully");
                             dict.Add("result", cdetails);
                         }
                         else
@@ -655,22 +702,39 @@ namespace AhwanamAPI.Controllers
         }
 
 
-        [HttpDelete]
+        [HttpPost]
         [Route("api/removecollabrator")]
         public IHttpActionResult removecollabrator(long collabrator_id)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
-            int count = wishlistservice.RemoveCollabrator(collabrator_id);
-            if (count != 0)
+            var re = Request;
+            var customheader = re.Headers;
+            UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
+            if (customheader.Contains("Authorization"))
             {
-                dict.Add("status", true);
-                dict.Add("message", "Success");
+                string token = customheader.GetValues("Authorization").First();
+                var userdetails = userlogindetailsservice.Getmyprofile(token);
+                if (userdetails.Token == token)
+                {
+                    int count = wishlistservice.RemoveCollabrator(collabrator_id);
+                    if (count != 0)
+                    {
+                        dict.Add("status", true);
+                        dict.Add("message", "Success");
+                    }
+                    else if(count == 0)
+                    {
+                        dict.Add("status", false);
+                        dict.Add("message", "collabrator already removed");
+                    }
+                }
+                else
+                {
+                    dict.Add("status", false);
+                    dict.Add("message", "Failed");
+                }
             }
-            else
-            {
-                dict.Add("status", false);
-                dict.Add("message", "Failed");
-            }
+                  
             return Json(dict);
 
         }
