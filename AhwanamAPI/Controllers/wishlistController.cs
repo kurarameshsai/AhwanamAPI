@@ -1,5 +1,9 @@
-﻿using System;
+﻿using MaaAahwanam.Models;
+using MaaAahwanam.Service;
+using MaaAahwanam.Utility;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -15,6 +19,7 @@ namespace AhwanamAPI.Controllers
     public class wishlistController : ApiController
     {
         WhishListService wishlistservice = new WhishListService();
+        UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
 
 
         public class wishlist
@@ -479,9 +484,12 @@ namespace AhwanamAPI.Controllers
                             usernote.edited_datetime = item.UpdatedDate;
                             usernotes.Add(usernote);
                         }
+
+                        Dictionary<string, object> dict1 = new Dictionary<string, object>();
+                        dict1.Add("results", usernotes);
                         dict.Add("status", true);
                         dict.Add("message", "Success");
-                        dict.Add("data", usernotes);
+                        dict.Add("data", dict1);
                     }
                 }
                 else
@@ -529,6 +537,8 @@ namespace AhwanamAPI.Controllers
                     usernotes.added_datetime = notedata.AddedDate;
                     if (notedata != null)
                     {
+                        // Dictionary<string, object> dict1 = new Dictionary<string, object>();
+                        //dict1.Add("results", usernotes);
                         dict.Add("status", true);
                         dict.Add("message", "Success");
                         dict.Add("data", usernotes);
@@ -679,9 +689,16 @@ namespace AhwanamAPI.Controllers
                             cdetails.collabrator_id = data.Id;
                             cdetails.wishlist_id = data.wishlistid;
                             cdetails.code = data.wishlistlink;
-                            dict.Add("status", true);
-                            dict.Add("message", "email send successfully");
-                            dict.Add("result", cdetails);
+                            //string url = "http://sandbox.ahwanam.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
+                            //FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
+                            //string readFile = File.OpenText().ReadToEnd();
+                            //readFile = readFile.Replace("[ActivationLink]", url);
+                            //readFile = readFile.Replace("[name]", data.Email);
+                            //readFile = readFile.Replace("[phoneno]", data.PhoneNo);
+                            //TriggerEmail(data.Email, readFile, "Account Activation", null);
+                            //dict.Add("status", true);
+                            //dict.Add("message", "Success");
+                            //dict.Add("result", cdetails);
                         }
                         else
                         {
@@ -701,6 +718,21 @@ namespace AhwanamAPI.Controllers
             return Json(dict);
         }
 
+        public void TriggerEmail(string txtto, string txtmsg, string subject, HttpPostedFileBase attachment)
+        {
+            EmailSendingUtility emailSendingUtility = new EmailSendingUtility();
+            emailSendingUtility.Wordpress_Email(txtto, txtmsg, subject, attachment);
+        }
+
+        //[HttpGet]
+        //public IHttpActionResult checkemail(string email)
+        //{
+        //    long data = userlogindetailsservice.GetLoginDetailsByEmail(email);
+        //    if(data==0)
+        //    {
+
+        //    }
+        //}
 
         [HttpPost]
         [Route("api/removecollabrator")]
