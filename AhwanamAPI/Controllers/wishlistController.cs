@@ -28,6 +28,14 @@ namespace AhwanamAPI.Controllers
             public long user_id { get; set; }
             public string name { get; set; }
             public List<wishlistitems> wishlistitems { get; set; }
+            public List<collabrators> collabrators { get; set; }
+        }
+        public class collabrators
+        {
+            public long collabrator_id { get; set; }
+            public string collabrator_name { get; set; }
+            public long user_id { get; set; }
+            public string collabrator_email { get; set; }
         }
         public class listItems
         {
@@ -62,6 +70,7 @@ namespace AhwanamAPI.Controllers
             public long wishlist_id { get; set; }
             public string email { get; set; }
             public string phoneNo { get; set; }
+            public string name { get; set; }
             //public DateTime UpdatedDate { get; set; }
         }
 
@@ -73,6 +82,7 @@ namespace AhwanamAPI.Controllers
             public string email { get; set; }
             public string phoneNo { get; set; }
             public string code { get; set; }
+            public string collabrator_name { get; set; }
             //public DateTime UpdatedDate { get; set; }
         }
         //public class WishList
@@ -396,9 +406,9 @@ namespace AhwanamAPI.Controllers
             return Json(dict);
         }
 
-        [HttpPost]
+        [HttpDelete]
         [Route("api/wishlist/removeitem")]
-        public IHttpActionResult RemoveWishList(long vendor_id, long wishlist_id)
+        public IHttpActionResult RemoveWishList([FromUri] long vendor_id, [FromUri] long wishlist_id)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
             WhishListService wishlistservices = new WhishListService();
@@ -569,9 +579,14 @@ namespace AhwanamAPI.Controllers
             {
                 string token = customheader.GetValues("Authorization").First();
                 var userdetails = userlogindetailsservice.Getmyprofile(token);
-                if (userdetails.Token == token)
+                if (userdetails!=null || userdetails.Token == token)
                 {
-                    var notedata = wishlistservice.UpdateNotes(enote.note_id, enote.note,userdetails.UserLoginId);
+                    Note note = new Note();
+                    note.Notes = enote.note;
+                    note.UserId = userdetails.UserLoginId;
+                    note.Name = userdetails.name;
+                    note.UpdatedDate= TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+                    var notedata = wishlistservice.UpdateNotes(note, enote.note_id);
                     if (notedata != null)
                     {
                         UseNotes usernotes = new UseNotes();
@@ -600,7 +615,7 @@ namespace AhwanamAPI.Controllers
         }
         [HttpPost]
         [Route("api/wishlist/removenote")]
-        public IHttpActionResult RemoveNotes(long note_id)
+        public IHttpActionResult RemoveNotes([FromUri] long note_id)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
 
@@ -661,6 +676,7 @@ namespace AhwanamAPI.Controllers
                 {
                     collbratordata.UserId = userdetails.UserLoginId;
                     collbratordata.wishlistid = collabrator.wishlist_id;
+                    collbratordata.collabratorname = collabrator.name;
                     collbratordata.PhoneNo = collabrator.phoneNo;
                     collbratordata.Email = collabrator.email;
                     collbratordata.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
@@ -680,11 +696,12 @@ namespace AhwanamAPI.Controllers
                             FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
                             string readFile = File.OpenText().ReadToEnd();
                             readFile = readFile.Replace("[ActivationLink]", url);
-                            readFile = readFile.Replace("[name]", data.Email);
-                            readFile = readFile.Replace("[phoneno]", data.PhoneNo);
+                            //readFile = readFile.Replace("[name]", data.Email);
+                            //readFile = readFile.Replace("[phoneno]", data.PhoneNo);
                             TriggerEmail(data.Email, readFile, "Account Invitation", null);
                             cdetails.email = data.Email;
                             cdetails.phoneNo = data.PhoneNo;
+                            cdetails.collabrator_name = data.collabratorname;
                             cdetails.user_id = data.UserId;
                             cdetails.collabrator_id = data.Id;
                             cdetails.wishlist_id = data.wishlistid;
@@ -718,11 +735,11 @@ namespace AhwanamAPI.Controllers
             return Json(dict);
         }
 
-        public void TriggerEmail(string txtto, string txtmsg, string subject, HttpPostedFileBase attachment)
-        {
-            EmailSendingUtility emailSendingUtility = new EmailSendingUtility();
-            emailSendingUtility.Wordpress_Email(txtto, txtmsg, subject, attachment);
-        }
+        //public void TriggerEmail(string txtto, string txtmsg, string subject, HttpPostedFileBase attachment)
+        //{
+        //    EmailSendingUtility emailSendingUtility = new EmailSendingUtility();
+        //    emailSendingUtility.Wordpress_Email(txtto, txtmsg, subject, attachment);
+        //}
 
         //[HttpGet]
         //public IHttpActionResult checkemail(string email)

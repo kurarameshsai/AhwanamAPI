@@ -83,9 +83,9 @@ namespace AhwanamAPI.Controllers
             public string description { get; set; }
             public decimal rating { get; set; }
             public string address { get; set; }
-            public string charge_type { get; set; }
+            //public string charge_type { get; set; }
             public string city { get; set; }
-            public packages packages { get; set; }
+            public List<packages1> packages { get; set; }           
             public string pic_url { get; set; }
             public location location { get; set; }
             public List<Amenities> amenities { get; set; }
@@ -245,12 +245,12 @@ namespace AhwanamAPI.Controllers
             public List<values> value { get; set; }
         }
 
-        //public class packages
-        //{
-        //    public string name { get; set; }
-        //    public string charge_type { get; set; }
-        //    public decimal price { get; set; }
-        //}
+        public class packages1
+        {
+            public string name { get; set; }
+            public string charge_type { get; set; }
+            public decimal price { get; set; }
+        }
 
         //public class prices2
 
@@ -614,25 +614,59 @@ namespace AhwanamAPI.Controllers
             p.description = details.Description.Trim();
             p.rating = details.Rating;
             p.reviews_count = details.ReviewsCount.ToString();
-            p.charge_type = details.Type_of_price;
+            //p.charge_type = details.Type_of_price;
             p.pic_url = "https://api.ahwanam.com/vendorimages/" + details.Image;
             location lc = new location();
             lc.latitude = "17.385044";
             lc.longitude = "78.486671";
             p.location = lc;
-            packages price = new packages();
-            price.Rentalprice = details.RentAmount.ToString();
+            List<packages1> pkg = new List<packages1>();
+            //price.Rentalprice = details.RentAmount.ToString();
             if (p.category_name == "Venues" || p.category_name == "Caterers")
             {
-                price.veg_price = details.VegPrice;
-                price.nonveg_price = details.NonvegPrice;
+                //price.veg_price = details.VegPrice;
+                //price.nonveg_price = details.NonvegPrice;
+              
+                packages1 price = new packages1();
+                price.name = "Vegetarian";
+                price.charge_type= details.Type_of_price;
+                price.price = details.VegPrice;
+                pkg.Add(price);
+                  //nonveg
+                  price = new packages1();
+                price.name = "Non Vegetarian";
+                price.charge_type = details.Type_of_price;
+                price.price = details.NonvegPrice;
+                pkg.Add(price);
+
             }
-            else
+            else if(p.category_name == "Photographers")
             {
-                price.minimum_price = details.MinPrice;
-                price.maximum_price = details.MaxPrice;
+
+                packages1 price = new packages1();
+                price.name = "Photography";
+                price.charge_type= details.Type_of_price;
+                price.price = details.MinPrice;
+                pkg.Add(price);
             }
-            p.packages = price;
+            else if(p.category_name == "Decorators")
+            {
+                packages1 price = new packages1();
+                price.name = "Decoratoration";
+                price.charge_type = details.Type_of_price;
+                price.price = details.MinPrice;
+                pkg.Add(price);
+            }
+            else if (p.category_name == "Mehendi")
+            {
+                packages1 price = new packages1();
+                price.name = "Mehendi";
+                price.charge_type = details.Type_of_price;
+                price.price = details.MinPrice;
+                pkg.Add(price);
+
+            }
+            p.packages = pkg;
             var amenitydetail= resultsPageService.GetAmenities(p.vendor_id);
             List<Amenities> amenitys = new List<Amenities>();
             foreach(var item in amenitydetail)

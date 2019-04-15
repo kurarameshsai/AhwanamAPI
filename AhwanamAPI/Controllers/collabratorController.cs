@@ -104,7 +104,12 @@ namespace AhwanamAPI.Controllers
                 var userdetails = userlogindetailsservice.Getmyprofile(token);
                 if (userdetails.Token == token)
                 {
-                    var notedata = wishlistservice.UpdatecollabratorNotes(enote.note_id, enote.note, userdetails.UserLoginId);
+                    collabratornotes cn = new collabratornotes();
+                    cn.collabratorNote = enote.note;
+                    cn.Userid = userdetails.UserLoginId;
+                    cn.Name = userdetails.name;
+                    cn.UpdatedDate= TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+                    var notedata = wishlistservice.UpdatecollabratorNotes(cn, enote.note_id);
                     if (notedata != null)
                     {
                         UseNotes usernotes = new UseNotes();

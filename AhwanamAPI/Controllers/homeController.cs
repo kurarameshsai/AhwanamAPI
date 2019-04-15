@@ -57,6 +57,8 @@ namespace AhwanamAPI.Controllers
             public string event_date { get; set; }
             public string time { get; set; }
             public string description { get; set; }
+            public string city { get; set; }
+            public string origin { get; set; }
         }
 
         public class eventslist
@@ -339,6 +341,8 @@ namespace AhwanamAPI.Controllers
             enquiry.PersonName = contact.name;
             enquiry.SenderPhone = contact.phone;
             enquiry.SenderEmailId = contact.email;
+            enquiry.city = contact.city;
+            enquiry.originfromurl = contact.origin;
             //string date = contact.event_date + contact.time;
             //DateTime d1 = Convert.ToDateTime(contact.event_date);
             //d1.Add("time",contact.time);

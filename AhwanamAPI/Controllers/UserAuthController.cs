@@ -252,11 +252,11 @@ namespace AhwanamAPI.Controllers
             {
                 //string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
                 string url = "http://sandbox.ahwanam.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
-                FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
+                FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/newwelcome.html"));
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);
-                readFile = readFile.Replace("[name]", Capitalise(userdetail.FirstName));
-                readFile = readFile.Replace("[phoneno]", userdetail.UserPhone);
+                //readFile = readFile.Replace("[name]", Capitalise(userdetail.FirstName));
+                //readFile = readFile.Replace("[phoneno]", userdetail.UserPhone);
                 TriggerEmail(userlogin.UserName, readFile, "Account Activation", null); // A Mail will be triggered
                 dict.Add("status", true);
                 dict.Add("message", "Successfully registered");
@@ -442,11 +442,11 @@ namespace AhwanamAPI.Controllers
                 {
                     //string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
                     string url = "http://sandbox.ahwanam.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
-                    FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
+                    FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/newwelcome.html"));
                     string readFile = File.OpenText().ReadToEnd();
                     readFile = readFile.Replace("[ActivationLink]", url);
-                    readFile = readFile.Replace("[name]", Capitalise(userdetail.FirstName));
-                    readFile = readFile.Replace("[phoneno]", userdetail.UserPhone);
+                    //readFile = readFile.Replace("[name]", Capitalise(userdetail.FirstName));
+                    //readFile = readFile.Replace("[phoneno]", userdetail.UserPhone);
                     TriggerEmail(userlogin.UserName, readFile, "Account Activation", null);
                     dict.Add("status", true);
                     dict.Add("message", "Successfully registered");
@@ -523,11 +523,13 @@ namespace AhwanamAPI.Controllers
                 u1 = venorVenueSignUpService.GetUserdetails(userLogin.UserName);
             else
                 u1 = venorVenueSignUpService.GetUserLoginByCode(details.code);
-            if (details.code == u1.ActivationCode)
+            if (details.code == u1.resetemaillink)
             {
                 try
                 {
                     userLogin.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+                    userLogin.resetemaillink = Guid.NewGuid().ToString();
+                    userLogin.isreset = "disable";
                     userLogin = userlogindetailsservice.changepassword(userLogin, (int)u1.UserLoginId);
                     dict.Add("status", true);
                     dict.Add("message", "Password Changed");
@@ -543,7 +545,7 @@ namespace AhwanamAPI.Controllers
             else
             {
                 dict.Add("status", false);
-                dict.Add("message", "failed");
+                dict.Add("message", "Link expired");
                 return Json(dict);
             }
         }
@@ -593,15 +595,17 @@ namespace AhwanamAPI.Controllers
             if (userLogin != null)
             {
                 var userdetails = userlogindetailsservice.GetUser(int.Parse(userLogin.UserLoginId.ToString()));
-                userLogin.ActivationCode = Guid.NewGuid().ToString();
+                //userLogin.ActivationCode = Guid.NewGuid().ToString();
+                userLogin.resetemaillink= Guid.NewGuid().ToString();
+                userLogin.isreset = "enable";
                 userLogin.UpdatedDate = DateTime.Now;
                 var data = userlogindetailsservice.UpdateActivationCode(userLogin);
                 //string url= "https://ahwanam-sandbox.herokuapp.com/resetpassword?code=" + userLogin.ActivationCode + "&email=" + userLogin.UserName;
-                string url = "http://sandbox.ahwanam.com/resetpassword?code=" + userLogin.ActivationCode + "&email=" + userLogin.UserName;
-                FileInfo File = new FileInfo(HttpContext.Current.Server.MapPath("/mailtemplate/mailer.html"));
+                string url = "http://sandbox.ahwanam.com/resetpassword?code=" + userLogin.resetemaillink + "&email=" + userLogin.UserName;
+                FileInfo File = new FileInfo(HttpContext.Current.Server.MapPath("/mailtemplate/newforgotpassword.html"));
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);
-                readFile = readFile.Replace("[name]", Capitalise(userdetails.FirstName));
+                //readFile = readFile.Replace("[name]", Capitalise(userdetails.FirstName));
                 TriggerEmail(details.email, readFile, "Password reset information", null);// A mail will be triggered
                 dict.Add("status", true);
                 dict.Add("message", "Reset Password Request Sent");
