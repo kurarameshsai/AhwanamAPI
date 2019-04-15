@@ -649,9 +649,9 @@ namespace AhwanamAPI.Controllers
                             //readFile = readFile.Replace("[name]", data.Email);
                             //readFile = readFile.Replace("[phoneno]", data.PhoneNo);
                             //TriggerEmail(data.Email, readFile, "Account Activation", null);
-                            //dict.Add("status", true);
-                            //dict.Add("message", "Success");
-                            //dict.Add("result", cdetails);
+                            dict.Add("status", true);
+                            dict.Add("message", "Success");
+                            dict.Add("data", cdetails);
                         }
                         else
                         {

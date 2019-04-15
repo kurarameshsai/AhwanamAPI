@@ -88,7 +88,7 @@ namespace AhwanamAPI.Controllers
             public string pic_url { get; set; }
             public location location { get; set; }
             public List<Amenities> amenities { get; set; }
-            public List<Policies> Policies { get; set; }
+            public List<Policies> policies { get; set; }
             public List<availableareas> availableareas { get; set; }
         }
 
@@ -116,7 +116,7 @@ namespace AhwanamAPI.Controllers
         public class location
         {
             public string latitude { get; set; }
-            public string langitude { get; set; }
+            public string longitude { get; set; }
         }
 
         public class Amenities
@@ -580,7 +580,7 @@ namespace AhwanamAPI.Controllers
             p.pic_url = details.Image;
             location lc = new location();
             lc.latitude = "17.385044";
-            lc.langitude = "78.486671";
+            lc.longitude = "78.486671";
             p.location = lc;
             packages price = new packages();
             price.Rentalprice = details.RentAmount.ToString();
@@ -616,7 +616,7 @@ namespace AhwanamAPI.Controllers
                 policy.policy_icon = policitem.PolicyIcon;
                 policys.Add(policy);
             }
-            p.Policies = policys;
+            p.policies = policys;
             var detailareas = resultsPageService.GetavailableAreas(p.vendor_id);
             List<availableareas> listava = new List<availableareas>();
             foreach(var availableitem in detailareas)
@@ -667,7 +667,7 @@ namespace AhwanamAPI.Controllers
             p.pic_url = details.Image;
             location lc = new location();
             lc.latitude = "17.385044";
-            lc.langitude = "78.486671";
+            lc.longitude = "78.486671";
             p.location = lc;
             packages price = new packages();
             //price.Rentalprice = details.RentAmount.ToString();
