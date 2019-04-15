@@ -31,6 +31,17 @@ namespace AhwanamAPI.Controllers
             public string image { get; set; }
         }
 
+        public class Reviews
+        {
+            public long vendor_id { get; set; }
+            public string name { get; set; }
+            public string review { get; set; }
+            public DateTime addeddate { get; set; }
+            public string email { get; set; }
+            public int category_id { get; set; }
+            public string category_name { get; set; }
+        }
+
         public class prices
         {
             public string actual_price { get; set; }
@@ -1400,7 +1411,47 @@ namespace AhwanamAPI.Controllers
         //    return Json(dict);
         //}
 
+        //[HttpGet]
+        //[Route("api/results/reviews")]
+        //public IHttpActionResult Getreviews(long vendor_id)
+        //{
+        //    Dictionary<string, object> dict = new Dictionary<string, object>();
+        //    Dictionary<string, object> dict1 = new Dictionary<string, object>();
+        //    var data = resultsPageService.Getreviews(vendor_id);
+        //    List<Reviews> reviewlist = new List<Reviews>();
+        //    if (data != null)
+        //    {
+        //        foreach (var item in data)
+        //        {
+        //            Reviews r = new Reviews();
+        //            r.vendor_id = item.ServiceId;
+        //            r.name = item.FirstName;
+        //            r.email = item.EmailId;
+        //            r.review = item.Comments;
+        //            r.category_id = item.categoryid;
+        //            r.category_name = item.Service;
+        //            r.addeddate = (DateTime)item.UpdatedDate;
+        //            reviewlist.Add(r);
+        //        }
+        //        if(reviewlist!=null)
+        //        { 
+        //        dict1.Add("reviews", reviewlist);
+        //        dict.Add("status", true);
+        //        dict.Add("message", "Success");
+        //        dict.Add("data", dict1);
+        //        }
+        //        else
+        //        {
+        //            dict1.Add("reviews", reviewlist);
+        //            dict.Add("status", false);
+        //            dict.Add("message", "Failed");
+        //            dict.Add("data", dict1);
+        //        }
+        //    }
+           
+        //    return Json(dict);
 
-      
+        //}
+
     }
 }
