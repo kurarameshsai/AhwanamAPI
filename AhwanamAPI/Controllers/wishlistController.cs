@@ -253,6 +253,23 @@ namespace AhwanamAPI.Controllers
                                 categorys.Add(category);
                             }
                             list.wishlistitems = categorys;
+                            List<collabrators> clist = new List<collabrators>();
+                            var collabratordata = wishlistservice.Getcollabrators(data.UserId);
+                            if(collabratordata!=null)
+                            {
+                               
+                                foreach(var item in collabratordata)
+                                {
+                                    collabrators c = new collabrators();
+                                    c.collabrator_id = item.Id;
+                                    c.collabrator_name = item.collabratorname;
+                                    c.user_id = item.UserId;
+                                    c.collabrator_email = item.Email;
+                                    clist.Add(c);
+                                }
+                                list.collabrators = clist;
+                            }
+                            else { list.collabrators = clist; }
                                 dict.Add("status", true);
                         dict.Add("message", "Success");
                         dict.Add("data", list);
@@ -314,6 +331,23 @@ namespace AhwanamAPI.Controllers
                             categorys.Add(category);
                         }
                         list.wishlistitems = categorys;
+                        List<collabrators> clist = new List<collabrators>();
+                        var collabratordata = wishlistservice.Getcollabrators(userdata.UserId);
+                        if (collabratordata != null)
+                        {
+
+                            foreach (var item in collabratordata)
+                            {
+                                collabrators c = new collabrators();
+                                c.collabrator_id = item.Id;
+                                c.collabrator_name = item.collabratorname;
+                                c.user_id = item.UserId;
+                                c.collabrator_email = item.Email;
+                                clist.Add(c);
+                            }
+                            list.collabrators = clist;
+                        }
+                        else { list.collabrators = clist; }
                         dict.Add("status", true);
                         dict.Add("message", "Success");
                         dict.Add("data", list);
