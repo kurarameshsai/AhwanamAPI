@@ -531,8 +531,9 @@ namespace AhwanamAPI.Controllers
                 List<vendors> param = new List<vendors>();
                //var data = resultsPageService.Getvendorbycategory(categories1.page_name);
                 var data= resultsPageService.GetvendorbycategoryId(categories1.category_id).ToList();
+                data = data.OrderBy(v => v.priority).Take(7).ToList();
                 if (cityvalue != null || cityvalue == "empty")
-                    data = data.Where(m => m.City == cityvalue).ToList();
+                    data = data.Where(m => m.City == cityvalue).Take(7).ToList();            
                 if (data.Count > 0)
                 {
                     foreach (var item in data)
@@ -545,7 +546,7 @@ namespace AhwanamAPI.Controllers
                         p.name = item.BusinessName;
                         p.charge_type = item.Type_of_price;
                         p.city = item.City;
-                        p.pic_url = "https://api.ahwanam.com/vendorimages/" + item.Image;
+                        p.pic_url = "https://api.ahwanam.com/images/" + item.VendorId + "/main.jpg";
                         //prices Section
                         price price = new price();
                         //price.Rentalprice = item.RentAmount.ToString();
@@ -567,9 +568,9 @@ namespace AhwanamAPI.Controllers
                     }
                 }
                 var records = param;
-                var rating = "4";
-                if (rating != null)
-                    records = records.Where(m => m.rating >= decimal.Parse(rating)).Take(7).ToList();
+                //var rating = "4";
+                //if (rating != null)
+                //    records = records.Where(m => m.rating >= decimal.Parse(rating)).Take(7).ToList();
                 categories1.vendors = records;
                 categories.Add(categories1);
             }

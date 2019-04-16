@@ -28,14 +28,14 @@ namespace AhwanamAPI.Controllers
             public long user_id { get; set; }
             public string name { get; set; }
             public List<wishlistitems> wishlistitems { get; set; }
-            public List<collabrators> collabrators { get; set; }
+            public List<collaborators> collaborators { get; set; }
         }
-        public class collabrators
+        public class collaborators
         {
-            public long collabrator_id { get; set; }
-            public string collabrator_name { get; set; }
+            public long collaborator_id { get; set; }
+            public string collaborator_name { get; set; }
             public long user_id { get; set; }
-            public string collabrator_email { get; set; }
+            public string collaborator_email { get; set; }
         }
         public class listItems
         {
@@ -64,7 +64,7 @@ namespace AhwanamAPI.Controllers
             //public long user_id { get; set; }
         }
 
-        public class UserCollabrator
+        public class UserCollaborator
         {
             //public long user_id { get; set; }
             public long wishlist_id { get; set; }
@@ -74,15 +74,15 @@ namespace AhwanamAPI.Controllers
             //public DateTime UpdatedDate { get; set; }
         }
 
-        public class DetailsCollabrator
+        public class DetailsCollaborator
         {
-            public long collabrator_id { get; set; }
+            public long collaborator_id { get; set; }
             public long user_id { get; set; }
             public long wishlist_id { get; set; }
             public string email { get; set; }
             public string phoneNo { get; set; }
             public string code { get; set; }
-            public string collabrator_name { get; set; }
+            public string collaborator_name { get; set; }
             //public DateTime UpdatedDate { get; set; }
         }
         //public class WishList
@@ -117,7 +117,7 @@ namespace AhwanamAPI.Controllers
             public string city { get; set; }
             public price price { get; set; }
             public string pic_url { get; set; }
-            public long? collabrator_id { get; set; }
+            public long? collaborator_id { get; set; }
             public List<notes> notes { get; set; }
         }
         public class notes
@@ -253,23 +253,23 @@ namespace AhwanamAPI.Controllers
                                 categorys.Add(category);
                             }
                             list.wishlistitems = categorys;
-                            List<collabrators> clist = new List<collabrators>();
-                            var collabratordata = wishlistservice.Getcollabrators(data.UserId);
-                            if(collabratordata!=null)
+                            List<collaborators> clist = new List<collaborators>();
+                            var collaboratordata = wishlistservice.Getcollabrators(data.UserId);
+                            if(collaboratordata!=null)
                             {
                                
-                                foreach(var item in collabratordata)
+                                foreach(var item in collaboratordata)
                                 {
-                                    collabrators c = new collabrators();
-                                    c.collabrator_id = item.Id;
-                                    c.collabrator_name = item.collabratorname;
+                                    collaborators c = new collaborators();
+                                    c.collaborator_id = item.Id;
+                                    c.collaborator_name = item.collabratorname;
                                     c.user_id = item.UserId;
-                                    c.collabrator_email = item.Email;
+                                    c.collaborator_email = item.Email;
                                     clist.Add(c);
                                 }
-                                list.collabrators = clist;
+                                list.collaborators = clist;
                             }
-                            else { list.collabrators = clist; }
+                            else { list.collaborators = clist; }
                                 dict.Add("status", true);
                         dict.Add("message", "Success");
                         dict.Add("data", list);
@@ -331,23 +331,23 @@ namespace AhwanamAPI.Controllers
                             categorys.Add(category);
                         }
                         list.wishlistitems = categorys;
-                        List<collabrators> clist = new List<collabrators>();
-                        var collabratordata = wishlistservice.Getcollabrators(userdata.UserId);
-                        if (collabratordata != null)
+                        List<collaborators> clist = new List<collaborators>();
+                        var collaboratordata = wishlistservice.Getcollabrators(userdata.UserId);
+                        if (collaboratordata != null)
                         {
 
-                            foreach (var item in collabratordata)
+                            foreach (var item in collaboratordata)
                             {
-                                collabrators c = new collabrators();
-                                c.collabrator_id = item.Id;
-                                c.collabrator_name = item.collabratorname;
+                                collaborators c = new collaborators();
+                                c.collaborator_id = item.Id;
+                                c.collaborator_name = item.collabratorname;
                                 c.user_id = item.UserId;
-                                c.collabrator_email = item.Email;
+                                c.collaborator_email = item.Email;
                                 clist.Add(c);
                             }
-                            list.collabrators = clist;
+                            list.collaborators = clist;
                         }
-                        else { list.collabrators = clist; }
+                        else { list.collaborators = clist; }
                         dict.Add("status", true);
                         dict.Add("message", "Success");
                         dict.Add("data", list);
@@ -399,7 +399,7 @@ namespace AhwanamAPI.Controllers
                         v.name = vdata.BusinessName;
                         v.city = vdata.City;
                         v.charge_type = vdata.Type_of_price;
-                        v.collabrator_id = vdata.UserId;
+                        v.collaborator_id = vdata.UserId;
                         v.rating = vdata.Rating;
                         v.reviews_count = vdata.ReviewsCount;
                             price p = new price();
@@ -440,9 +440,9 @@ namespace AhwanamAPI.Controllers
             return Json(dict);
         }
 
-        [HttpDelete]
+        [HttpPost]
         [Route("api/wishlist/removeitem")]
-        public IHttpActionResult RemoveWishList([FromUri] long vendor_id, [FromUri] long wishlist_id)
+        public IHttpActionResult RemoveWishList(long vendor_id,long wishlist_id)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
             WhishListService wishlistservices = new WhishListService();
@@ -693,8 +693,8 @@ namespace AhwanamAPI.Controllers
         }
 
         [HttpPost]
-        [Route("api/addcollabrator")]
-        public IHttpActionResult Addcollabrator(UserCollabrator collabrator)
+        [Route("api/addcollaborator")]
+        public IHttpActionResult Addcollabrator(UserCollaborator collaborator)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
             TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
@@ -709,19 +709,19 @@ namespace AhwanamAPI.Controllers
                 if (userdetails.Token == token)
                 {
                     collbratordata.UserId = userdetails.UserLoginId;
-                    collbratordata.wishlistid = collabrator.wishlist_id;
-                    collbratordata.collabratorname = collabrator.name;
-                    collbratordata.PhoneNo = collabrator.phoneNo;
-                    collbratordata.Email = collabrator.email;
+                    collbratordata.wishlistid = collaborator.wishlist_id;
+                    collbratordata.collabratorname = collaborator.name;
+                    collbratordata.PhoneNo = collaborator.phoneNo;
+                    collbratordata.Email = collaborator.email;
                     collbratordata.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
-                    string name = collbratordata.UserId.ToString() + ',' + collbratordata.wishlistid.ToString() + ',' + collabrator.email;
+                    string name = collbratordata.UserId.ToString() + ',' + collbratordata.wishlistid.ToString() + ',' + collaborator.email;
                     encptdecpt encrypt = new encptdecpt();
                     string encrypted = encrypt.Encrypt(name);
                     collbratordata.wishlistlink = encrypted;
-                    long details = wishlistservice.GetcollabratorDetailsByEmail(collabrator.email);
+                    long details = wishlistservice.GetcollabratorDetailsByEmail(collaborator.email);
                     if(details == 0)
                     { var data = wishlistservice.AddCollabrator(collbratordata);
-                        DetailsCollabrator cdetails = new DetailsCollabrator();
+                        DetailsCollaborator cdetails = new DetailsCollaborator();
                         if (data!=null)
                         {
 
@@ -735,9 +735,9 @@ namespace AhwanamAPI.Controllers
                             TriggerEmail(data.Email, readFile, "Account Invitation", null);
                             cdetails.email = data.Email;
                             cdetails.phoneNo = data.PhoneNo;
-                            cdetails.collabrator_name = data.collabratorname;
+                            cdetails.collaborator_name = data.collabratorname;
                             cdetails.user_id = data.UserId;
-                            cdetails.collabrator_id = data.Id;
+                            cdetails.collaborator_id = data.Id;
                             cdetails.wishlist_id = data.wishlistid;
                             cdetails.code = data.wishlistlink;
                             //string url = "http://sandbox.ahwanam.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
@@ -762,7 +762,7 @@ namespace AhwanamAPI.Controllers
                     else
                     {
                         dict.Add("status", false);
-                        dict.Add("message", "This collabrator already added");
+                        dict.Add("message", "This collaborator already added");
                     }
                 }
             }
@@ -786,8 +786,8 @@ namespace AhwanamAPI.Controllers
         //}
 
         [HttpPost]
-        [Route("api/removecollabrator")]
-        public IHttpActionResult removecollabrator(long collabrator_id)
+        [Route("api/removecollaborator")]
+        public IHttpActionResult removecollaborator(long collaborator_id)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
             var re = Request;
@@ -799,16 +799,16 @@ namespace AhwanamAPI.Controllers
                 var userdetails = userlogindetailsservice.Getmyprofile(token);
                 if (userdetails.Token == token)
                 {
-                    int count = wishlistservice.RemoveCollabrator(collabrator_id);
+                    int count = wishlistservice.RemoveCollabrator(collaborator_id);
                     if (count != 0)
                     {
                         dict.Add("status", true);
                         dict.Add("message", "Success");
                     }
-                    else if(count == 0)
+                    else if (count == 0)
                     {
                         dict.Add("status", false);
-                        dict.Add("message", "collabrator already removed");
+                        dict.Add("message", "collaborator already removed");
                     }
                 }
                 else
@@ -817,7 +817,7 @@ namespace AhwanamAPI.Controllers
                     dict.Add("message", "Failed");
                 }
             }
-                  
+
             return Json(dict);
 
         }

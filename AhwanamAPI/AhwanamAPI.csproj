@@ -50,17 +50,21 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="MaaAahwanam.Models">
-      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Models.dll</HintPath>
+    <Reference Include="MaaAahwanam.Models, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Models.dll</HintPath>
     </Reference>
-    <Reference Include="MaaAahwanam.Repository">
-      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Repository.dll</HintPath>
+    <Reference Include="MaaAahwanam.Repository, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Repository.dll</HintPath>
     </Reference>
-    <Reference Include="MaaAahwanam.Service">
-      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Service.dll</HintPath>
+    <Reference Include="MaaAahwanam.Service, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Service.dll</HintPath>
     </Reference>
-    <Reference Include="MaaAahwanam.Utility">
-      <HintPath>..\..\Maa-Aahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Utility.dll</HintPath>
+    <Reference Include="MaaAahwanam.Utility, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Ahwanam\MaaAahwanam.Web\bin\MaaAahwanam.Utility.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
@@ -118,6 +122,48 @@
   <ItemGroup>
     <Content Include="Global.asax" />
     <Content Include="html\index.html" />
+    <Content Include="images\34\baner.jpg" />
+    <Content Include="images\34\main.jpg" />
+    <Content Include="images\39\baner.jpg" />
+    <Content Include="images\39\main.jpg" />
+    <Content Include="images\41\baner.jpg" />
+    <Content Include="images\41\main.jpg" />
+    <Content Include="images\44\baner.jpg" />
+    <Content Include="images\44\main.jpg" />
+    <Content Include="images\51\baner.jpg" />
+    <Content Include="images\51\main.jpg" />
+    <Content Include="images\55\baner.jpg" />
+    <Content Include="images\55\main.jpg" />
+    <Content Include="images\56\baner.jpg" />
+    <Content Include="images\56\main.jpg" />
+    <Content Include="images\57\baner.jpg" />
+    <Content Include="images\57\main.jpg" />
+    <Content Include="images\63\baner.jpg" />
+    <Content Include="images\63\main.jpg" />
+    <Content Include="images\64\baner.jpg" />
+    <Content Include="images\64\main.jpg" />
+    <Content Include="images\65\baner.jpg" />
+    <Content Include="images\65\main.jpg" />
+    <Content Include="images\66\baner.jpg" />
+    <Content Include="images\66\main.jpg" />
+    <Content Include="images\67\baner.jpg" />
+    <Content Include="images\67\main.jpg" />
+    <Content Include="images\68\baner.jpg" />
+    <Content Include="images\68\main.jpg" />
+    <Content Include="images\69\baner.jpg" />
+    <Content Include="images\69\main.jpg" />
+    <Content Include="images\70\baner.jpg" />
+    <Content Include="images\70\main.jpg" />
+    <Content Include="images\71\baner.jpg" />
+    <Content Include="images\71\main.jpg" />
+    <Content Include="images\72\baner.jpg" />
+    <Content Include="images\72\main.jpg" />
+    <Content Include="images\74\baner.jpg" />
+    <Content Include="images\74\main.jpg" />
+    <Content Include="images\79\baner.jpg" />
+    <Content Include="images\79\main.jpg" />
+    <Content Include="images\80\baner.jpg" />
+    <Content Include="images\80\main.jpg" />
     <Content Include="images\amenities\Air-conditioner.svg" />
     <Content Include="images\amenities\Bath Tub.svg" />
     <Content Include="images\amenities\Beer.svg" />
@@ -161,6 +207,17 @@
     <Content Include="images\policy.svg" />
     <Content Include="images\popular_sangeeth.jpg" />
     <Content Include="images\reception_caterers.jpg" />
+    <Content Include="images\templateimages\1-logo.png" />
+    <Content Include="images\templateimages\2-mainpic.png" />
+    <Content Include="images\templateimages\3-catering.png" />
+    <Content Include="images\templateimages\3-decoration.png" />
+    <Content Include="images\templateimages\3-special events.png" />
+    <Content Include="images\templateimages\3-wishlist.png" />
+    <Content Include="images\templateimages\4- digital tools.png" />
+    <Content Include="images\templateimages\4- personalised.png" />
+    <Content Include="images\templateimages\4- vendor network.png" />
+    <Content Include="images\templateimages\7Vows Logo.png" />
+    <Content Include="images\templateimages\Forgot-password.png" />
     <Content Include="images\wedding_ceremony.png" />
     <Content Include="images\wedding_dashboard.jpg" />
     <Content Include="images\wedding_photographers.jpg" />
@@ -434,7 +491,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\cartController.cs" />
     <Compile Include="Controllers\ceremoniesController.cs" />
-    <Compile Include="Controllers\collabratorController.cs" />
+    <Compile Include="Controllers\collaboratorController.cs" />
     <Compile Include="Controllers\customerController.cs" />
     <Compile Include="Controllers\homeController.cs" />
     <Compile Include="Controllers\invoiceController.cs" />
@@ -530,6 +587,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="images\15\" />
+    <Folder Include="images\30\" />
+    <Folder Include="images\5\" />
+    <Folder Include="images\6\" />
+    <Folder Include="images\76\" />
+    <Folder Include="images\7\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

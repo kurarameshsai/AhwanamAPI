@@ -9,7 +9,7 @@ using System.Web.Http;
 
 namespace AhwanamAPI.Controllers
 {
-    public class collabratorController : ApiController
+    public class collaboratorController : ApiController
     {
         WhishListService wishlistservice = new WhishListService();
         public class AddNote
@@ -38,7 +38,7 @@ namespace AhwanamAPI.Controllers
         }
 
         [HttpPost]
-         [Route("api/collabrator/addnote")]
+         [Route("api/collaborator/addnote")]
         public IHttpActionResult addcollabratornotes(AddNote note)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
@@ -89,7 +89,7 @@ namespace AhwanamAPI.Controllers
 
 
         [HttpPost]
-        [Route("api/collabrator/updatenote")]
+        [Route("api/collaborator/updatenote")]
         public IHttpActionResult Updatecollabratornote(EditNote enote)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
@@ -139,7 +139,7 @@ namespace AhwanamAPI.Controllers
         }
 
         [HttpDelete]
-        [Route("api/collabrator/removenote")]
+        [Route("api/collaborator/removenote")]
         public IHttpActionResult removecollabratornote([FromUri] long note_id)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
@@ -162,6 +162,42 @@ namespace AhwanamAPI.Controllers
                     {
                         dict.Add("status", false);
                         dict.Add("message", "note already removed");
+                    }
+                }
+                else
+                {
+                    dict.Add("status", false);
+                    dict.Add("message", "Failed");
+                }
+            }
+
+            return Json(dict);
+
+        }
+        [HttpPost]
+        [Route("api/collaborator/removecollaborator")]
+        public IHttpActionResult removecollabrator(long collaborator_id)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            var re = Request;
+            var customheader = re.Headers;
+            UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
+            if (customheader.Contains("Authorization"))
+            {
+                string token = customheader.GetValues("Authorization").First();
+                var userdetails = userlogindetailsservice.Getmyprofile(token);
+                if (userdetails.Token == token)
+                {
+                    int count = wishlistservice.RemoveCollabrator(collaborator_id);
+                    if (count != 0)
+                    {
+                        dict.Add("status", true);
+                        dict.Add("message", "Success");
+                    }
+                    else if (count == 0)
+                    {
+                        dict.Add("status", false);
+                        dict.Add("message", "collaborator already removed");
                     }
                 }
                 else

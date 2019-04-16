@@ -522,7 +522,7 @@ namespace AhwanamAPI.Controllers
             if (details.email != null)
                 u1 = venorVenueSignUpService.GetUserdetails(userLogin.UserName);
             else
-                u1 = venorVenueSignUpService.GetUserLoginByCode(details.code);
+                u1 = venorVenueSignUpService.Getuserloginbycode(details.code);
             if (details.code == u1.resetemaillink)
             {
                 try
@@ -545,10 +545,39 @@ namespace AhwanamAPI.Controllers
             else
             {
                 dict.Add("status", false);
-                dict.Add("message", "Link expired");
+                dict.Add("message", "Failed");
                 return Json(dict);
             }
         }
+
+        [HttpGet]
+        [Route("api/UserAuth/validateresetpasswordlink")]
+        public IHttpActionResult validatereset(string code)
+        {
+            VenorVenueSignUpService venorVenueSignUpService = new VenorVenueSignUpService();
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            UserLogin userLogin = new UserLogin();
+            UserLogin u1 = new UserLogin();
+                u1 = venorVenueSignUpService.GetUserLoginByCode(code);
+            if (u1.resetemaillink == code || u1 != null)
+            {
+               
+                     dict.Add("status", true);
+                    dict.Add("message", "Success");
+                   
+            }
+            else
+            {
+                dict.Add("status", false);
+                dict.Add("message", "This link already used");
+                
+            }
+            return Json(dict);
+
+        }
+
+
+
 
 
         //[AllowAnonymous]
@@ -594,6 +623,8 @@ namespace AhwanamAPI.Controllers
             userLogin = venorvenuesignupservice.GetUserLogdetails(userLogin);
             if (userLogin != null)
             {
+                if(userLogin.Status == "Active")
+                { 
                 var userdetails = userlogindetailsservice.GetUser(int.Parse(userLogin.UserLoginId.ToString()));
                 //userLogin.ActivationCode = Guid.NewGuid().ToString();
                 userLogin.resetemaillink= Guid.NewGuid().ToString();
@@ -610,6 +641,13 @@ namespace AhwanamAPI.Controllers
                 dict.Add("status", true);
                 dict.Add("message", "Reset Password Request Sent");
                 return Json(dict);
+                }
+                else
+                {
+                    dict.Add("status", false);
+                    dict.Add("message", "Email ID is not activated");
+                    return Json(dict);
+                }
             }
             dict.Add("status", false);
             dict.Add("message", "Email ID is not registered");

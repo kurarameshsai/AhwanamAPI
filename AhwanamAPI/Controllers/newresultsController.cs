@@ -453,7 +453,7 @@ namespace AhwanamAPI.Controllers
             if (((int)page - 1) > 0)
                 takecount = ((int)page - 1) * (int)offset;
 
-            if (ratingvalue == "All Ratings") ratingvalue = "2";
+            if (ratingvalue == "Rated 2.0+") ratingvalue = "2";
             else if (ratingvalue == "Rated 3.0+") ratingvalue = "3";
             else if (ratingvalue == "Rated 4.0+") ratingvalue = "4";
             else if (ratingvalue == "Rated 5.0+") ratingvalue = "5";
@@ -494,7 +494,7 @@ namespace AhwanamAPI.Controllers
                     p.description = item.Description.Trim();
                     p.charge_type = item.Type_of_price;
                     p.city = item.City;
-                    p.pic_url = "https://api.ahwanam.com/vendorimages/" + item.Image;
+                    p.pic_url = "https://api.ahwanam.com/images/" + item.VendorId + "/main.jpg";
                     //prices Section
                     prices price = new prices();
                     //price.Rentalprice = item.RentAmount.ToString();
@@ -524,7 +524,8 @@ namespace AhwanamAPI.Controllers
                     records = records.OrderByDescending(m => m.price.minimum_price).ToList();
             }
             if (rating != 0)
-                records = records.Where(m => m.rating >= decimal.Parse(rating.ToString())).ToList();
+                //records = records.Where(m => m.rating == decimal.Parse(rating.ToString())).ToList();
+                records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).ToList();
             Dictionary<string, object> dict1 = new Dictionary<string, object>();
             dict1.Add("results", records);
             dict1.Add("total_count", count);
@@ -561,7 +562,7 @@ namespace AhwanamAPI.Controllers
                 //p.description = data[i].Description.Trim();
                 p.charge_type = data[i].Type_of_price;
                 p.city = data[i].City;
-                p.pic_url = "https://api.ahwanam.com/vendorimages/" + data[i].Image;
+                p.pic_url = "https://api.ahwanam.com/images/" + data[i].VendorId + "/main.jpg";
                 //prices Section
                 prices price = new prices();
                 //price.Rentalprice = item.RentAmount.ToString();
@@ -615,7 +616,7 @@ namespace AhwanamAPI.Controllers
             p.rating = details.Rating;
             p.reviews_count = details.ReviewsCount.ToString();
             //p.charge_type = details.Type_of_price;
-            p.pic_url = "https://api.ahwanam.com/vendorimages/" + details.Image;
+            p.pic_url = "https://api.ahwanam.com/images/" + details.VendorId + "/baner.jpg"; ;
             location lc = new location();
             lc.latitude = "17.385044";
             lc.longitude = "78.486671";
@@ -881,6 +882,7 @@ namespace AhwanamAPI.Controllers
                 result.page_name = categories[i].display_name;
                 result.category_id = categories[i].servicType_id;
                 var data = resultsPageService.GetvendorbycategoryId(categories[i].servicType_id);
+                data = data.OrderBy(v => v.priority).ToList();
                 List<param5> param = new List<param5>();
                 if(data!=null)
                 {
@@ -917,9 +919,9 @@ namespace AhwanamAPI.Controllers
                 }
                 }
                 var records = param;
-                var rating = "4";
-                if (rating != null)
-                    records = records.Where(m => m.rating >= decimal.Parse(rating)).Take(7).ToList();
+                //var rating = "4";
+                //if (rating != null)
+                //    records = records.Where(m => m.rating >= decimal.Parse(rating)).Take(7).ToList();
                 result.vendors = records;
                 res.Add(result);
             }
@@ -939,20 +941,18 @@ namespace AhwanamAPI.Controllers
             Dictionary<string, object> dict1 = new Dictionary<string, object>();
             List<VImages> ilist = new List<VImages>();
             var gallaryimages = resultsPageService.Getimages(vendor_id);
-            if(gallaryimages!=null)
-            {
                 foreach(var item in gallaryimages)
                 {
                     VImages i = new VImages();
                     //i.vendor_id = item.VendorId;
-                    i.image = "https://api.ahwanam.com/vendorimages/" + item.MainImageUrl;
+                    i.image = "https://api.ahwanam.com/images/" + vendor_id + "/main.jpg";
                     ilist.Add(i);
                 }
                 dict1.Add("gallery", ilist);
                 dict.Add("status", true);
                 dict.Add("message", "Success");
                 dict.Add("data", dict1);
-            }
+            
             return Json(dict);
 
         }
