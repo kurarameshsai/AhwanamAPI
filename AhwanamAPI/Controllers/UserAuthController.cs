@@ -523,7 +523,7 @@ namespace AhwanamAPI.Controllers
                 u1 = venorVenueSignUpService.GetUserdetails(userLogin.UserName);
             else
                 u1 = venorVenueSignUpService.Getuserloginbycode(details.code);
-            if (details.code == u1.resetemaillink)
+            if (u1!=null)
             {
                 try
                 {
@@ -533,21 +533,21 @@ namespace AhwanamAPI.Controllers
                     userLogin = userlogindetailsservice.changepassword(userLogin, (int)u1.UserLoginId);
                     dict.Add("status", true);
                     dict.Add("message", "Password Changed");
-                    return Json(dict);
+                   
                 }
                 catch (Exception)
                 {
                     dict.Add("status", false);
                     dict.Add("message", "Failed");
-                    return Json(dict);
+                    
                 }
             }
             else
             {
                 dict.Add("status", false);
                 dict.Add("message", "Failed");
-                return Json(dict);
             }
+            return Json(dict);
         }
 
         [HttpGet]
@@ -558,8 +558,8 @@ namespace AhwanamAPI.Controllers
             Dictionary<string, object> dict = new Dictionary<string, object>();
             UserLogin userLogin = new UserLogin();
             UserLogin u1 = new UserLogin();
-                u1 = venorVenueSignUpService.GetUserLoginByCode(code);
-            if (u1.resetemaillink == code || u1 != null)
+            u1 = venorVenueSignUpService.Getuserloginbycode(code);
+            if (u1 != null)
             {
                
                      dict.Add("status", true);
@@ -619,6 +619,7 @@ namespace AhwanamAPI.Controllers
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
             UserLogin userLogin = new UserLogin();
+            TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
             userLogin.UserName = details.email;
             userLogin = venorvenuesignupservice.GetUserLogdetails(userLogin);
             if (userLogin != null)
@@ -629,8 +630,8 @@ namespace AhwanamAPI.Controllers
                 //userLogin.ActivationCode = Guid.NewGuid().ToString();
                 userLogin.resetemaillink= Guid.NewGuid().ToString();
                 userLogin.isreset = "enable";
-                userLogin.UpdatedDate = DateTime.Now;
-                var data = userlogindetailsservice.UpdateActivationCode(userLogin);
+                userLogin.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+                    var data = userlogindetailsservice.UpdateActivationCode(userLogin);
                 //string url= "https://ahwanam-sandbox.herokuapp.com/resetpassword?code=" + userLogin.ActivationCode + "&email=" + userLogin.UserName;
                 string url = "http://sandbox.ahwanam.com/resetpassword?code=" + userLogin.resetemaillink + "&email=" + userLogin.UserName;
                 FileInfo File = new FileInfo(HttpContext.Current.Server.MapPath("/mailtemplate/newforgotpassword.html"));

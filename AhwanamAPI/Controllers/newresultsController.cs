@@ -447,6 +447,14 @@ namespace AhwanamAPI.Controllers
             string vtypevalue = (venue_type != 0 && venue_type != null) ? getvalue((int)venue_type) : null;
             string localityvalue = (locality != 0 && locality != null) ? getvalue((int)locality) : null;
             string pricevalue = (price_per_plate_or_rental != 0 && price_per_plate_or_rental != null) ? getvalue((int)price_per_plate_or_rental) : null;
+
+            if (pricevalue == "< 1000") pricevalue = "1000";
+            else if (pricevalue == "1000-1500") pricevalue = "1000";
+            else if (pricevalue == "1500-2000") pricevalue = "1500";
+            else if (pricevalue == "2000-3000") pricevalue = "2000";
+            else if (pricevalue == "> 3000") pricevalue = "3000";
+            else if (pricevalue == "Rental") pricevalue = "100";
+
             page = (page == null) ? 1 : page;
             offset = (offset == null || offset == 0) ? 6 : offset;
             int takecount = 6;
@@ -516,7 +524,7 @@ namespace AhwanamAPI.Controllers
             }
             var records = param;
             if (pricevalue != null)
-                records = records.Where(m => m.price.minimum_price > decimal.Parse(pricevalue)).ToList();
+                records = records.Where(m => m.price.minimum_price <= decimal.Parse(pricevalue)).ToList();
             if (sortby != null)
             {
                 if (sortby == 1)

@@ -356,6 +356,118 @@ namespace AhwanamAPI.Controllers
             }
             return Json(dict);
         }
+     
+
+        [HttpGet]
+        [Route("api/wishlist/getsharedwishlist")]
+        public IHttpActionResult getsharedwishlist(long wishlist_id)
+        {
+            WishlistDetails wishlists = new WishlistDetails();
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+            var re = Request;
+            var customheader = re.Headers;
+            UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
+            if (customheader.Contains("Authorization"))
+            {
+                string token = customheader.GetValues("Authorization").First();
+                var details = userlogindetailsservice.Getmyprofile(token);
+                if (details.Token == token)
+                {
+                    WhishListService wishlistservice1 = new WhishListService();
+                    var wishdetails = wishlistservice1.getwishlistdetails(wishlist_id);
+                    wishlist list = new wishlist();
+                    if (wishdetails != null)
+                    {
+                        list.wishlist_id = wishdetails.WishlistdetailId;
+                        list.user_id = wishdetails.UserId;
+                        list.name = wishdetails.Name;
+                        FilterServices filterServices = new FilterServices();
+                        var categories = filterServices.AllCategories();
+                        List<wishlistitems> categorys = new List<wishlistitems>();
+                        for (int i = 0; i < categories.Count(); i++)
+                        {
+                            wishlistitems category = new wishlistitems();
+                            category.category_id = categories[i].servicType_id;
+                            category.category_name = categories[i].name;
+                            category.page_name = categories[i].display_name;
+                            var vendordata = wishlistservice1.getwishlistvendors(list.wishlist_id, category.category_id);
+                            if (vendordata != null)
+                            {
+                                List<vendors> vendorslst = new List<vendors>();
+                                for (int j = 0; j < vendordata.Count(); j++)
+                                {
+                                    vendors v = new vendors();
+                                    v.vendor_id = vendordata[j].VendormasterId;
+                                    v.category_id = vendordata[j].Category_TypeId;
+                                    v.category_name = vendordata[j].name;
+                                    v.name = vendordata[j].BusinessName;
+                                    v.city = vendordata[j].City;
+                                    v.rating = vendordata[j].Rating;
+                                    v.reviews_count = vendordata[j].ReviewsCount;
+                                    v.charge_type = vendordata[j].Type_of_price;
+                                    price p = new price();
+                                    if (vendordata[j].name == "Venues" || vendordata[j].name == "Caterers")
+                                    {
+
+                                        p.minimum_price = vendordata[j].VegPrice;
+                                    }
+                                    else
+                                    {
+                                        p.minimum_price = vendordata[j].MinPrice;
+                                    }
+                                    v.price = p;
+                                    v.pic_url = vendordata[j].pic_url;
+                                    v.contributor_id = vendordata[j].UserId;
+                                    vendorslst.Add(v);
+                                }
+                                category.vendors = vendorslst;
+                            }
+
+                            categorys.Add(category);
+                        }
+                        list.wishlistitems = categorys;
+                        List<collaborators> clist = new List<collaborators>();
+                        var collaboratordata = wishlistservice.Getcollabrators(list.user_id);
+                        if (collaboratordata != null)
+                        {
+
+                            foreach (var item in collaboratordata)
+                            {
+                                collaborators c = new collaborators();
+                                c.collaborator_id = item.Id;
+                                c.collaborator_name = item.collabratorname;
+                                c.user_id = item.UserId;
+                                c.collaborator_email = item.Email;
+                                clist.Add(c);
+                            }
+                            list.collaborators = clist;
+                        }
+                        else { list.collaborators = clist; }
+                        dict.Add("status", true);
+                        dict.Add("message", "Success");
+                        dict.Add("data", list);
+                    }
+                    else
+                    {
+                        dict.Add("status", false);
+                        dict.Add("message", "failed");
+                        dict.Add("data", list);
+
+                    }
+                
+                }
+                else
+                {
+                    dict.Add("status", false);
+                    dict.Add("message", "failed");
+
+                }
+                
+            }
+            return Json(dict);
+       }
+
 
         [HttpPost]
         [Route("api/wishlist/additem")]
