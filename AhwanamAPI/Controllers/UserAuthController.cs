@@ -569,7 +569,7 @@ namespace AhwanamAPI.Controllers
             else
             {
                 dict.Add("status", false);
-                dict.Add("message", "This link already used");
+                dict.Add("message", "This link has already been used.");
                 
             }
             return Json(dict);

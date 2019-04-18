@@ -50,7 +50,7 @@ namespace AhwanamAPI.Controllers
 
         public class contact
         {
-            public int ID { get; set; }
+            //public int ID { get; set; }
             public string name { get; set; }
             public string email { get; set; }
             public string phone { get; set; }
@@ -393,7 +393,7 @@ namespace AhwanamAPI.Controllers
             readFile = readFile.Replace("[event]", contact.event_date);
             string txtmsg = readFile;
             string subj = "Seven Vows User Iinformation";
-            string targetmails = "lakshmi.p@xsilica.com,prabodh.dasari@xsilica.com,amit.saxena@ahwanam.com";
+            string targetmails = "lakshmi.p@xsilica.com,prabodh.dasari@xsilica.com,amit.saxena@ahwanam.com,sneha.akula9@gmail.com,nivita.priya@xsilica.com";
          
                 emailSendingUtility.Email_maaaahwanam(targetmails, txtmsg, subj, null);
             if (status != null)

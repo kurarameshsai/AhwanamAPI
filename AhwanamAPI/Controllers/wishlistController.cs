@@ -243,7 +243,7 @@ namespace AhwanamAPI.Controllers
                                             p.minimum_price = vendordata[j].MinPrice;
                                         }
                                         v.price = p;
-                                        v.pic_url = vendordata[j].pic_url;
+                                        v.pic_url = "https://api.ahwanam.com/images/" + v.vendor_id + "/main.jpg";
                                         v.contributor_id = vendordata[j].UserId;
                                         vendorslst.Add(v);
                                     }
@@ -417,7 +417,7 @@ namespace AhwanamAPI.Controllers
                                         p.minimum_price = vendordata[j].MinPrice;
                                     }
                                     v.price = p;
-                                    v.pic_url = vendordata[j].pic_url;
+                                    v.pic_url = "https://api.ahwanam.com/images/" + v.vendor_id + "/main.jpg";
                                     v.contributor_id = vendordata[j].UserId;
                                     vendorslst.Add(v);
                                 }
@@ -493,15 +493,17 @@ namespace AhwanamAPI.Controllers
                     ResultsPageService resultsPageService = new ResultsPageService();
                     category categorys = new category();
                     vendor v = new vendor();
-                    userwishlistdetails.UserId = details.UserId;
+                        var vdata = wishlistservices.Getdetailsofvendorbyid(list.vendor_id);
+                        userwishlistdetails.UserId = details.UserId;
                     userwishlistdetails.wishlistId = list.wishlist_id;
                     userwishlistdetails.vendorId = list.vendor_id;
+                        userwishlistdetails.categoryid = vdata.Category_TypeId;
                     userwishlistdetails.IPAddress = HttpContext.Current.Request.UserHostAddress;
                     userwishlistdetails.WhishListedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
                     var data = wishlistservices.Adduserwishlistitem(userwishlistdetails);
                     if (data != null)
                     {
-                        var vdata = wishlistservices.Getdetailsofvendorbyid(list.vendor_id);
+                       
                         categorys.category_id = vdata.Category_TypeId;
                         categorys.category_name = vdata.name;
                         v.vendor_id = vdata.VendorId;
@@ -524,7 +526,7 @@ namespace AhwanamAPI.Controllers
                                 p.minimum_price = vdata.MinPrice;
                         }
                            v.price = p;
-                         v.pic_url = vdata.Image;
+                         v.pic_url = "https://api.ahwanam.com/images/" + v.vendor_id + "/main.jpg"; ;
                         v.notes = null;
                         categorys.vendor = v;
                         dict.Add("status", true);
