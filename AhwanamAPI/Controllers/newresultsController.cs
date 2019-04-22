@@ -492,7 +492,7 @@ namespace AhwanamAPI.Controllers
             if (cityvalue != null || cityvalue == "empty")
                 data = data.Where(m => m.City == cityvalue).ToList();
             if (guestsvalue != null)
-                   data = data.Where(m => m.Capacity > int.Parse(guestsvalue) || m.Capacity <= int.Parse(guestvalue1)).ToList();
+                   data = data.Where(m => m.Capacity > int.Parse(guestsvalue)|| m.Capacity <= int.Parse(guestvalue1)).ToList();
                 //if (localityvalue != null && cityvalue != null)
                 //    data = data.Where(m => m.Landmark == localityvalue).ToList();
                 //if (guestsvalue != null)
