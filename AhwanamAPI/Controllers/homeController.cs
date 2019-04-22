@@ -352,35 +352,6 @@ namespace AhwanamAPI.Controllers
             enquiry.EnquiryStatus = enquiry.Status = "Open";
             enquiry.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
             var status = enquiryService.SaveallEnquiries(enquiry);
-            //StringBuilder cds = new StringBuilder();
-            //cds.Append("<table style='border:1px black solid;'><tbody>");
-            //cds.Append("<tr><td>Order Id</td><td>Order Date</td><td> Event Type </td><td>Guest Count</td><td>Perunit Price</td><td>Total Price</td></tr>");
-            //cds.Append("<tr><td style = 'width: 75px;border: 1px black solid;'> " + orderdetails1.FirstOrDefault().orderid + "</td><td style = 'width: 75px;border: 1px black solid;' > " + orderdetails1.FirstOrDefault().bookdate + " </td><td style = 'width: 75px;border: 1px black solid;'> " + orderdetails1.FirstOrDefault().eventtype + " </td><td style = 'width: 50px;border: 1px black solid;'> " + orderdetails1.FirstOrDefault().guestno + " </td> <td style = 'width: 50px;border: 1px black solid;'> " + orderdetails1.FirstOrDefault().perunitprice + " </td><td style = 'width: 50px;border: 1px black solid;'> " + orderdetails1.FirstOrDefault().totalprice + " </td></tr>");  //<td style = 'width: 50px;border: 2px black solid;'> " + item.eventstartdate + " </td><td> date </td>
-            //cds.Append("</tbody></table>");
-            //if (payment.Count != 0)
-            //{
-            //    cds.Append("<table style='border:1px black solid;'><tbody>");
-            //    cds.Append("<tr><td> Payment Id</td><td> Payment By</td><td> Payment Type </td><td> Payment Date </td><td> Received Amount </td></tr>");
-            //    foreach (var item in payment)
-            //    {
-            //        cds.Append("<tr><td style = 'width: 75px;border: 1px black solid;'> " + item.Payment_Id + "</td><td style = 'width: 75px;border: 1px black solid;'> " + item.PaymentBy + "</td><td style = 'width: 75px;border: 1px black solid;' > " + item.Payment_Type + " </td><td style = 'width: 75px;border: 1px black solid;'> " + item.Payment_Date + " </td><td style = 'width: 50px;border: 1px black solid;'> " + item.Received_Amount + " </td></tr>");  //<td style = 'width: 50px;border: 2px black solid;'> " + item.eventstartdate + " </td><td> date </td>
-            //    }
-            //    cds.Append("</tbody></table>");
-            //}
-            //string url = Request.Url.Scheme + "://" + Request.Url.Authority;
-            ////string url = cds.ToString();
-            //FileInfo File = new FileInfo(Server.MapPath("/mailtemplate/order.html"));
-            //string readFile = File.OpenText().ReadToEnd();
-            //readFile = readFile.Replace("[ActivationLink]", url);
-            //readFile = readFile.Replace("[name]", name);
-            //readFile = readFile.Replace("[table]", cds.ToString());
-            //readFile = readFile.Replace("[orderid]", oid);
-            //string txtmessage = readFile;//readFile + body;
-            //string subj = "Thanks for your order";
-            //EmailSendingUtility emailSendingUtility = new EmailSendingUtility();
-            //emailSendingUtility.Email_maaaahwanam(txtto, txtmessage, subj, null);
-            //string targetmails = "lakshmi.p@xsilica.com,seema.g@xsilica.com,rameshsai@xsilica.com";
-            //emailSendingUtility.Email_maaaahwanam(targetmails, txtmessage, subj, null);
             EmailSendingUtility emailSendingUtility = new EmailSendingUtility();
             FileInfo File = new FileInfo(HttpContext.Current.Server.MapPath("/mailtemplate/talktoahwanam.html"));
             string readFile = File.OpenText().ReadToEnd();
@@ -393,8 +364,7 @@ namespace AhwanamAPI.Controllers
             readFile = readFile.Replace("[event]", contact.event_date);
             string txtmsg = readFile;
             string subj = "Seven Vows User Iinformation";
-            string targetmails = "lakshmi.p@xsilica.com,prabodh.dasari@xsilica.com,amit.saxena@ahwanam.com,sneha.akula9@gmail.com,nivita.priya@xsilica.com";
-         
+            string targetmails = "lakshmi.p@xsilica.com,prabodh.dasari@xsilica.com,amit.saxena@ahwanam.com,sneha.akula9@gmail.com,nivita.priya@xsilica.com";   
                 emailSendingUtility.Email_maaaahwanam(targetmails, txtmsg, subj, null);
             if (status != null)
             { 

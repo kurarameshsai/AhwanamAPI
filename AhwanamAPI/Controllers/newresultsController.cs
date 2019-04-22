@@ -440,6 +440,9 @@ namespace AhwanamAPI.Controllers
         {
             List<param2> param = new List<param2>();
             int count = 0;
+            string guestvalue1 = "";
+            string pricevalue1 = "";
+            string budgetvalue1 = "";
             string ratingvalue = (rating != 0 && rating != null) ? getvalue((int)rating) : null;
             string cityvalue = (city != -1 && city != null) ? getcity((int)city) : null;
             string guestsvalue = (capacity != 0 && capacity != null) ? getvalue((int)capacity) : null;
@@ -447,13 +450,8 @@ namespace AhwanamAPI.Controllers
             string vtypevalue = (venue_type != 0 && venue_type != null) ? getvalue((int)venue_type) : null;
             string localityvalue = (locality != 0 && locality != null) ? getvalue((int)locality) : null;
             string pricevalue = (price_per_plate_or_rental != 0 && price_per_plate_or_rental != null) ? getvalue((int)price_per_plate_or_rental) : null;
+            string budgetvalue = (budget != 0 && budget != null) ? getvalue((int)budget) : null;
 
-            if (pricevalue == "< 1000") pricevalue = "1000";
-            else if (pricevalue == "1000-1500") pricevalue = "1000";
-            else if (pricevalue == "1500-2000") pricevalue = "1500";
-            else if (pricevalue == "2000-3000") pricevalue = "2000";
-            else if (pricevalue == "> 3000") pricevalue = "3000";
-            else if (pricevalue == "Rental") pricevalue = "100";
 
             page = (page == null) ? 1 : page;
             offset = (offset == null || offset == 0) ? 6 : offset;
@@ -461,10 +459,29 @@ namespace AhwanamAPI.Controllers
             if (((int)page - 1) > 0)
                 takecount = ((int)page - 1) * (int)offset;
 
+            if (budgetvalue == "< 50000") { budgetvalue = "0"; budgetvalue1 = "50000"; }
+            else if (budgetvalue == "50000-200000") { budgetvalue = "50000"; budgetvalue1 = "200000"; }
+            else if (budgetvalue == "200000-350000") { budgetvalue = "200000"; budgetvalue1 = "350000"; }
+            else if (budgetvalue == "350000-450000") { budgetvalue = "350000"; budgetvalue1 = "450000"; }
+            else if (budgetvalue == "450000") { budgetvalue = "450000"; budgetvalue1 = "700000"; }
+
+            if (pricevalue == "< 1000") { pricevalue = "0"; pricevalue1 = "1000"; }
+            else if (pricevalue == "1000-1500") { pricevalue = "1000"; pricevalue1 = "1500"; }
+            else if (pricevalue == "1500-2000") { pricevalue = "1500"; pricevalue1 = "2000"; }
+            else if (pricevalue == "2000-3000") { pricevalue = "2000"; pricevalue1 = "3000"; }
+            else if (pricevalue == "> 3000") { pricevalue = "3000"; pricevalue1 = "4000"; }
+            else if (pricevalue == "Rental") pricevalue = "100";
+
+            if (guestsvalue == "< 100") { guestsvalue = "0"; guestvalue1 = "100"; }
+            else if (guestsvalue == "100-250") { guestsvalue = "100"; guestvalue1 = "250"; }
+            else if (guestsvalue == "250-500") { guestsvalue = "250"; guestvalue1 = "500"; }
+            else if (guestsvalue == "500-1000") { guestsvalue = "500"; guestvalue1 = "1000"; }
+            else if (guestsvalue == "> 1000") { guestsvalue = "1000"; guestvalue1 = "2000"; }
+
             if (ratingvalue == "Rated 2.0+") ratingvalue = "2";
-            else if (ratingvalue == "Rated 3.0+") ratingvalue = "3";
-            else if (ratingvalue == "Rated 4.0+") ratingvalue = "4";
-            else if (ratingvalue == "Rated 5.0+") ratingvalue = "5";
+                else if (ratingvalue == "Rated 3.0+") ratingvalue = "3";
+                else if (ratingvalue == "Rated 4.0+") ratingvalue = "4";
+                else if (ratingvalue == "Rated 5.0+") ratingvalue = "5";
 
             var data = resultsPageService.GetvendorbycategoryId(category_id);
             count = data.Count();
@@ -474,20 +491,22 @@ namespace AhwanamAPI.Controllers
                 data = data.Take((int)offset).ToList();
             if (cityvalue != null || cityvalue == "empty")
                 data = data.Where(m => m.City == cityvalue).ToList();
-            //if (localityvalue != null && cityvalue != null)
-            //    data = data.Where(m => m.Landmark == localityvalue).ToList();
-            //if (guestsvalue != null)
-            //    data = data.Where(m => m.Minimumseatingcapacity > int.Parse(guestsvalue)).ToList();
-            //if (pricevalue != null)
-            //   data = data.Where(m => m.MinPrice > decimal.Parse(pricevalue)).ToList();
-            //if (sortby != null)
-            //{
-            //    if (sortby == 1)
-            //        //if (sortbyvalue == "price-high-to-low")
-            //        data = data.OrderByDescending(m => m.MinPrice).ToList();
-            //}
+            if (guestsvalue != null)
+                   data = data.Where(m => m.Capacity > int.Parse(guestsvalue) || m.Capacity <= int.Parse(guestvalue1)).ToList();
+                //if (localityvalue != null && cityvalue != null)
+                //    data = data.Where(m => m.Landmark == localityvalue).ToList();
+                //if (guestsvalue != null)
+                //    data = data.Where(m => m.Minimumseatingcapacity > int.Parse(guestsvalue)).ToList();
+                //if (pricevalue != null)
+                //   data = data.Where(m => m.MinPrice > decimal.Parse(pricevalue)).ToList();
+                //if (sortby != null)
+                //{
+                //    if (sortby == 1)
+                //        //if (sortbyvalue == "price-high-to-low")
+                //        data = data.OrderByDescending(m => m.MinPrice).ToList();
+                //}
 
-            if (data.Count > 0)
+                if (data.Count > 0)
             {
                 foreach (var item in data)
                 {
@@ -508,8 +527,10 @@ namespace AhwanamAPI.Controllers
                     //price.Rentalprice = item.RentAmount.ToString();
                     if (p.category_name == "Venues" || p.category_name == "Caterers")
                     {
+                       
                         price.minimum_price = item.VegPrice;
                         //price.maxprice = item.NonvegPrice.ToString();
+                       
                     }
                     else
                     {
@@ -517,14 +538,16 @@ namespace AhwanamAPI.Controllers
                         //price.maxprice = item.MaxPrice.ToString();
                     }
                     p.price = price;
-
                     param.Add(p);
 
                 }
             }
             var records = param;
             if (pricevalue != null)
-                records = records.Where(m => m.price.minimum_price <= decimal.Parse(pricevalue)).ToList();
+                records = records.Where(m => m.price.minimum_price >= decimal.Parse(pricevalue) || m.price.minimum_price <= decimal.Parse(pricevalue1)).ToList();
+            if(budgetvalue !=null)
+                records= records.Where(m => m.price.minimum_price >= decimal.Parse(budgetvalue) || m.price.minimum_price <= decimal.Parse(budgetvalue1)).ToList();
+
             if (sortby != null)
             {
                 if (sortby == 1)
@@ -890,7 +913,7 @@ namespace AhwanamAPI.Controllers
                 result.page_name = categories[i].display_name;
                 result.category_id = categories[i].servicType_id;
                 var data = resultsPageService.GetvendorbycategoryId(categories[i].servicType_id);
-                data = data.OrderBy(v => v.priority).ToList();
+                data = data.OrderBy(v => v.priority).Take(7).ToList();
                 List<param5> param = new List<param5>();
                 if(data!=null)
                 {
@@ -927,6 +950,7 @@ namespace AhwanamAPI.Controllers
                 }
                 }
                 var records = param;
+              
                 //var rating = "4";
                 //if (rating != null)
                 //    records = records.Where(m => m.rating >= decimal.Parse(rating)).Take(7).ToList();

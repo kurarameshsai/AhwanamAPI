@@ -832,7 +832,7 @@ namespace AhwanamAPI.Controllers
                     encptdecpt encrypt = new encptdecpt();
                     string encrypted = encrypt.Encrypt(name);
                     collbratordata.wishlistlink = encrypted;
-                    long details = wishlistservice.GetcollabratorDetailsByEmail(collaborator.email);
+                    long details = wishlistservice.GetcollabratorDetailsByEmail(collaborator.email, userdetails.UserLoginId);
                     if(details == 0)
                     { var data = wishlistservice.AddCollabrator(collbratordata);
                         DetailsCollaborator cdetails = new DetailsCollaborator();
