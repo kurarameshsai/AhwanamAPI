@@ -29,6 +29,13 @@ namespace AhwanamAPI.Controllers
             public string name { get; set; }
             public List<wishlistitems> wishlistitems { get; set; }
             public List<collaborators> collaborators { get; set; }
+            public List<sharedwishlist> shared_wishlists { get; set; }
+        }
+
+        public class sharedwishlist
+        {
+            public string name { get; set; }
+            public long wishlist_id { get; set; }
         }
         public class collaborators
         {
@@ -331,6 +338,8 @@ namespace AhwanamAPI.Controllers
                             categorys.Add(category);
                         }
                         list.wishlistitems = categorys;
+                        List<sharedwishlist> swishlist = new List<sharedwishlist>();
+
                         List<collaborators> clist = new List<collaborators>();
                         var collaboratordata = wishlistservice.Getcollabrators(userdata.UserId);
                         if (collaboratordata != null)
