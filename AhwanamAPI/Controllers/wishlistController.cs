@@ -9,10 +9,10 @@ using System.Net;
 using System.Net.Http;
 using System.Web;
 using System.Web.Http;
-using MaaAahwanam.Service;
-using MaaAahwanam.Models;
-using MaaAahwanam.Utility;
-using System.IO;
+//using MaaAahwanam.Service;
+//using MaaAahwanam.Models;
+//using MaaAahwanam.Utility;
+//using System.IO;
 
 namespace AhwanamAPI.Controllers
 {
