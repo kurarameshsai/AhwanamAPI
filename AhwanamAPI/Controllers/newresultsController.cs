@@ -492,7 +492,7 @@ namespace AhwanamAPI.Controllers
             if (cityvalue != null || cityvalue == "empty")
                 data = data.Where(m => m.City == cityvalue).ToList();
             if (guestsvalue != null)
-                   data = data.Where(m => m.Capacity > int.Parse(guestsvalue) || m.Capacity <= int.Parse(guestvalue1)).ToList();
+                   data = data.Where(m => m.Capacity > int.Parse(guestsvalue)|| m.Capacity <= int.Parse(guestvalue1)).ToList();
                 //if (localityvalue != null && cityvalue != null)
                 //    data = data.Where(m => m.Landmark == localityvalue).ToList();
                 //if (guestsvalue != null)
@@ -977,7 +977,7 @@ namespace AhwanamAPI.Controllers
                 {
                     VImages i = new VImages();
                     //i.vendor_id = item.VendorId;
-                    i.image = "https://api.ahwanam.com/images/" + vendor_id + "/main.jpg";
+                    i.image = "https://api.ahwanam.com/images/" + vendor_id + item.ThumbnailUrl;
                     ilist.Add(i);
                 }
                 dict1.Add("gallery", ilist);
