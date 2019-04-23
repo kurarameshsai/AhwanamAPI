@@ -977,7 +977,7 @@ namespace AhwanamAPI.Controllers
                 {
                     VImages i = new VImages();
                     //i.vendor_id = item.VendorId;
-                    i.image = "https://api.ahwanam.com/images/" + vendor_id + "/main.jpg";
+                    i.image = "https://api.ahwanam.com/images/" + vendor_id + item.ThumbnailUrl;
                     ilist.Add(i);
                 }
                 dict1.Add("gallery", ilist);

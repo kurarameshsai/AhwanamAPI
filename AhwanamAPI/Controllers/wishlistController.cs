@@ -29,6 +29,13 @@ namespace AhwanamAPI.Controllers
             public string name { get; set; }
             public List<wishlistitems> wishlistitems { get; set; }
             public List<collaborators> collaborators { get; set; }
+            public List<sharedwishlist> shared_wishlists { get; set; }
+        }
+
+        public class sharedwishlist
+        {
+            public string name { get; set; }
+            public long wishlist_id { get; set; }
         }
         public class collaborators
         {
@@ -253,6 +260,20 @@ namespace AhwanamAPI.Controllers
                                 categorys.Add(category);
                             }
                             list.wishlistitems = categorys;
+                            List<sharedwishlist> swlist = new List<sharedwishlist>();
+                            var sharedwishlistdata = wishlistservice.getsharedwishlist(details.AlternativeEmailID);
+                            if(sharedwishlistdata!=null)
+                            {
+                                foreach (var item in sharedwishlistdata)
+                                {
+                                    sharedwishlist s = new sharedwishlist();
+                                    s.name = item.Name;
+                                    s.wishlist_id = item.WishlistdetailId;
+                                    swlist.Add(s);
+                                }
+                                list.shared_wishlists = swlist;
+                            }
+                            else { list.shared_wishlists = swlist; }
                             List<collaborators> clist = new List<collaborators>();
                             var collaboratordata = wishlistservice.Getcollabrators(data.UserId);
                             if(collaboratordata!=null)
@@ -331,6 +352,20 @@ namespace AhwanamAPI.Controllers
                             categorys.Add(category);
                         }
                         list.wishlistitems = categorys;
+                        List<sharedwishlist> swlist = new List<sharedwishlist>();
+                        var sharedwishlistdata = wishlistservice.getsharedwishlist(details.AlternativeEmailID);
+                        if (sharedwishlistdata != null)
+                        {
+                            foreach (var item in sharedwishlistdata)
+                            {
+                                sharedwishlist s = new sharedwishlist();
+                                s.name = item.Name;
+                                s.wishlist_id = item.WishlistdetailId;
+                                swlist.Add(s);
+                            }
+                            list.shared_wishlists = swlist;
+                        }
+                        else { list.shared_wishlists = swlist; }
                         List<collaborators> clist = new List<collaborators>();
                         var collaboratordata = wishlistservice.Getcollabrators(userdata.UserId);
                         if (collaboratordata != null)
