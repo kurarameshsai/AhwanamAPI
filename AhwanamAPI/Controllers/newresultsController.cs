@@ -19,7 +19,7 @@ namespace AhwanamAPI.Controllers
         public class prices
         {
             //public string Rentalprice { get; set; }
-            public decimal minimum_price { get; set; }
+            public string minimum_price { get; set; }
             //public string maxprice { get; set; }
             //public string vegprice { get; set; }
             //public string nonvegprice { get; set; }
@@ -451,8 +451,6 @@ namespace AhwanamAPI.Controllers
             string localityvalue = (locality != 0 && locality != null) ? getvalue((int)locality) : null;
             string pricevalue = (price_per_plate_or_rental != 0 && price_per_plate_or_rental != null) ? getvalue((int)price_per_plate_or_rental) : null;
             string budgetvalue = (budget != 0 && budget != null) ? getvalue((int)budget) : null;
-
-
             page = (page == null) ? 1 : page;
             offset = (offset == null || offset == 0) ? 6 : offset;
             int takecount = 6;
@@ -485,28 +483,41 @@ namespace AhwanamAPI.Controllers
 
             var data = resultsPageService.GetvendorbycategoryId(category_id);
             count = data.Count();
+            if (cityvalue != null || cityvalue == "empty")
+                data = data.Where(m => m.City == cityvalue).ToList();
             if (page > 1)
                 data = data.Skip(takecount).Take((int)offset).ToList();
             else
-                data = data.Take((int)offset).ToList();
-            if (cityvalue != null || cityvalue == "empty")
-                data = data.Where(m => m.City == cityvalue).ToList();
+                data = data.Take((int)offset).ToList();           
             if (guestsvalue != null)
-                   data = data.Where(m => m.Capacity > int.Parse(guestsvalue)|| m.Capacity <= int.Parse(guestvalue1)).ToList();
-                //if (localityvalue != null && cityvalue != null)
-                //    data = data.Where(m => m.Landmark == localityvalue).ToList();
-                //if (guestsvalue != null)
-                //    data = data.Where(m => m.Minimumseatingcapacity > int.Parse(guestsvalue)).ToList();
-                //if (pricevalue != null)
-                //   data = data.Where(m => m.MinPrice > decimal.Parse(pricevalue)).ToList();
-                //if (sortby != null)
-                //{
-                //    if (sortby == 1)
-                //        //if (sortbyvalue == "price-high-to-low")
-                //        data = data.OrderByDescending(m => m.MinPrice).ToList();
-                //}
+                   data = data.Where(m => m.Capacity > int.Parse(guestsvalue) && m.Capacity <= int.Parse(guestvalue1)).ToList();
+            if (pricevalue != null)
+            {
+                if (category_id == 1 || category_id == 2)
+                    data = data.Where(m =>m.VegPrice >= decimal.Parse(pricevalue) && m.VegPrice <= decimal.Parse(pricevalue1)).ToList();
+                //else
+                //    data = data.Where(m => m.MinPrice >= decimal.Parse(pricevalue) && m.MinPrice <= decimal.Parse(pricevalue1)).ToList();
+            }   
+            if (budgetvalue != null)
+            {
+                data = data.Where(m => m.MinPrice >= decimal.Parse(pricevalue) && m.MinPrice <= decimal.Parse(pricevalue1)).ToList();
+                //if (category_id == '1' || category_id == '2')
+                //    data = data.Where(m => m.VegPrice >= decimal.Parse(budgetvalue) || m.VegPrice <= decimal.Parse(budgetvalue1)).ToList();
+            }
+                
+            if (sortby != null)
+            {
+                if (sortby == 1)
+                {  //if (sortbyvalue == "price-high-to-low")
+                    if (category_id == 1 || category_id == 2)
+                        data = data.OrderByDescending(m => m.VegPrice).ToList();
+                    else
+                        data = data.OrderByDescending(m => m.MinPrice).ToList();
 
-                if (data.Count > 0)
+                }
+            }
+            
+            if (data.Count > 0)
             {
                 foreach (var item in data)
                 {
@@ -527,14 +538,17 @@ namespace AhwanamAPI.Controllers
                     //price.Rentalprice = item.RentAmount.ToString();
                     if (p.category_name == "Venues" || p.category_name == "Caterers")
                     {
-                       
-                        price.minimum_price = item.VegPrice;
+                        decimal cost = item.VegPrice / 1000;
+                        price.minimum_price = cost.ToString() + 'k';
+                        //price.minimum_price1 = item.VegPrice;
                         //price.maxprice = item.NonvegPrice.ToString();
                        
                     }
                     else
                     {
-                        price.minimum_price = item.MinPrice;
+                        decimal cost = item.MinPrice / 1000;
+                        price.minimum_price = cost.ToString() + 'k';
+                        //price.minimum_price = item.MinPrice;
                         //price.maxprice = item.MaxPrice.ToString();
                     }
                     p.price = price;
@@ -543,17 +557,6 @@ namespace AhwanamAPI.Controllers
                 }
             }
             var records = param;
-            if (pricevalue != null)
-                records = records.Where(m => m.price.minimum_price >= decimal.Parse(pricevalue) || m.price.minimum_price <= decimal.Parse(pricevalue1)).ToList();
-            if(budgetvalue !=null)
-                records= records.Where(m => m.price.minimum_price >= decimal.Parse(budgetvalue) || m.price.minimum_price <= decimal.Parse(budgetvalue1)).ToList();
-
-            if (sortby != null)
-            {
-                if (sortby == 1)
-                    //if (sortbyvalue == "price-high-to-low")
-                    records = records.OrderByDescending(m => m.price.minimum_price).ToList();
-            }
             if (rating != 0)
                 //records = records.Where(m => m.rating == decimal.Parse(rating.ToString())).ToList();
                 records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).ToList();
@@ -599,12 +602,16 @@ namespace AhwanamAPI.Controllers
                 //price.Rentalprice = item.RentAmount.ToString();
                 if (p.category_name == "Venues" || p.category_name == "Caterers")
                 {
-                    price.minimum_price = data[i].VegPrice;
+                    decimal cost = data[i].VegPrice / 1000;
+                    price.minimum_price = cost.ToString() + 'k';
+                    //price.minimum_price = data[i].VegPrice;
                     //price.maxprice = item.NonvegPrice.ToString();
                 }
                 else
                 {
-                    price.minimum_price = data[i].MinPrice;
+                    decimal cost = data[i].MinPrice / 1000;
+                    price.minimum_price = cost.ToString() + 'k';
+                    //price.minimum_price = data[i].MinPrice;
                     //price.maxprice = item.MaxPrice.ToString();
                 }
                 p.price = price;
@@ -940,14 +947,16 @@ namespace AhwanamAPI.Controllers
                     //price.Rentalprice = item.RentAmount.ToString();
                     if (p.category_name == "Venues" || p.category_name == "Caterers")
                     {
-                        price.minimum_price = item.VegPrice;
-                        //price.maxprice = item.NonvegPrice.ToString();
-                    }
+                            decimal cost = item.VegPrice / 1000;
+                            price.minimum_price = cost.ToString() + 'k';
+                            //price.maxprice = item.NonvegPrice.ToString();
+                      }
                     else
                     {
-                        price.minimum_price = item.MinPrice;
-                        //price.maxprice = item.MaxPrice.ToString();
-                    }
+                            decimal cost = item.MinPrice / 1000;
+                            price.minimum_price = cost.ToString() + 'k';
+                            //price.maxprice = item.MaxPrice.ToString();
+                      }
                     p.price = price;
 
                     param.Add(p);
