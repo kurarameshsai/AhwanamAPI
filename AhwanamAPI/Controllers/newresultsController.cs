@@ -492,7 +492,7 @@ namespace AhwanamAPI.Controllers
             if (cityvalue != null || cityvalue == "empty")
                 data = data.Where(m => m.City == cityvalue).ToList();
             if (guestsvalue != null)
-                   data = data.Where(m => m.Capacity > int.Parse(guestsvalue)|| m.Capacity <= int.Parse(guestvalue1)).ToList();
+                   data = data.Where(m => m.Capacity >= int.Parse(guestsvalue) && m.Capacity <= int.Parse(guestvalue1)).ToList();
                 //if (localityvalue != null && cityvalue != null)
                 //    data = data.Where(m => m.Landmark == localityvalue).ToList();
                 //if (guestsvalue != null)
@@ -544,9 +544,9 @@ namespace AhwanamAPI.Controllers
             }
             var records = param;
             if (pricevalue != null)
-                records = records.Where(m => m.price.minimum_price >= decimal.Parse(pricevalue) || m.price.minimum_price <= decimal.Parse(pricevalue1)).ToList();
+                records = records.Where(m => m.price.minimum_price >= decimal.Parse(pricevalue) && m.price.minimum_price <= decimal.Parse(pricevalue1)).ToList();
             if(budgetvalue !=null)
-                records= records.Where(m => m.price.minimum_price >= decimal.Parse(budgetvalue) || m.price.minimum_price <= decimal.Parse(budgetvalue1)).ToList();
+                records= records.Where(m => m.price.minimum_price >= decimal.Parse(budgetvalue) && m.price.minimum_price <= decimal.Parse(budgetvalue1)).ToList();
 
             if (sortby != null)
             {
