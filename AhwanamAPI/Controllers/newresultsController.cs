@@ -249,7 +249,7 @@ namespace AhwanamAPI.Controllers
         {
             public string name { get; set; }
             public string charge_type { get; set; }
-            public decimal price { get; set; }
+            public string price { get; set; }
         }
 
         //public class prices2
@@ -641,7 +641,7 @@ namespace AhwanamAPI.Controllers
             p.vendor_id = details.VendorId;
             p.category_name = details.name;
             p.name = details.BusinessName;
-            p.address = details.Address;
+            p.address = details.Address.Trim();
             p.city = details.City;
             p.description = details.Description.Trim();
             p.rating = details.Rating;
@@ -662,13 +662,16 @@ namespace AhwanamAPI.Controllers
                 packages1 price = new packages1();
                 price.name = "Vegetarian";
                 price.charge_type= details.Type_of_price;
-                price.price = details.VegPrice;
+               decimal pricevalue = details.VegPrice / 1000;
+                price.price = pricevalue.ToString() + 'k';
                 pkg.Add(price);
                   //nonveg
                   price = new packages1();
                 price.name = "Non Vegetarian";
                 price.charge_type = details.Type_of_price;
-                price.price = details.NonvegPrice;
+                decimal pricevalue2 = details.NonvegPrice / 1000;
+                price.price = pricevalue.ToString() + 'k';
+                
                 pkg.Add(price);
 
             }
@@ -678,23 +681,24 @@ namespace AhwanamAPI.Controllers
                 packages1 price = new packages1();
                 price.name = "Photography";
                 price.charge_type= details.Type_of_price;
-                price.price = details.MinPrice;
+                decimal pricevalue = details.MinPrice / 1000;
+                price.price = pricevalue.ToString() + 'k';
                 pkg.Add(price);
-            }
+            } 
             else if(p.category_name == "Decorators")
             {
                 packages1 price = new packages1();
                 price.name = "Decoratoration";
-                price.charge_type = details.Type_of_price;
-                price.price = details.MinPrice;
+                decimal pricevalue = details.MinPrice / 1000;
+                price.price = pricevalue.ToString() + 'k';
                 pkg.Add(price);
             }
             else if (p.category_name == "Mehendi")
             {
                 packages1 price = new packages1();
                 price.name = "Mehendi";
-                price.charge_type = details.Type_of_price;
-                price.price = details.MinPrice;
+                decimal pricevalue = details.MinPrice / 1000;
+                price.price = pricevalue.ToString() + 'k';
                 pkg.Add(price);
 
             }

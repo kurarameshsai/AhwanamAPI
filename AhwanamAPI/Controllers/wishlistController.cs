@@ -28,8 +28,9 @@ namespace AhwanamAPI.Controllers
             public long user_id { get; set; }
             public string name { get; set; }
             public List<wishlistitems> wishlistitems { get; set; }
-            public List<collaborators> collaborators { get; set; }
             public List<sharedwishlist> shared_wishlists { get; set; }
+            public List<collaborators> collaborators { get; set; }
+           
         }
 
         public class sharedwishlist
@@ -359,7 +360,7 @@ namespace AhwanamAPI.Controllers
                             foreach (var item in sharedwishlistdata)
                             {
                                 sharedwishlist s = new sharedwishlist();
-                                s.name = item.Name;
+                                s.name = item.Name.Trim(' ');
                                 s.wishlist_id = item.WishlistdetailId;
                                 swlist.Add(s);
                             }
@@ -918,21 +919,6 @@ namespace AhwanamAPI.Controllers
             return Json(dict);
         }
 
-        //public void TriggerEmail(string txtto, string txtmsg, string subject, HttpPostedFileBase attachment)
-        //{
-        //    EmailSendingUtility emailSendingUtility = new EmailSendingUtility();
-        //    emailSendingUtility.Wordpress_Email(txtto, txtmsg, subject, attachment);
-        //}
-
-        //[HttpGet]
-        //public IHttpActionResult checkemail(string email)
-        //{
-        //    long data = userlogindetailsservice.GetLoginDetailsByEmail(email);
-        //    if(data==0)
-        //    {
-
-        //    }
-        //}
 
         [HttpPost]
         [Route("api/removecollaborator")]
