@@ -373,8 +373,8 @@ namespace AhwanamAPI.Controllers
             readFile = readFile.Replace("[decription]", contact.description);
             readFile = readFile.Replace("[event]", contact.event_date);
             string txtmsg = readFile;
-            string subj = "Seven Vows User Iinformation";
-            string targetmails = "lakshmi.p@xsilica.com,prabodh.dasari@xsilica.com,amit.saxena@ahwanam.com,sneha.akula9@gmail.com,nivita.priya@xsilica.com";   
+            string subj = "Seven Vows User Information";
+            string targetmails = "lakshmi.p@xsilica.com,vivek@qburst.com,amit.saxena@ahwanam.com,sneha.akula9@gmail.com,nivita.priya@xsilica.com";   
                 emailSendingUtility.Email_maaaahwanam(targetmails, txtmsg, subj, null);
             if (status != null)
             { 

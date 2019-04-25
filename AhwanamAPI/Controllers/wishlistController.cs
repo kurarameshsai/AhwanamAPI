@@ -874,9 +874,8 @@ namespace AhwanamAPI.Controllers
                         DetailsCollaborator cdetails = new DetailsCollaborator();
                         if (data!=null)
                         {
-
                             //string url = "http://sandbox.ahwanam.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
-                            string url = "http://sandbox.ahwanam.com/addcollabrator?wishlist_id=" + data.wishlistid + "&email=" + data.Email;
+                            string url = "http://sandbox.ahwanam.com/sharedwishlist??wishlist_id=" + data.wishlistid + "&email=" + data.Email;
                             FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
                             string readFile = File.OpenText().ReadToEnd();
                             readFile = readFile.Replace("[ActivationLink]", url);
@@ -890,13 +889,6 @@ namespace AhwanamAPI.Controllers
                             cdetails.collaborator_id = data.Id;
                             cdetails.wishlist_id = data.wishlistid;
                             cdetails.code = data.wishlistlink;
-                            //string url = "http://sandbox.ahwanam.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
-                            //FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
-                            //string readFile = File.OpenText().ReadToEnd();
-                            //readFile = readFile.Replace("[ActivationLink]", url);
-                            //readFile = readFile.Replace("[name]", data.Email);
-                            //readFile = readFile.Replace("[phoneno]", data.PhoneNo);
-                            //TriggerEmail(data.Email, readFile, "Account Activation", null);
                             dict.Add("status", true);
                             dict.Add("message", "Success");
                             dict.Add("data", cdetails);

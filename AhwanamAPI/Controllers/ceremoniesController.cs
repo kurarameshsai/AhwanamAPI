@@ -15,6 +15,7 @@ namespace AhwanamAPI.Controllers
         {
             //public string Rentalprice { get; set; }
             public string minimum_price { get; set; }
+            public string format_price { get; set; }
             //public string maxprice { get; set; }
             //public string vegprice { get; set; }
             //public string nonvegprice { get; set; }
@@ -552,17 +553,22 @@ namespace AhwanamAPI.Controllers
                         //price.Rentalprice = item.RentAmount.ToString();
                         if (p.category_name == "Venues" || p.category_name == "Caterers")
                         {
-                            price.minimum_price = item.VegPrice.ToString();
+                            int cost = (int)item.VegPrice;
+                            price.minimum_price = Convert.ToString(cost);
                             //price.maxprice = item.NonvegPrice.ToString();
                         }
                         else
                         {
-                            price.minimum_price = item.MinPrice.ToString();
+                            int cost = (int)item.MinPrice;
+                            price.minimum_price = Convert.ToString(cost);
+                            if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
                             //price.maxprice = item.MaxPrice.ToString();
                         }
                         p.price = price;
                         p.rating = item.Rating;
-                        p.reviews_count = item.ReviewsCount.ToString();
+                        var data1 = resultsPageService.Getreviews(item.VendorId);
+                        p.reviews_count = data1.Count().ToString();
+                        //p.reviews_count = item.ReviewsCount.ToString();
                         param.Add(p);
                         
                     }
