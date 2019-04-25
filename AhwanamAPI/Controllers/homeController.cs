@@ -282,6 +282,16 @@ namespace AhwanamAPI.Controllers
         }
 
         [HttpGet]
+        [Route("api/getmsg")]
+        public IHttpActionResult get()
+        {
+            string msg = "Hii";
+            return Json(msg);
+        }
+
+
+
+        [HttpGet]
         [Route("api/home/sendquote")]
         public IHttpActionResult SendQuote(string name, string email, string phone, string page, string date = null, string city = null, string comments = null)
         {

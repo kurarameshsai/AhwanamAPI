@@ -15,6 +15,7 @@ namespace AhwanamAPI.Controllers
     public class newresultsController : ApiController
     {
         ResultsPageService resultsPageService = new ResultsPageService();
+        WhishListService wishlistservice = new WhishListService();
 
         public class prices
         {
@@ -39,6 +40,7 @@ namespace AhwanamAPI.Controllers
             public string city { get; set; }
             public prices price { get; set; }
             public string pic_url { get; set; }
+            public bool is_in_wishlist { get; set; }
         }
 
         public class param5
@@ -87,6 +89,7 @@ namespace AhwanamAPI.Controllers
             public string city { get; set; }
             public List<packages1> packages { get; set; }           
             public string pic_url { get; set; }
+            public bool is_in_wishlist { get; set; }
             public location location { get; set; }
             public List<Amenities> amenities { get; set; }
             public List<Policies> policies { get; set; }
@@ -438,6 +441,7 @@ namespace AhwanamAPI.Controllers
         [Route("api/getall")]
         public IHttpActionResult GetallVendordetails(int category_id, int? city = -1, int? rating = 0, int? offset = 0, int? page = 0, int? capacity = 0, int? venue_type = 0, int? space_preference = 0, int? locality = 0, int? price_per_plate_or_rental = 0, int? sortby = -1, int? budget = 0)
         {
+            Dictionary<string, object> dict1 = new Dictionary<string, object>();
             List<param2> param = new List<param2>();
             int count = 0;
             string guestvalue1 = "";
@@ -477,10 +481,113 @@ namespace AhwanamAPI.Controllers
             else if (guestsvalue == "> 1000") { guestsvalue = "1000"; guestvalue1 = "2000"; }
 
             if (ratingvalue == "Rated 2.0+") ratingvalue = "2";
-                else if (ratingvalue == "Rated 3.0+") ratingvalue = "3";
-                else if (ratingvalue == "Rated 4.0+") ratingvalue = "4";
-                else if (ratingvalue == "Rated 5.0+") ratingvalue = "5";
+            else if (ratingvalue == "Rated 3.0+") ratingvalue = "3";
+            else if (ratingvalue == "Rated 4.0+") ratingvalue = "4";
+            else if (ratingvalue == "Rated 5.0+") ratingvalue = "5";
+            var re = Request;
+            var customheader = re.Headers;
+            UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
+            if (customheader.Contains("Authorization"))
+            {
+                string token = customheader.GetValues("Authorization").First();
+                var details = userlogindetailsservice.Getmyprofile(token);
+                if (details != null)
+                {
+                    var data = resultsPageService.GetvendorbycategoryId(category_id);
+                    count = data.Count();
+                    if (cityvalue != null || cityvalue == "empty")
+                        data = data.Where(m => m.City == cityvalue).ToList();
+                    if (page > 1)
+                        data = data.Skip(takecount).Take((int)offset).ToList();
+                    else
+                        data = data.Take((int)offset).ToList();
+                    if (guestsvalue != null)
+                        data = data.Where(m => m.Capacity > int.Parse(guestsvalue) && m.Capacity <= int.Parse(guestvalue1)).ToList();
+                    if (pricevalue != null)
+                    {
+                        if (category_id == 1 || category_id == 2)
+                            data = data.Where(m => m.VegPrice >= decimal.Parse(pricevalue) && m.VegPrice <= decimal.Parse(pricevalue1)).ToList();
+                        //else
+                        //    data = data.Where(m => m.MinPrice >= decimal.Parse(pricevalue) && m.MinPrice <= decimal.Parse(pricevalue1)).ToList();
+                    }
+                    if (budgetvalue != null)
+                    {
+                        data = data.Where(m => m.MinPrice >= decimal.Parse(pricevalue) && m.MinPrice <= decimal.Parse(pricevalue1)).ToList();
+                        //if (category_id == '1' || category_id == '2')
+                        //    data = data.Where(m => m.VegPrice >= decimal.Parse(budgetvalue) || m.VegPrice <= decimal.Parse(budgetvalue1)).ToList();
+                    }
 
+                    if (sortby != null)
+                    {
+                        if (sortby == 1)
+                        {  //if (sortbyvalue == "price-high-to-low")
+                            if (category_id == 1 || category_id == 2)
+                                data = data.OrderByDescending(m => m.VegPrice).ToList();
+                            else
+                                data = data.OrderByDescending(m => m.MinPrice).ToList();
+                        }
+                    }
+
+                    if (data.Count > 0)
+                    {
+                        foreach (var item in data)
+                        {
+                            param2 p = new param2();
+                            p.vendor_id = item.VendorId;
+                            p.category_id = item.Category_TypeId;
+                            p.category_name = item.name.Trim();
+                            p.name = item.BusinessName.Trim();
+                            p.rating = item.Rating;
+                            p.reviews_count = item.ReviewsCount.ToString();
+                            p.description = item.Description.Trim();
+                            p.charge_type = item.Type_of_price;
+                            p.city = item.City;
+                            p.pic_url = "https://api.ahwanam.com/images/" + item.VendorId + "/main.jpg";
+                            //prices Section
+                            prices price = new prices();
+                            //price.Rentalprice = item.RentAmount.ToString();
+                            if (p.category_name == "Venues" || p.category_name == "Caterers")
+                            {
+                                decimal cost = item.VegPrice / 1000;
+                                price.minimum_price = cost.ToString() + 'k';
+                                //price.minimum_price1 = item.VegPrice;
+                                //price.maxprice = item.NonvegPrice.ToString();
+                            }
+                            else
+                            {
+                                decimal cost = item.MinPrice / 1000;
+                                price.minimum_price = cost.ToString() + 'k';
+                                //price.minimum_price = item.MinPrice;
+                                //price.maxprice = item.MaxPrice.ToString();
+                            }
+                            p.price = price;
+                            var itemavailabe = wishlistservice.getwishlistitemdetail(details.UserLoginId);
+                            foreach(var a in itemavailabe)
+                            {
+                                if (a.vendorId==item.VendorId)
+                                {
+                                    p.is_in_wishlist = true;
+                                }
+                                else
+                                {
+                                    p.is_in_wishlist = false;
+                                }
+                            }
+                            param.Add(p);
+                        }
+                    }
+                    var records = param;
+                    if (rating != 0)
+                        //records = records.Where(m => m.rating == decimal.Parse(rating.ToString())).ToList();
+                        records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).ToList();
+                    dict1.Add("results", records);
+                    dict1.Add("total_count", count);
+                    dict1.Add("offset", (offset == null) ? 6 : offset);
+                    dict1.Add("no_of_pages", ((count - 1) / offset) + 1);
+                    dict1.Add("sort_options", (sortby == null) ? 0 : sortby);
+                }
+            }
+            else { 
             var data = resultsPageService.GetvendorbycategoryId(category_id);
             count = data.Count();
             if (cityvalue != null || cityvalue == "empty")
@@ -513,16 +620,13 @@ namespace AhwanamAPI.Controllers
                         data = data.OrderByDescending(m => m.VegPrice).ToList();
                     else
                         data = data.OrderByDescending(m => m.MinPrice).ToList();
-
                 }
             }
-            
             if (data.Count > 0)
             {
                 foreach (var item in data)
                 {
                     param2 p = new param2();
-
                     p.vendor_id = item.VendorId;
                     p.category_id = item.Category_TypeId;
                     p.category_name = item.name.Trim();
@@ -541,8 +645,7 @@ namespace AhwanamAPI.Controllers
                         decimal cost = item.VegPrice / 1000;
                         price.minimum_price = cost.ToString() + 'k';
                         //price.minimum_price1 = item.VegPrice;
-                        //price.maxprice = item.NonvegPrice.ToString();
-                       
+                        //price.maxprice = item.NonvegPrice.ToString();         
                     }
                     else
                     {
@@ -552,22 +655,21 @@ namespace AhwanamAPI.Controllers
                         //price.maxprice = item.MaxPrice.ToString();
                     }
                     p.price = price;
+                        p.is_in_wishlist = false;
                     param.Add(p);
-
                 }
             }
-            var records = param;
+            var records = param;           
             if (rating != 0)
                 //records = records.Where(m => m.rating == decimal.Parse(rating.ToString())).ToList();
                 records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).ToList();
-            Dictionary<string, object> dict1 = new Dictionary<string, object>();
             dict1.Add("results", records);
             dict1.Add("total_count", count);
             dict1.Add("offset", (offset == null) ? 6 : offset);
             dict1.Add("no_of_pages", ((count - 1) / offset) + 1);
             dict1.Add("sort_options", (sortby == null) ? 0 : sortby);
-            //dict1.Add("service_type", type);
-
+                //dict1.Add("service_type", type);
+            }
             Dictionary<string, object> dict = new Dictionary<string, object>();
             dict.Add("status", true);
             dict.Add("message", "Success");
@@ -642,8 +744,33 @@ namespace AhwanamAPI.Controllers
         public IHttpActionResult getdetails(long vendor_id)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
-            var details = resultsPageService.Getsupplier(vendor_id);
             param3 p = new param3();
+            var re = Request;
+            var customheader = re.Headers;
+            UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
+            if (customheader.Contains("Authorization"))
+            {
+                string token = customheader.GetValues("Authorization").First();
+                var detail = userlogindetailsservice.Getmyprofile(token);
+                if (detail != null)
+                {
+                    var itemavailabe = wishlistservice.getwishlistitemdetail(detail.UserLoginId);
+                    foreach (var a in itemavailabe)
+                    {
+                        if (a.vendorId == vendor_id)
+                        {
+                            p.is_in_wishlist = true;
+                        }
+                        else
+                        {
+                            p.is_in_wishlist = false;
+                        }
+                    }
+
+                }
+            }
+
+           var details = resultsPageService.Getsupplier(vendor_id);
             p.category_id = details.Category_TypeId;
             p.vendor_id = details.VendorId;
             p.category_name = details.name;
