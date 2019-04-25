@@ -1,6 +1,7 @@
 ﻿using MaaAahwanam.Service;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -10,7 +11,7 @@ namespace AhwanamAPI.Controllers
 {
     public class ceremoniesController : ApiController
     {
-
+        WhishListService wishlistservice = new WhishListService();
         public class price
         {
             //public string Rentalprice { get; set; }
@@ -34,6 +35,7 @@ namespace AhwanamAPI.Controllers
             public string city { get; set; }
             public price price { get; set; }
             public string pic_url { get; set; }
+            public bool is_in_wishlist { get; set; }
         }
         public class ceremony
         {
@@ -532,7 +534,7 @@ namespace AhwanamAPI.Controllers
                 List<vendors> param = new List<vendors>();
                //var data = resultsPageService.Getvendorbycategory(categories1.page_name);
                 var data= resultsPageService.GetvendorbycategoryId(categories1.category_id).ToList();
-                data = data.OrderBy(v => v.priority).Take(7).ToList();
+                data = data.OrderByDescending(v => v.priority).Take(7).ToList();
                 if (cityvalue != null || cityvalue == "empty")
                     data = data.Where(m => m.City == cityvalue).Take(7).ToList();            
                 if (data.Count > 0)
@@ -547,15 +549,15 @@ namespace AhwanamAPI.Controllers
                         p.name = item.BusinessName;
                         p.charge_type = item.Type_of_price;
                         p.city = item.City;
-                        p.pic_url = "https://api.ahwanam.com/images/" + item.VendorId + "/main.jpg";
+                        p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorId + "/main.jpg";
                         //prices Section
                         price price = new price();
                         //price.Rentalprice = item.RentAmount.ToString();
                         if (p.category_name == "Venues" || p.category_name == "Caterers")
                         {
-                            int cost = (int)item.VegPrice;
-                            price.minimum_price = Convert.ToString(cost);
-                            //price.maxprice = item.NonvegPrice.ToString();
+                            var mny = item.VegPrice.ToString("N", CultureInfo.CreateSpecificCulture("en-IN")).Split('.');
+                            price.minimum_price = mny[0];
+                            price.format_price = Convert.ToString(mny[0]);
                         }
                         else
                         {
@@ -565,6 +567,31 @@ namespace AhwanamAPI.Controllers
                             //price.maxprice = item.MaxPrice.ToString();
                         }
                         p.price = price;
+                        var re = Request;
+                        var customheader = re.Headers;
+                        UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
+                        if (customheader.Contains("Authorization"))
+                        {
+                            string token = customheader.GetValues("Authorization").First();
+                            var detail1 = userlogindetailsservice.Getmyprofile(token);
+                            if (detail != null)
+                            {
+                                var itemavailabe = wishlistservice.getwishlistitemdetail(detail1.UserLoginId);
+                                foreach (var a in itemavailabe)
+                                {
+                                    if (a.vendorId == item.VendorId)
+                                    {
+                                        p.is_in_wishlist = true;
+                                    }
+
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            p.is_in_wishlist = false;
+                        }
                         p.rating = item.Rating;
                         var data1 = resultsPageService.Getreviews(item.VendorId);
                         p.reviews_count = data1.Count().ToString();

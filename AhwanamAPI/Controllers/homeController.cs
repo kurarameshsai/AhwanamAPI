@@ -181,7 +181,7 @@ namespace AhwanamAPI.Controllers
             price.save_amount = "2.4 Lakhs";
             price.save_percentage = "15";
             pkg.price = price;
-            pkg.imageUrl = "https://api.ahwanam.com/images/package.png";
+            pkg.imageUrl = System.Configuration.ConfigurationManager.AppSettings["imagename"] + "package.png";
             pkg.targetUrl = "https://www.ahwanam.com/packages/wedding-gold-package/";
             package.Add(pkg);
 
@@ -195,7 +195,7 @@ namespace AhwanamAPI.Controllers
             price.save_amount = "2.4 Lakhs";
             price.save_percentage = "15";
             pkg.price = price;
-            pkg.imageUrl = "https://api.ahwanam.com/images/package.png";
+            pkg.imageUrl = System.Configuration.ConfigurationManager.AppSettings["imagename"] + "package.png";
             pkg.targetUrl = "https://www.ahwanam.com/packages/wedding-gold-package/";
             package.Add(pkg);
 
@@ -209,7 +209,7 @@ namespace AhwanamAPI.Controllers
             price.save_amount = "2.4 Lakhs";
             price.save_percentage = "15";
             pkg.price = price;
-            pkg.imageUrl = "https://api.ahwanam.com/images/package.png";
+            pkg.imageUrl = System.Configuration.ConfigurationManager.AppSettings["imagename"] + "package.png";
             pkg.targetUrl = "https://www.ahwanam.com/packages/wedding-gold-package/";
             package.Add(pkg);
             Dictionary<string, object> dict = new Dictionary<string, object>();

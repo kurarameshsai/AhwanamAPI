@@ -695,7 +695,7 @@ namespace AhwanamAPI.Controllers
             else if (type == "mehendi")
                 headers.header_text = "Best Mehendi Vendors";
             headers.sub_text = "Sub Text";
-            headers.image = "https://api.ahwanam.com/images/header1.png";
+            headers.image = System.Configuration.ConfigurationManager.AppSettings["imagename"] + "header1.png";
             dict.Add("header", headers);
 
             List<newfilter> filter = new List<newfilter>();
@@ -904,7 +904,7 @@ namespace AhwanamAPI.Controllers
             else if (type == "mehendi")
                 headers.header_text = "Best Mehendi Vendors";
             headers.sub_text = "Sub Text";
-            headers.image = "https://api.ahwanam.com/images/header1.png";
+            headers.image = System.Configuration.ConfigurationManager.AppSettings["imagename"] + "header1.png";
             d1.Add("header", headers);
 
             List<newfilter> filter = new List<newfilter>();

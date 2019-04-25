@@ -9,6 +9,7 @@ using System.Web;
 using Newtonsoft.Json;
 using System.Web.Http.Cors;
 using MaaAahwanam.Models;
+using System.Globalization;
 
 namespace AhwanamAPI.Controllers
 {
@@ -58,6 +59,7 @@ namespace AhwanamAPI.Controllers
             public string city { get; set; }
             public prices price { get; set; }
             public string pic_url { get; set; }
+            public bool is_in_wishlist { get; set; }
         }
         public class param
         {
@@ -332,7 +334,7 @@ namespace AhwanamAPI.Controllers
             else if (categories1.name == "Mehendi")
                 headers.header_text = "Best Mehendi Vendors";
             headers.sub_text = "Sub Text";
-            headers.image = "https://api.ahwanam.com/images/header1.png";
+            headers.image = System.Configuration.ConfigurationManager.AppSettings["imagename"] + "header1.png";
             headers.category_name = categories1.name;
             d1.Add("header", headers);
 
@@ -521,6 +523,7 @@ namespace AhwanamAPI.Controllers
                         data = data.OrderByDescending(m => m.MinPrice).ToList();
                 }
             }
+            data = data.OrderByDescending(v => v.priority).ToList();
             if (data.Count > 0)
             {
                 foreach (var item in data)
@@ -538,15 +541,15 @@ namespace AhwanamAPI.Controllers
                     p.description = d;
                     p.charge_type = item.Type_of_price;
                     p.city = item.City;
-                    p.pic_url = "https://api.ahwanam.com/images/" + item.VendorId + "/main.jpg";
+                    p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorId + "/main.jpg";
                     //prices Section
                     prices price = new prices();
                     //price.Rentalprice = item.RentAmount.ToString();
                     if (p.category_name == "Venues" || p.category_name == "Caterers")
                     {
-                        int cost = (int)item.VegPrice;
-                        price.minimum_price =Convert.ToString(cost);
-                               
+                        var mny = item.VegPrice.ToString("N", CultureInfo.CreateSpecificCulture("en-IN")).Split('.');
+                        price.minimum_price = mny[0];
+                        price.format_price = Convert.ToString(mny[0]);
                     }
                     else
                     {
@@ -584,8 +587,9 @@ namespace AhwanamAPI.Controllers
                     param.Add(p);
                 }
             
-            var records = param;           
-            if (rating != 0)
+            var records = param;
+
+                if (rating != 0)
                 //records = records.Where(m => m.rating == decimal.Parse(rating.ToString())).ToList();
                 records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).ToList();
             dict1.Add("results", records);
@@ -625,15 +629,15 @@ namespace AhwanamAPI.Controllers
                 //p.description = data[i].Description.Trim();
                 p.charge_type = data[i].Type_of_price;
                 p.city = data[i].City;
-                p.pic_url = "https://api.ahwanam.com/images/" + data[i].VendorId + "/main.jpg";
+                p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + data[i].VendorId + "/main.jpg";
                 //prices Section
                 prices price = new prices();
                 //price.Rentalprice = item.RentAmount.ToString();
                 if (p.category_name == "Venues" || p.category_name == "Caterers")
                 {
-                    int cost = (int)data[i].VegPrice;
-                    price.minimum_price = Convert.ToString(cost);
-                 
+                    var mny = data[i].VegPrice.ToString("N", CultureInfo.CreateSpecificCulture("en-IN")).Split('.');
+                    price.minimum_price = mny[0];
+                    price.format_price = Convert.ToString(mny[0]);
                 }
                 else
                 {
@@ -710,7 +714,7 @@ namespace AhwanamAPI.Controllers
             p.reviews_count = data1.Count().ToString();
             //p.reviews_count = details.ReviewsCount.ToString();
             //p.charge_type = details.Type_of_price;
-            p.pic_url = "https://api.ahwanam.com/images/" + details.VendorId + "/baner.jpg"; ;
+            p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + details.VendorId + "/baner.jpg"; ;
             location lc = new location();
             lc.latitude = "17.385044";
             lc.longitude = "78.486671";
@@ -721,19 +725,21 @@ namespace AhwanamAPI.Controllers
             {
                 //price.veg_price = details.VegPrice;
                 //price.nonveg_price = details.NonvegPrice;
-              
+                //CultureInfo CInfo = new CultureInfo("hi - IN");
                 packages1 price = new packages1();
                 price.name = "Vegetarian";
                 price.charge_type= details.Type_of_price;
-                int cost = (int)details.VegPrice;
-                price.price = Convert.ToString(cost);
+                var mny = details.VegPrice.ToString("N", CultureInfo.CreateSpecificCulture("en-IN")).Split('.');
+                price.price = mny[0];
+                price.format_price = Convert.ToString(mny[0]);
                 pkg.Add(price);
                   //nonveg
                   price = new packages1();
                 price.name = "Non Vegetarian";
                 price.charge_type = details.Type_of_price;
-                int cost1 = (int)details.NonvegPrice;
-                price.price = Convert.ToString(cost1);             
+                var mny1 = details.NonvegPrice.ToString("N", CultureInfo.CreateSpecificCulture("en-IN")).Split('.');
+                price.price = mny1[0];
+                price.format_price = Convert.ToString(mny1[0]);
                 pkg.Add(price);
 
             }
@@ -757,7 +763,17 @@ namespace AhwanamAPI.Controllers
                 if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
                 pkg.Add(price);
             }
-            else if (p.category_name == "Mehendi")
+            else if (p.category_name == "Pandit")
+            {
+                packages1 price = new packages1();
+                price.name = "Pandit";
+                int cost = (int)details.MinPrice;
+                price.price = Convert.ToString(cost);
+                if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                pkg.Add(price);
+
+            }
+            else if (p.category_name == "Mehendi Artists")
             {
                 packages1 price = new packages1();
                 price.name = "Mehendi";
@@ -767,6 +783,34 @@ namespace AhwanamAPI.Controllers
                 pkg.Add(price);
 
             }
+            else if(p.category_name == "Makeup Artists")
+            {
+                packages1 price = new packages1();
+                price.name = "Makeup";
+                int cost = (int)details.MinPrice;
+                price.price = Convert.ToString(cost);
+                if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                pkg.Add(price);
+            }
+            else if (p.category_name == "DJ")
+            {
+                packages1 price = new packages1();
+                price.name = "DJ";
+                int cost = (int)details.MinPrice;
+                price.price = Convert.ToString(cost);
+                if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                pkg.Add(price);
+            }
+            else if (p.category_name == "Choreographers")
+            {
+                packages1 price = new packages1();
+                price.name = "DJ";
+                int cost = (int)details.MinPrice;
+                price.price = Convert.ToString(cost);
+                if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                pkg.Add(price);
+            }
+
             p.packages = pkg;
             var amenitydetail= resultsPageService.GetAmenities(p.vendor_id);
             List<Amenities> amenitys = new List<Amenities>();
@@ -982,11 +1026,10 @@ namespace AhwanamAPI.Controllers
                 result.page_name = categories[i].display_name;
                 result.category_id = categories[i].servicType_id;
                 var data = resultsPageService.GetvendorbycategoryId(categories[i].servicType_id);
-                data = data.OrderBy(v => v.priority).Take(7).ToList();
+                data = data.OrderByDescending(v => v.priority).Take(7).ToList();
                 List<param5> param = new List<param5>();
                 if(data!=null)
                 {
-                //for (int j = 0; j < data.Count; j++)
                 foreach(var item in data)
                 {
                     param5 p = new param5();
@@ -1001,15 +1044,16 @@ namespace AhwanamAPI.Controllers
                     //p.description = data[i].Description.Trim();
                     p.charge_type = item.Type_of_price;
                     p.city = item.City;
-                    p.pic_url = "https://api.ahwanam.com/images/" + item.VendorId + "/main.jpg";
+                    p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorId + "/main.jpg";
                         //prices Section
                         prices price = new prices();
                     //price.Rentalprice = item.RentAmount.ToString();
                     if (p.category_name == "Venues" || p.category_name == "Caterers")
                     {
-                            int cost = (int)item.VegPrice;
-                            price.minimum_price = Convert.ToString(cost);
-                            //price.maxprice = item.NonvegPrice.ToString();
+                            var mny = item.VegPrice.ToString("N", CultureInfo.CreateSpecificCulture("en-IN")).Split('.');
+                            price.minimum_price = mny[0];
+                            price.format_price = Convert.ToString(mny[0]);
+                            
                         }
                     else
                     {
@@ -1019,8 +1063,33 @@ namespace AhwanamAPI.Controllers
                             //price.maxprice = item.MaxPrice.ToString();
                         }
                     p.price = price;
+                        var re = Request;
+                        var customheader = re.Headers;
+                        UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
+                        if (customheader.Contains("Authorization"))
+                        {
+                            string token = customheader.GetValues("Authorization").First();
+                            var detail = userlogindetailsservice.Getmyprofile(token);
+                            if (detail != null)
+                            {
+                                var itemavailabe = wishlistservice.getwishlistitemdetail(detail.UserLoginId);
+                                foreach (var a in itemavailabe)
+                                {
+                                    if (a.vendorId == item.VendorId)
+                                    {
+                                        p.is_in_wishlist = true;
+                                    }
 
-                    param.Add(p);
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            p.is_in_wishlist = false;
+                        }
+
+                        param.Add(p);
                 }
                 }
                 var records = param;
@@ -1051,7 +1120,7 @@ namespace AhwanamAPI.Controllers
                 {
                     VImages i = new VImages();
                     //i.vendor_id = item.VendorId;
-                    i.image = "https://api.ahwanam.com/images/" + vendor_id + item.ThumbnailUrl;
+                    i.image = System.Configuration.ConfigurationManager.AppSettings["imagename"] + vendor_id + "/" + item.ThumbnailUrl;
                     ilist.Add(i);
                 }
                 dict1.Add("gallery", ilist);

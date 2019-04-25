@@ -153,7 +153,8 @@ namespace AhwanamAPI.Controllers
         public class price
         {
             //public string Rentalprice { get; set; }
-            public decimal minimum_price { get; set; }
+            public string minimum_price { get; set; }
+            public string format_price { get; set; }
             //public string maxprice { get; set; }
             //public string vegprice { get; set; }
             //public string nonvegprice { get; set; }
@@ -243,12 +244,16 @@ namespace AhwanamAPI.Controllers
                                         price p = new price();
                                         if (vendordata[j].name == "Venues" || vendordata[j].name == "Caterers")
                                         {
-                                            
-                                            p.minimum_price = vendordata[j].VegPrice;
+
+                                            int cost = (int)vendordata[j].VegPrice;
+                                            p.minimum_price = Convert.ToString(cost);
+                                            p.format_price = Convert.ToString(cost);
                                         }
                                         else
                                         {
-                                            p.minimum_price = vendordata[j].MinPrice;
+                                            int cost = (int)vendordata[j].MinPrice;
+                                            p.minimum_price = Convert.ToString(cost);
+                                            if (cost >= 10000) { int value = cost / 1000; p.format_price = value.ToString() + 'k'; }
                                         }
                                         v.price = p;
                                         v.pic_url = "https://api.ahwanam.com/images/" + v.vendor_id + "/main.jpg";
@@ -336,11 +341,15 @@ namespace AhwanamAPI.Controllers
                                     price p = new price();
                                     if (vendordata[j].name == "Venues" || vendordata[j].name == "Caterers")
                                     {
-                                        p.minimum_price = vendordata[j].VegPrice;
+                                        int cost = (int)vendordata[j].VegPrice;
+                                        p.minimum_price = Convert.ToString(cost);
+                                        p.format_price = Convert.ToString(cost);
                                     }
                                     else
                                     {
-                                        p.minimum_price = vendordata[j].MinPrice;
+                                        int cost = (int)vendordata[j].MinPrice;
+                                        p.minimum_price = Convert.ToString(cost);
+                                        if (cost >= 10000) { int value = cost / 1000; p.format_price = value.ToString() + 'k'; }
                                     }
                                     v.price = p;
                                     v.pic_url = vendordata[j].pic_url;
@@ -446,11 +455,15 @@ namespace AhwanamAPI.Controllers
                                     if (vendordata[j].name == "Venues" || vendordata[j].name == "Caterers")
                                     {
 
-                                        p.minimum_price = vendordata[j].VegPrice;
+                                        int cost = (int)vendordata[j].VegPrice;
+                                        p.minimum_price = Convert.ToString(cost);
+                                        p.format_price = Convert.ToString(cost);
                                     }
                                     else
                                     {
-                                        p.minimum_price = vendordata[j].MinPrice;
+                                        int cost = (int)vendordata[j].MinPrice;
+                                        p.minimum_price = Convert.ToString(cost);
+                                        if (cost >= 10000) { int value = cost / 1000; p.format_price = value.ToString() + 'k'; }
                                     }
                                     v.price = p;
                                     v.pic_url = "https://api.ahwanam.com/images/" + v.vendor_id + "/main.jpg";
@@ -555,12 +568,16 @@ namespace AhwanamAPI.Controllers
                             price p = new price();
                         if (vdata.name == "Venues" || vdata.name == "Caterers")
                         {
-                                p.minimum_price = vdata.VegPrice;
-                        }
+                                int cost = (int)vdata.VegPrice;
+                                p.minimum_price = Convert.ToString(cost);
+                                p.format_price = Convert.ToString(cost);
+                            }
                         else
                         {
-                                p.minimum_price = vdata.MinPrice;
-                        }
+                                int cost = (int)vdata.MinPrice;
+                                p.minimum_price = Convert.ToString(cost);
+                                if (cost >= 10000) { int value = cost / 1000; p.format_price = value.ToString() + 'k'; }
+                            }
                            v.price = p;
                          v.pic_url = "https://api.ahwanam.com/images/" + v.vendor_id + "/main.jpg"; ;
                         v.notes = null;
