@@ -356,7 +356,14 @@ namespace AhwanamAPI.Controllers
             //string date = contact.event_date + contact.time;
             //DateTime d1 = Convert.ToDateTime(contact.event_date);
             //d1.Add("time",contact.time);
-            enquiry.EnquiryDate = DateTime.Parse(contact.event_date);
+            if (contact.event_date == "\"\"")
+            {
+                enquiry.EnquiryDate = null;
+            }
+            else
+            {
+                enquiry.EnquiryDate = DateTime.Parse(contact.event_date);
+            }
             enquiry.EnquiryDetails = contact.description;
             enquiry.EnquiryTitle = "Talk To Ahwanam";
             enquiry.EnquiryStatus = enquiry.Status = "Open";
