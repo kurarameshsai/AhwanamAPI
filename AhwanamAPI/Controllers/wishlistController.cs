@@ -603,7 +603,12 @@ namespace AhwanamAPI.Controllers
                     dict.Add("status", false);
                     dict.Add("message", "failed");
                 }
-            }      
+            }
+            else
+            {
+                dict.Add("status", false);
+                dict.Add("message", "failed");
+            }
             return Json(dict);
         }
 

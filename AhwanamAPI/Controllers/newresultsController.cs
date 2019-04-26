@@ -322,19 +322,24 @@ namespace AhwanamAPI.Controllers
             // Header Section
             header headers = new header();
             if (categories1.name == "Venues")
-                headers.header_text = "Best Wedding Venues";
+            { headers.header_text = "Best Wedding Venues"; headers.image = System.Configuration.ConfigurationManager.AppSettings["imagename"] + "genericimages" + "/venus_hero_image_generic.jpg"; }
             else if (categories1.name == "Caterers")
-                headers.header_text = "Best Catering Vendors";
+            { headers.header_text = "Best Catering Vendors"; headers.image = System.Configuration.ConfigurationManager.AppSettings["imagename"] + "genericimages" + "/caterers_hero_image_generic.jpg"; }
             else if (categories1.name == "Decorators")
-                headers.header_text = "Best Decorator Vendors";
+            { headers.header_text = "Best Decorator Vendors"; headers.image = System.Configuration.ConfigurationManager.AppSettings["imagename"] + "genericimages" + "/decor_hero_image_generic.jpg"; }
             else if (categories1.name == "Photographers")
-                headers.header_text = "Best Photography Vendors";
+            { headers.header_text = "Best Photography Vendors"; headers.image = System.Configuration.ConfigurationManager.AppSettings["imagename"] + "genericimages" + "/Photography_hero_image_generic.jpg"; }
             else if (categories1.name == "Pandits")
-                headers.header_text = "Best Pandit Vendors";
-            else if (categories1.name == "Mehendi")
-                headers.header_text = "Best Mehendi Vendors";
+            { headers.header_text = "Best Pandit Vendors"; headers.image = System.Configuration.ConfigurationManager.AppSettings["imagename"] + "genericimages" + "/pandit_hero_image_generic.jpg"; }
+            else if (categories1.name == "Mehendi Artists")
+            { headers.header_text = "Best Mehendi Vendors"; headers.image = System.Configuration.ConfigurationManager.AppSettings["imagename"] + "genericimages" + "/mehendi_hero_image_generic.jpg"; }
+            else if (categories1.name == "Makeup Artists")
+            { headers.header_text = "Best Makeup Vendors"; headers.image = System.Configuration.ConfigurationManager.AppSettings["imagename"] + "genericimages" + "/makeup_hero_image_generic.jpg"; }
+            else if (categories1.name == "DJ")
+            { headers.header_text = "Best DJ Vendors"; headers.image = System.Configuration.ConfigurationManager.AppSettings["imagename"] + "genericimages" + "/dj_hero_image_generic.jpg"; }
+            else if (categories1.name == "Choreographers")
+            { headers.header_text = "Best Choreography Vendors"; headers.image = System.Configuration.ConfigurationManager.AppSettings["imagename"] + "genericimages" + "/choreographer_hero_image_generic.jpg"; }
             headers.sub_text = "Sub Text";
-            headers.image = System.Configuration.ConfigurationManager.AppSettings["imagename"] + "header1.png";
             headers.category_name = categories1.name;
             d1.Add("header", headers);
 
@@ -490,6 +495,7 @@ namespace AhwanamAPI.Controllers
             else if (ratingvalue == "Rated 5.0+") ratingvalue = "5";
 
             var data = resultsPageService.GetvendorbycategoryId(category_id);
+            data = data.OrderByDescending(v => v.priority).ToList();
             count = data.Count();
             if (cityvalue != null || cityvalue == "empty")
                 data = data.Where(m => m.City == cityvalue).ToList();
@@ -508,7 +514,7 @@ namespace AhwanamAPI.Controllers
             }   
             if (budgetvalue != null)
             {
-                data = data.Where(m => m.MinPrice >= decimal.Parse(pricevalue) && m.MinPrice <= decimal.Parse(pricevalue1)).ToList();
+                data = data.Where(m => m.MinPrice >= decimal.Parse(budgetvalue) && m.MinPrice <= decimal.Parse(budgetvalue1)).ToList();
                 //if (category_id == '1' || category_id == '2')
                 //    data = data.Where(m => m.VegPrice >= decimal.Parse(budgetvalue) || m.VegPrice <= decimal.Parse(budgetvalue1)).ToList();
             }
@@ -523,7 +529,7 @@ namespace AhwanamAPI.Controllers
                         data = data.OrderByDescending(m => m.MinPrice).ToList();
                 }
             }
-            data = data.OrderByDescending(v => v.priority).ToList();
+          
             if (data.Count > 0)
             {
                 foreach (var item in data)
@@ -1019,8 +1025,7 @@ namespace AhwanamAPI.Controllers
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
             Dictionary<string, object> dict1 = new Dictionary<string, object>();
-            FilterServices filterServices = new FilterServices();
-            var categories = filterServices.AllCategories();
+            var categories = resultsPageService.getallcategories();
             List<services> res = new List<services>();
             for (int i = 0; i < categories.Count(); i++)
             {

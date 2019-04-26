@@ -433,7 +433,7 @@ namespace AhwanamAPI.Controllers
                 }
                     userdetail.UserPhone = sloginresponse.phoneno;
                 userdetail.AlternativeEmailID = sloginresponse.email;
-                userlogin.Password =
+                //userlogin.Password =
                 userlogin.UserName = sloginresponse.email;
                 userlogin.Status = "InActive";
                 userlogin.UserType = "User";
