@@ -545,11 +545,18 @@ namespace AhwanamAPI.Controllers
                     //prices Section
                     prices price = new prices();
                     //price.Rentalprice = item.RentAmount.ToString();
-                    if (p.category_name == "Venues" || p.category_name == "Caterers")
+                    if (item.name.Trim() == "Venues" || item.name.Trim() == "Caterers")
                     {
                         var mny = item.VegPrice.ToString("N", CultureInfo.CreateSpecificCulture("en-IN")).Split('.');
                         price.minimum_price = mny[0];
                         price.format_price = Convert.ToString(mny[0]);
+                        if(item.ServiceType == "Function Hall")
+                        {
+                            int cost = (int)item.RentAmount;
+                            price.minimum_price = Convert.ToString(cost);
+                            if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                            if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
+                        }
                     }
                     else
                     {
@@ -637,6 +644,13 @@ namespace AhwanamAPI.Controllers
                     var mny = data[i].VegPrice.ToString("N", CultureInfo.CreateSpecificCulture("en-IN")).Split('.');
                     price.minimum_price = mny[0];
                     price.format_price = Convert.ToString(mny[0]);
+                    if (data[i].ServiceType == "Function Hall")
+                    {
+                        int cost = (int)data[i].RentAmount;
+                        price.minimum_price = Convert.ToString(cost);
+                        if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                        if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
+                    }
                 }
                 else
                 {
@@ -737,6 +751,16 @@ namespace AhwanamAPI.Controllers
                 price.price = mny1[0];
                 price.format_price = Convert.ToString(mny1[0]);
                 pkg.Add(price);
+                if (details.ServiceType == "Function Hall")
+                {
+                    price = new packages1();
+                    price.name = "Rental Price";
+                    int cost = (int)details.RentAmount;
+                    price.price = Convert.ToString(cost);
+                    price.charge_type = details.Type_of_price;
+                    if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                    if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
+                }
 
             }
             else if(p.category_name == "Photographers")
@@ -1056,7 +1080,14 @@ namespace AhwanamAPI.Controllers
                             var mny = item.VegPrice.ToString("N", CultureInfo.CreateSpecificCulture("en-IN")).Split('.');
                             price.minimum_price = mny[0];
                             price.format_price = Convert.ToString(mny[0]);
-                            
+                            if (item.ServiceType == "Function Hall")
+                            {
+                                int cost = (int)item.RentAmount;
+                                price.minimum_price = Convert.ToString(cost);
+                                if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                                if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
+                            }
+
                         }
                     else
                     {
