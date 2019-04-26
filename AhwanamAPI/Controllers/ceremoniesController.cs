@@ -564,6 +564,7 @@ namespace AhwanamAPI.Controllers
                             int cost = (int)item.MinPrice;
                             price.minimum_price = Convert.ToString(cost);
                             if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                            if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
                             //price.maxprice = item.MaxPrice.ToString();
                         }
                         p.price = price;

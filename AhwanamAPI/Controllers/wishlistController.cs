@@ -256,7 +256,7 @@ namespace AhwanamAPI.Controllers
                                             if (cost >= 10000) { int value = cost / 1000; p.format_price = value.ToString() + 'k'; }
                                         }
                                         v.price = p;
-                                        v.pic_url = "https://api.ahwanam.com/images/" + v.vendor_id + "/main.jpg";
+                                        v.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + v.vendor_id + "/main.jpg";
                                         v.contributor_id = vendordata[j].UserId;
                                         vendorslst.Add(v);
                                     }
@@ -352,7 +352,7 @@ namespace AhwanamAPI.Controllers
                                         if (cost >= 10000) { int value = cost / 1000; p.format_price = value.ToString() + 'k'; }
                                     }
                                     v.price = p;
-                                    v.pic_url = vendordata[j].pic_url;
+                                    v.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + v.vendor_id + "/main.jpg";
                                     v.contributor_id = vendordata[j].UserId;
                                     vendorslst.Add(v);
                                 }
@@ -466,7 +466,7 @@ namespace AhwanamAPI.Controllers
                                         if (cost >= 10000) { int value = cost / 1000; p.format_price = value.ToString() + 'k'; }
                                     }
                                     v.price = p;
-                                    v.pic_url = "https://api.ahwanam.com/images/" + v.vendor_id + "/main.jpg";
+                                    v.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + vendordata[j].VendormasterId + "/main.jpg";
                                     v.contributor_id = vendordata[j].UserId;
                                     vendorslst.Add(v);
                                 }
@@ -579,7 +579,7 @@ namespace AhwanamAPI.Controllers
                                 if (cost >= 10000) { int value = cost / 1000; p.format_price = value.ToString() + 'k'; }
                             }
                            v.price = p;
-                         v.pic_url = "https://api.ahwanam.com/images/" + v.vendor_id + "/main.jpg"; ;
+                         v.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + v.vendor_id + "/main.jpg"; ;
                         v.notes = null;
                         categorys.vendor = v;
                         dict.Add("status", true);
@@ -892,7 +892,7 @@ namespace AhwanamAPI.Controllers
                         if (data!=null)
                         {
                             //string url = "http://sandbox.ahwanam.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
-                            string url = "http://sandbox.ahwanam.com/sharedwishlist??wishlist_id=" + data.wishlistid + "&email=" + data.Email;
+                            string url = "https://sandbox.sevenvows.co.in/sharedwishlist??wishlist_id=" + data.wishlistid + "&email=" + data.Email;
                             FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
                             string readFile = File.OpenText().ReadToEnd();
                             readFile = readFile.Replace("[ActivationLink]", url);

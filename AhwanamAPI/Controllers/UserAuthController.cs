@@ -251,7 +251,7 @@ namespace AhwanamAPI.Controllers
             if (responce == "sucess")
             {
                 //string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
-                string url = "http://sandbox.ahwanam.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
+                string url = "https://sandbox.sevenvows.co.in/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
                 FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/newwelcome.html"));
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);
@@ -441,7 +441,7 @@ namespace AhwanamAPI.Controllers
                 if (responce == "sucess")
                 {
                     //string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
-                    string url = "http://sandbox.ahwanam.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
+                    string url = "https://sandbox.sevenvows.co.in/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
                     FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/newwelcome.html"));
                     string readFile = File.OpenText().ReadToEnd();
                     readFile = readFile.Replace("[ActivationLink]", url);
@@ -576,10 +576,6 @@ namespace AhwanamAPI.Controllers
 
         }
 
-
-
-
-
         //[AllowAnonymous]
         //[HttpPost]
         //[Route("api/UserAuth/changepassword")]
@@ -633,7 +629,7 @@ namespace AhwanamAPI.Controllers
                 userLogin.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
                     var data = userlogindetailsservice.UpdateActivationCode(userLogin);
                 //string url= "https://ahwanam-sandbox.herokuapp.com/resetpassword?code=" + userLogin.ActivationCode + "&email=" + userLogin.UserName;
-                string url = "http://sandbox.ahwanam.com/resetpassword?code=" + userLogin.resetemaillink + "&email=" + userLogin.UserName;
+                string url = "https://sandbox.sevenvows.co.in/resetpassword?code=" + userLogin.resetemaillink + "&email=" + userLogin.UserName;
                 FileInfo File = new FileInfo(HttpContext.Current.Server.MapPath("/mailtemplate/newforgotpassword.html"));
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);

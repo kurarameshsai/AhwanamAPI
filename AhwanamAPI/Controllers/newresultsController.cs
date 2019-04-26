@@ -93,7 +93,7 @@ namespace AhwanamAPI.Controllers
             public List<packages1> packages { get; set; }           
             public string pic_url { get; set; }
             public bool is_in_wishlist { get; set; }
-            public location location { get; set; }
+            //public location location { get; set; }
             public List<Amenities> amenities { get; set; }
             public List<Policies> policies { get; set; }
             public List<availableareas> availableareas { get; set; }
@@ -114,7 +114,7 @@ namespace AhwanamAPI.Controllers
             public string city { get; set; }
             public packages packages { get; set; }
             public string pic_url { get; set; }
-            public location location { get; set; }
+            //public location location { get; set; }
             //public List<Amenities> amenities { get; set; }
             //public List<Policies> Policies { get; set; }
             //public List<availableareas> availableareas { get; set; }
@@ -556,6 +556,7 @@ namespace AhwanamAPI.Controllers
                         int cost = (int)item.MinPrice;
                         price.minimum_price = Convert.ToString(cost);
                         if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                        if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
 
                     }
                     p.price = price;
@@ -585,10 +586,8 @@ namespace AhwanamAPI.Controllers
                         p.is_in_wishlist = false;
                     }
                     param.Add(p);
-                }
-            
+                }          
             var records = param;
-
                 if (rating != 0)
                 //records = records.Where(m => m.rating == decimal.Parse(rating.ToString())).ToList();
                 records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).ToList();
@@ -643,8 +642,9 @@ namespace AhwanamAPI.Controllers
                 {
                     int cost = (int)data[i].MinPrice;
                     price.minimum_price = Convert.ToString(cost);
-                    if(cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }        
-                    
+                    if(cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                    if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
+
                 }
                 p.price = price;
 
@@ -713,19 +713,15 @@ namespace AhwanamAPI.Controllers
             var data1 = resultsPageService.Getreviews(details.VendorId);
             p.reviews_count = data1.Count().ToString();
             //p.reviews_count = details.ReviewsCount.ToString();
-            //p.charge_type = details.Type_of_price;
             p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + details.VendorId + "/baner.jpg"; ;
-            location lc = new location();
-            lc.latitude = "17.385044";
-            lc.longitude = "78.486671";
-            p.location = lc;
+            //location lc = new location();
+            //lc.latitude = "17.385044";
+            //lc.longitude = "78.486671";
+            //p.location = lc;
             List<packages1> pkg = new List<packages1>();
             //price.Rentalprice = details.RentAmount.ToString();
             if (p.category_name == "Venues" || p.category_name == "Caterers")
             {
-                //price.veg_price = details.VegPrice;
-                //price.nonveg_price = details.NonvegPrice;
-                //CultureInfo CInfo = new CultureInfo("hi - IN");
                 packages1 price = new packages1();
                 price.name = "Vegetarian";
                 price.charge_type= details.Type_of_price;
@@ -752,15 +748,17 @@ namespace AhwanamAPI.Controllers
                 int cost = (int)details.MinPrice;
                 price.price = Convert.ToString(cost);
                 if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
                 pkg.Add(price);
             } 
             else if(p.category_name == "Decorators")
             {
                 packages1 price = new packages1();
-                price.name = "Decoratoration";
+                price.name = "Decoration";
                 int cost = (int)details.MinPrice;
                 price.price = Convert.ToString(cost);
                 if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                if(cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
                 pkg.Add(price);
             }
             else if (p.category_name == "Pandit")
@@ -770,6 +768,7 @@ namespace AhwanamAPI.Controllers
                 int cost = (int)details.MinPrice;
                 price.price = Convert.ToString(cost);
                 if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
                 pkg.Add(price);
 
             }
@@ -780,6 +779,7 @@ namespace AhwanamAPI.Controllers
                 int cost = (int)details.MinPrice;
                 price.price = Convert.ToString(cost);
                 if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
                 pkg.Add(price);
 
             }
@@ -790,6 +790,7 @@ namespace AhwanamAPI.Controllers
                 int cost = (int)details.MinPrice;
                 price.price = Convert.ToString(cost);
                 if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
                 pkg.Add(price);
             }
             else if (p.category_name == "DJ")
@@ -799,15 +800,17 @@ namespace AhwanamAPI.Controllers
                 int cost = (int)details.MinPrice;
                 price.price = Convert.ToString(cost);
                 if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
                 pkg.Add(price);
             }
             else if (p.category_name == "Choreographers")
             {
                 packages1 price = new packages1();
-                price.name = "DJ";
+                price.name = "Choreographers";
                 int cost = (int)details.MinPrice;
                 price.price = Convert.ToString(cost);
                 if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
                 pkg.Add(price);
             }
 
@@ -882,10 +885,10 @@ namespace AhwanamAPI.Controllers
             p.reviews_count = details.ReviewsCount.ToString();
             p.charge_type = details.Type_of_price;
             p.pic_url = details.Image;
-            location lc = new location();
-            lc.latitude = "17.385044";
-            lc.longitude = "78.486671";
-            p.location = lc;
+            //location lc = new location();
+            //lc.latitude = "17.385044";
+            //lc.longitude = "78.486671";
+            //p.location = lc;
             packages price = new packages();
             //price.Rentalprice = details.RentAmount.ToString();
             if (p.category_name == "Venues" || p.category_name == "Caterers")
@@ -1060,6 +1063,7 @@ namespace AhwanamAPI.Controllers
                             int cost = (int)item.MinPrice;
                             price.minimum_price = Convert.ToString(cost);
                             if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                            if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
                             //price.maxprice = item.MaxPrice.ToString();
                         }
                     p.price = price;
@@ -1088,12 +1092,10 @@ namespace AhwanamAPI.Controllers
                         {
                             p.is_in_wishlist = false;
                         }
-
                         param.Add(p);
                 }
                 }
-                var records = param;
-              
+                var records = param;             
                 //var rating = "4";
                 //if (rating != null)
                 //    records = records.Where(m => m.rating >= decimal.Parse(rating)).Take(7).ToList();
