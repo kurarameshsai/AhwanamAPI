@@ -152,61 +152,62 @@ namespace AhwanamAPI.Controllers
             return Json(dict);
         }
 
-        //public Dictionary<string, object> checkemail(sloginresponse sloginresponse, slogin slogin)
-        //{
-        //    Dictionary<string, object> dict = new Dictionary<string, object>();
-        //    long data = userlogindetailsservice.GetLoginDetailsByEmail(sloginresponse.email);
-        //    if (data == 0)
-        //    {
-        //        UserLogin userlogin = new UserLogin();
-        //        UserDetail userdetail = new UserDetail();
-        //        userlogin.ActivationCode = Guid.NewGuid().ToString();
-        //        userdetail.FirstName = sloginresponse.first_name;
-        //        if (slogin.auth_type == "facebook")
-        //        {
-        //            userdetail.FirstName = sloginresponse.first_name + ' ' + sloginresponse.last_name;
-        //            userdetail.name = sloginresponse.first_name + ' ' + sloginresponse.last_name;
-        //        }
-        //        else
-        //        {
-        //            userdetail.FirstName = sloginresponse.name;
-        //            userdetail.name = sloginresponse.name;
-        //        }
-        //        userdetail.UserPhone = sloginresponse.phoneno;
-        //        userdetail.AlternativeEmailID = sloginresponse.email;
-        //        userlogin.Password = null;
-        //        userlogin.UserName = sloginresponse.email;
-        //        userlogin.Status = "Active";
-        //        userlogin.UserType = "User";
-        //        var responce = userlogindetailsservice.AddUserDetails(userlogin, userdetail);
-        //        if (responce == "sucess")
-        //        {
-        //            ////string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
-        //            //string url = "https://sandbox.sevenvows.co.in/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
-        //            //FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/newwelcome.html"));
-        //            //string readFile = File.OpenText().ReadToEnd();
-        //            //readFile = readFile.Replace("[ActivationLink]", url);
-        //            ////readFile = readFile.Replace("[name]", Capitalise(userdetail.FirstName));
-        //            ////readFile = readFile.Replace("[phoneno]", userdetail.UserPhone);
-        //            //TriggerEmail(userlogin.UserName, readFile, "Account Activation", null);
-        //            //dict.Add("status", true);
-        //            //dict.Add("message", "Successfully registered");
+        public Dictionary<string, object> checkemail(sloginresponse sloginresponse, slogin slogin)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            long data = userlogindetailsservice.GetLoginDetailsByEmail(sloginresponse.email);
+            if (data == 0)
+            {
+                UserLogin userlogin = new UserLogin();
+                UserDetail userdetail = new UserDetail();
+                userlogin.ActivationCode = Guid.NewGuid().ToString();
+                userdetail.FirstName = sloginresponse.first_name;
+                if (slogin.auth_type == "facebook")
+                {
+                    userdetail.FirstName = sloginresponse.first_name + ' ' + sloginresponse.last_name;
+                    userdetail.name = sloginresponse.first_name + ' ' + sloginresponse.last_name;
+                }
+                else
+                {
+                    userdetail.FirstName = sloginresponse.name;
+                    userdetail.name = sloginresponse.name;
+                }
+                userdetail.UserPhone = sloginresponse.phoneno;
+                userdetail.AlternativeEmailID = sloginresponse.email;
+                userlogin.Password = null;
+                userlogin.UserName = sloginresponse.email;
+                userlogin.Status = "Active";
+                userlogin.UserType = "User";
+                var responce = userlogindetailsservice.AddUserDetails(userlogin, userdetail);
+                if (responce == "sucess")
+                {
+                    ////string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
+                    //string url = "https://sandbox.sevenvows.co.in/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
+                    //FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/newwelcome.html"));
+                    //string readFile = File.OpenText().ReadToEnd();
+                    //readFile = readFile.Replace("[ActivationLink]", url);
+                    ////readFile = readFile.Replace("[name]", Capitalise(userdetail.FirstName));
+                    ////readFile = readFile.Replace("[phoneno]", userdetail.UserPhone);
+                    //TriggerEmail(userlogin.UserName, readFile, "Account Activation", null);
+                    //dict.Add("status", true);
+                    //dict.Add("message", "Successfully registered");
+                    long data1 = userlogindetailsservice.GetLoginDetailsByEmail(sloginresponse.email);
+                    UserToken usertoken = new UserToken();
+                    usertoken.IPAddress = HttpContext.Current.Request.UserHostAddress;
+                    usertoken.Token = Guid.NewGuid().ToString();
+                    usertoken.UserLoginID = data1;
+                    TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+                    usertoken.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+                    usertoken.LastLogin = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+                    usertoken = userlogindetailsservice.addtoken(usertoken); // Saving Token
+                    var details = userlogindetailsservice.Getmyprofile(usertoken.Token);
+                    dict.Add("status", true);
+                    dict.Add("message", "Login Success");
+                }
+            }
 
-        //            UserToken usertoken = new UserToken();
-        //            usertoken.IPAddress = HttpContext.Current.Request.UserHostAddress;
-        //            usertoken.Token = Guid.NewGuid().ToString();
-        //            usertoken.UserLoginID = data;
-        //            TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
-        //            usertoken.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
-        //            usertoken.LastLogin = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
-        //            usertoken = userlogindetailsservice.addtoken(usertoken); // Saving Token
-        //            dict.Add("status", true);
-        //            dict.Add("message", "Login Success");
-        //        }
-        //    }
-
-        //    return dict;
-        //}
+            return dict;
+        }
 
 
 
@@ -471,84 +472,84 @@ namespace AhwanamAPI.Controllers
             return Char.ToUpper(str[0]) + str.Substring(1).ToLower();
         }
 
-        public Dictionary<string, object> checkemail(sloginresponse sloginresponse, slogin slogin)
-        {
-            UserLoginDetailsService userLoginDetailsService = new UserLoginDetailsService();
-            Dictionary<string, object> dict = new Dictionary<string, object>();
-            long data = userlogindetailsservice.GetLoginDetailsByEmail(sloginresponse.email);
-            if (data == 0)
-            {
-                UserLogin userlogin = new UserLogin();
-                UserDetail userdetail = new UserDetail();
-                userlogin.ActivationCode = Guid.NewGuid().ToString();
-                userdetail.FirstName = sloginresponse.first_name;
-                userdetail.LastName = sloginresponse.last_name;
-                if (slogin.auth_type == "facebook")
-                {
-                    userdetail.name = sloginresponse.first_name + ' ' + sloginresponse.last_name;
-                }
-                else
-                {
-                    userdetail.name = sloginresponse.name;
-                }
-                userdetail.UserPhone = sloginresponse.phoneno;
-                userdetail.AlternativeEmailID = sloginresponse.email;
-                //userlogin.Password =
-                userlogin.UserName = sloginresponse.email;
-                userlogin.Status = "InActive";
-                userlogin.UserType = "User";
-                var responce = userlogindetailsservice.AddUserDetails(userlogin, userdetail);
-                if (responce == "sucess")
-                {
-                    //string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
-                    string url = "https://sandbox.sevenvows.co.in/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
-                    FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/newwelcome.html"));
-                    string readFile = File.OpenText().ReadToEnd();
-                    readFile = readFile.Replace("[ActivationLink]", url);
-                    //readFile = readFile.Replace("[name]", Capitalise(userdetail.FirstName));
-                    //readFile = readFile.Replace("[phoneno]", userdetail.UserPhone);
-                    TriggerEmail(userlogin.UserName, readFile, "Account Activation", null);
-                    dict.Add("status", true);
-                    dict.Add("message", "Successfully registered");
-                }
-            }
+        //public Dictionary<string, object> checkemail(sloginresponse sloginresponse, slogin slogin)
+        //{
+        //    UserLoginDetailsService userLoginDetailsService = new UserLoginDetailsService();
+        //    Dictionary<string, object> dict = new Dictionary<string, object>();
+        //    long data = userlogindetailsservice.GetLoginDetailsByEmail(sloginresponse.email);
+        //    if (data == 0)
+        //    {
+        //        UserLogin userlogin = new UserLogin();
+        //        UserDetail userdetail = new UserDetail();
+        //        userlogin.ActivationCode = Guid.NewGuid().ToString();
+        //        userdetail.FirstName = sloginresponse.first_name;
+        //        userdetail.LastName = sloginresponse.last_name;
+        //        if (slogin.auth_type == "facebook")
+        //        {
+        //            userdetail.name = sloginresponse.first_name + ' ' + sloginresponse.last_name;
+        //        }
+        //        else
+        //        {
+        //            userdetail.name = sloginresponse.name;
+        //        }
+        //        userdetail.UserPhone = sloginresponse.phoneno;
+        //        userdetail.AlternativeEmailID = sloginresponse.email;
+        //        //userlogin.Password =
+        //        userlogin.UserName = sloginresponse.email;
+        //        userlogin.Status = "InActive";
+        //        userlogin.UserType = "User";
+        //        var responce = userlogindetailsservice.AddUserDetails(userlogin, userdetail);
+        //        if (responce == "sucess")
+        //        {
+        //            //string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
+        //            string url = "https://sandbox.sevenvows.co.in/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
+        //            FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/newwelcome.html"));
+        //            string readFile = File.OpenText().ReadToEnd();
+        //            readFile = readFile.Replace("[ActivationLink]", url);
+        //            //readFile = readFile.Replace("[name]", Capitalise(userdetail.FirstName));
+        //            //readFile = readFile.Replace("[phoneno]", userdetail.UserPhone);
+        //            TriggerEmail(userlogin.UserName, readFile, "Account Activation", null);
+        //            dict.Add("status", true);
+        //            dict.Add("message", "Successfully registered");
+        //        }
+        //    }
 
-            UserToken usertoken = new UserToken();
-            usertoken.IPAddress = HttpContext.Current.Request.UserHostAddress;
-            usertoken.Token = Guid.NewGuid().ToString();
-            usertoken.UserLoginID = data;
-            TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
-            usertoken.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
-            usertoken.LastLogin = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
-            usertoken = userLoginDetailsService.addtoken(usertoken); // Saving Token
-            dict.Add("status", true);
-            dict.Add("message", "Login Success");
-            loginuser loginuser = new loginuser();
-            loginuser.email = sloginresponse.email;
-            //loginuser.password = userlogin.Password;
-            //if (slogin.auth_type == "facebook")
-            //{ 
-            //loginuser.user_id = data;
-            //loginuser.name = sloginresponse.first_name + " " + sloginresponse.last_name;
-            //}
-            //else
-            //    loginuser.user_id = data;
-            //    loginuser.name = sloginresponse.name;
-            //loginuser.phoneno = sloginresponse.phoneno;
-            var details = userlogindetailsservice.Getmyprofile(usertoken.Token);
-            if (details != null)
-            {
-                loginuser.user_id = details.UserLoginId;
-                loginuser.name = details.name;
-                loginuser.phoneno = details.UserPhone;
-            }
-            loginuser.user_id = data;
-            Dictionary<string, object> u1 = new Dictionary<string, object>();
-            u1.Add("token", usertoken.Token);
-            u1.Add("user", loginuser);
-            dict.Add("data", u1);
-            return dict;
-        }
+        //    UserToken usertoken = new UserToken();
+        //    usertoken.IPAddress = HttpContext.Current.Request.UserHostAddress;
+        //    usertoken.Token = Guid.NewGuid().ToString();
+        //    usertoken.UserLoginID = data;
+        //    TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+        //    usertoken.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+        //    usertoken.LastLogin = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+        //    usertoken = userLoginDetailsService.addtoken(usertoken); // Saving Token
+        //    dict.Add("status", true);
+        //    dict.Add("message", "Login Success");
+        //    loginuser loginuser = new loginuser();
+        //    loginuser.email = sloginresponse.email;
+        //    //loginuser.password = userlogin.Password;
+        //    //if (slogin.auth_type == "facebook")
+        //    //{ 
+        //    //loginuser.user_id = data;
+        //    //loginuser.name = sloginresponse.first_name + " " + sloginresponse.last_name;
+        //    //}
+        //    //else
+        //    //    loginuser.user_id = data;
+        //    //    loginuser.name = sloginresponse.name;
+        //    //loginuser.phoneno = sloginresponse.phoneno;
+        //    var details = userlogindetailsservice.Getmyprofile(usertoken.Token);
+        //    if (details != null)
+        //    {
+        //        loginuser.user_id = details.UserLoginId;
+        //        loginuser.name = details.name;
+        //        loginuser.phoneno = details.UserPhone;
+        //    }
+        //    loginuser.user_id = data;
+        //    Dictionary<string, object> u1 = new Dictionary<string, object>();
+        //    u1.Add("token", usertoken.Token);
+        //    u1.Add("user", loginuser);
+        //    dict.Add("data", u1);
+        //    return dict;
+        //}
         #endregion
 
 
