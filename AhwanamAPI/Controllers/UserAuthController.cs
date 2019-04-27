@@ -181,16 +181,6 @@ namespace AhwanamAPI.Controllers
                 var responce = userlogindetailsservice.AddUserDetails(userlogin, userdetail);
                 if (responce == "sucess")
                 {
-                    ////string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
-                    //string url = "https://sandbox.sevenvows.co.in/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
-                    //FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/newwelcome.html"));
-                    //string readFile = File.OpenText().ReadToEnd();
-                    //readFile = readFile.Replace("[ActivationLink]", url);
-                    ////readFile = readFile.Replace("[name]", Capitalise(userdetail.FirstName));
-                    ////readFile = readFile.Replace("[phoneno]", userdetail.UserPhone);
-                    //TriggerEmail(userlogin.UserName, readFile, "Account Activation", null);
-                    //dict.Add("status", true);
-                    //dict.Add("message", "Successfully registered");
                     long data1 = userlogindetailsservice.GetLoginDetailsByEmail(sloginresponse.email);
                     UserToken usertoken = new UserToken();
                     usertoken.IPAddress = HttpContext.Current.Request.UserHostAddress;
@@ -200,9 +190,50 @@ namespace AhwanamAPI.Controllers
                     usertoken.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
                     usertoken.LastLogin = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
                     usertoken = userlogindetailsservice.addtoken(usertoken); // Saving Token
+                    loginuser loginuser = new loginuser();
+                    loginuser.email = sloginresponse.email;
+                    var details = userlogindetailsservice.Getmyprofile(usertoken.Token);
+                    if (details != null)
+                    {
+                        loginuser.user_id = details.UserLoginId;
+                        loginuser.name = details.name;
+                        loginuser.phoneno = details.UserPhone;
+                    }
+                    loginuser.user_id = data;
+                    Dictionary<string, object> u1 = new Dictionary<string, object>();
+                    u1.Add("token", usertoken.Token);
+                    u1.Add("user", loginuser);
+                    dict.Add("data", u1);
                     dict.Add("status", true);
                     dict.Add("message", "Login Success");
                 }
+            }
+            else
+            {
+                UserToken usertoken = new UserToken();
+                usertoken.IPAddress = HttpContext.Current.Request.UserHostAddress;
+                usertoken.Token = Guid.NewGuid().ToString();
+                usertoken.UserLoginID = data;
+                TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+                usertoken.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+                usertoken.LastLogin = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+                usertoken = userlogindetailsservice.addtoken(usertoken); // Saving Token
+                loginuser loginuser = new loginuser();
+                loginuser.email = sloginresponse.email;
+                var details = userlogindetailsservice.Getmyprofile(usertoken.Token);
+                if (details != null)
+                {
+                    loginuser.user_id = details.UserLoginId;
+                    loginuser.name = details.name;
+                    loginuser.phoneno = details.UserPhone;
+                }
+                loginuser.user_id = data;
+                Dictionary<string, object> u1 = new Dictionary<string, object>();
+                u1.Add("token", usertoken.Token);
+                u1.Add("user", loginuser);
+                dict.Add("data", u1);
+                dict.Add("status", true);
+                dict.Add("message", "Login Success");
             }
 
             return dict;
