@@ -152,6 +152,65 @@ namespace AhwanamAPI.Controllers
             return Json(dict);
         }
 
+        //public Dictionary<string, object> checkemail(sloginresponse sloginresponse, slogin slogin)
+        //{
+        //    Dictionary<string, object> dict = new Dictionary<string, object>();
+        //    long data = userlogindetailsservice.GetLoginDetailsByEmail(sloginresponse.email);
+        //    if (data == 0)
+        //    {
+        //        UserLogin userlogin = new UserLogin();
+        //        UserDetail userdetail = new UserDetail();
+        //        userlogin.ActivationCode = Guid.NewGuid().ToString();
+        //        userdetail.FirstName = sloginresponse.first_name;
+        //        if (slogin.auth_type == "facebook")
+        //        {
+        //            userdetail.FirstName = sloginresponse.first_name + ' ' + sloginresponse.last_name;
+        //            userdetail.name = sloginresponse.first_name + ' ' + sloginresponse.last_name;
+        //        }
+        //        else
+        //        {
+        //            userdetail.FirstName = sloginresponse.name;
+        //            userdetail.name = sloginresponse.name;
+        //        }
+        //        userdetail.UserPhone = sloginresponse.phoneno;
+        //        userdetail.AlternativeEmailID = sloginresponse.email;
+        //        userlogin.Password = null;
+        //        userlogin.UserName = sloginresponse.email;
+        //        userlogin.Status = "Active";
+        //        userlogin.UserType = "User";
+        //        var responce = userlogindetailsservice.AddUserDetails(userlogin, userdetail);
+        //        if (responce == "sucess")
+        //        {
+        //            ////string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
+        //            //string url = "https://sandbox.sevenvows.co.in/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
+        //            //FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/newwelcome.html"));
+        //            //string readFile = File.OpenText().ReadToEnd();
+        //            //readFile = readFile.Replace("[ActivationLink]", url);
+        //            ////readFile = readFile.Replace("[name]", Capitalise(userdetail.FirstName));
+        //            ////readFile = readFile.Replace("[phoneno]", userdetail.UserPhone);
+        //            //TriggerEmail(userlogin.UserName, readFile, "Account Activation", null);
+        //            //dict.Add("status", true);
+        //            //dict.Add("message", "Successfully registered");
+
+        //            UserToken usertoken = new UserToken();
+        //            usertoken.IPAddress = HttpContext.Current.Request.UserHostAddress;
+        //            usertoken.Token = Guid.NewGuid().ToString();
+        //            usertoken.UserLoginID = data;
+        //            TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+        //            usertoken.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+        //            usertoken.LastLogin = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+        //            usertoken = userlogindetailsservice.addtoken(usertoken); // Saving Token
+        //            dict.Add("status", true);
+        //            dict.Add("message", "Login Success");
+        //        }
+        //    }
+
+        //    return dict;
+        //}
+
+
+
+
         [HttpPost]
         [Route("api/UserAuth/login")]
         public IHttpActionResult login([FromBody]registerdetails details)
@@ -414,6 +473,7 @@ namespace AhwanamAPI.Controllers
 
         public Dictionary<string, object> checkemail(sloginresponse sloginresponse, slogin slogin)
         {
+            UserLoginDetailsService userLoginDetailsService = new UserLoginDetailsService();
             Dictionary<string, object> dict = new Dictionary<string, object>();
             long data = userlogindetailsservice.GetLoginDetailsByEmail(sloginresponse.email);
             if (data == 0)
@@ -431,7 +491,7 @@ namespace AhwanamAPI.Controllers
                 {
                     userdetail.name = sloginresponse.name;
                 }
-                    userdetail.UserPhone = sloginresponse.phoneno;
+                userdetail.UserPhone = sloginresponse.phoneno;
                 userdetail.AlternativeEmailID = sloginresponse.email;
                 //userlogin.Password =
                 userlogin.UserName = sloginresponse.email;
@@ -452,7 +512,7 @@ namespace AhwanamAPI.Controllers
                     dict.Add("message", "Successfully registered");
                 }
             }
-            UserLoginDetailsService userLoginDetailsService = new UserLoginDetailsService();
+
             UserToken usertoken = new UserToken();
             usertoken.IPAddress = HttpContext.Current.Request.UserHostAddress;
             usertoken.Token = Guid.NewGuid().ToString();
@@ -476,11 +536,11 @@ namespace AhwanamAPI.Controllers
             //    loginuser.name = sloginresponse.name;
             //loginuser.phoneno = sloginresponse.phoneno;
             var details = userlogindetailsservice.Getmyprofile(usertoken.Token);
-            if(details!=null)
+            if (details != null)
             {
                 loginuser.user_id = details.UserLoginId;
                 loginuser.name = details.name;
-                loginuser.phoneno =details.UserPhone;
+                loginuser.phoneno = details.UserPhone;
             }
             loginuser.user_id = data;
             Dictionary<string, object> u1 = new Dictionary<string, object>();
