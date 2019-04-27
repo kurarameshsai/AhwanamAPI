@@ -740,6 +740,20 @@ namespace AhwanamAPI.Controllers
             //p.location = lc;
             List<packages1> pkg = new List<packages1>();
             //price.Rentalprice = details.RentAmount.ToString();
+            
+            if (details.name == "Venues" && details.ServiceType == "Function Hall")
+            {
+                packages1 price = new packages1();
+                price = new packages1();
+                price.name = "Rental Price";
+                int cost = (int)details.RentAmount;
+                price.price = Convert.ToString(cost);
+                price.charge_type = details.Type_of_price;
+                if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+                if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
+                pkg.Add(price);
+            }
+            else { 
             if (p.category_name == "Venues" || p.category_name == "Caterers")
             {
                 packages1 price = new packages1();
@@ -757,16 +771,6 @@ namespace AhwanamAPI.Controllers
                 price.price = mny1[0];
                 price.format_price = Convert.ToString(mny1[0]);
                 pkg.Add(price);
-                if (details.ServiceType == "Function Hall")
-                {
-                    price = new packages1();
-                    price.name = "Rental Price";
-                    int cost = (int)details.RentAmount;
-                    price.price = Convert.ToString(cost);
-                    price.charge_type = details.Type_of_price;
-                    if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
-                    if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
-                }
 
             }
             else if(p.category_name == "Photographers")
@@ -843,7 +847,7 @@ namespace AhwanamAPI.Controllers
                 if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
                 pkg.Add(price);
             }
-
+            }
             p.packages = pkg;
             var amenitydetail= resultsPageService.GetAmenities(p.vendor_id);
             List<Amenities> amenitys = new List<Amenities>();
@@ -1051,13 +1055,13 @@ namespace AhwanamAPI.Controllers
             Dictionary<string, object> dict1 = new Dictionary<string, object>();
             var categories = resultsPageService.getallcategories();
             List<services> res = new List<services>();
-            for (int i = 0; i < categories.Count(); i++)
+            foreach (var items in categories)
             {
                 services result = new services();
-                result.name = categories[i].name;
-                result.page_name = categories[i].display_name;
-                result.category_id = categories[i].servicType_id;
-                var data = resultsPageService.GetvendorbycategoryId(categories[i].servicType_id);
+                result.name = items.name;
+                result.page_name = items.display_name;
+                result.category_id = items.servicType_id;
+                var data = resultsPageService.GetvendorbycategoryId(items.servicType_id);
                 data = data.OrderByDescending(v => v.priority).Take(7).ToList();
                 List<param5> param = new List<param5>();
                 if(data!=null)

@@ -240,8 +240,6 @@ namespace AhwanamAPI.Controllers
         }
 
 
-
-
         [HttpPost]
         [Route("api/UserAuth/login")]
         public IHttpActionResult login([FromBody]registerdetails details)
