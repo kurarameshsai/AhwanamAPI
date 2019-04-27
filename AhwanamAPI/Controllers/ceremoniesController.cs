@@ -505,7 +505,7 @@ namespace AhwanamAPI.Controllers
             //d.thumb_image = detail.Image;
             d.page_name = detail.page_name1;
             d.description = detail.Description;
-            d.cermony_image = detail.ceremonyImage;
+            d.cermony_image = System.Configuration.ConfigurationManager.AppSettings["imagename"] + "ceremonies_images/" + detail.ceremonyImage;
             d.city = cityvalue;
           //  var result = resultsPageService.Getvendormasterdata();
           //  var citylist = result.Select(m => m.City).Distinct().ToList();
