@@ -152,12 +152,8 @@ namespace AhwanamAPI.Controllers
         }
         public class price
         {
-            //public string Rentalprice { get; set; }
             public string minimum_price { get; set; }
             public string format_price { get; set; }
-            //public string maxprice { get; set; }
-            //public string vegprice { get; set; }
-            //public string nonvegprice { get; set; }
         }
         public class vendors
         {
@@ -242,6 +238,14 @@ namespace AhwanamAPI.Controllers
                                         v.reviews_count = vendordata[j].ReviewsCount;
                                         v.charge_type = vendordata[j].Type_of_price;
                                         price p = new price();
+
+                                        if (vendordata[j].ServiceType == "Function Hall")
+                                        {
+                                            int cost = (int)vendordata[j].RentAmount;
+                                            p.minimum_price = Convert.ToString(cost);
+                                            if (cost >= 10000) { int value = cost / 1000; p.format_price = value.ToString() + 'k'; }
+                                            if (cost >= 100000) { int value = cost / 100000; p.format_price = value.ToString() + 'L'; }
+                                        }
                                         if (vendordata[j].name == "Venues" || vendordata[j].name == "Caterers")
                                         {
 
@@ -339,6 +343,13 @@ namespace AhwanamAPI.Controllers
                                     v.reviews_count = vendordata[j].ReviewsCount;
                                     v.charge_type = vendordata[j].Type_of_price;
                                     price p = new price();
+                                    if (vendordata[j].ServiceType == "Function Hall")
+                                    {
+                                        int cost = (int)vendordata[j].RentAmount;
+                                        p.minimum_price = Convert.ToString(cost);
+                                        if (cost >= 10000) { int value = cost / 1000; p.format_price = value.ToString() + 'k'; }
+                                        if (cost >= 100000) { int value = cost / 100000; p.format_price = value.ToString() + 'L'; }
+                                    }
                                     if (vendordata[j].name == "Venues" || vendordata[j].name == "Caterers")
                                     {
                                         int cost = (int)vendordata[j].VegPrice;
@@ -452,6 +463,13 @@ namespace AhwanamAPI.Controllers
                                     v.reviews_count = vendordata[j].ReviewsCount;
                                     v.charge_type = vendordata[j].Type_of_price;
                                     price p = new price();
+                                    if (vendordata[j].ServiceType == "Function Hall")
+                                    {
+                                        int cost = (int)vendordata[j].RentAmount;
+                                        p.minimum_price = Convert.ToString(cost);
+                                        if (cost >= 10000) { int value = cost / 1000; p.format_price = value.ToString() + 'k'; }
+                                        if (cost >= 100000) { int value = cost / 100000; p.format_price = value.ToString() + 'L'; }
+                                    }
                                     if (vendordata[j].name == "Venues" || vendordata[j].name == "Caterers")
                                     {
 
@@ -517,10 +535,9 @@ namespace AhwanamAPI.Controllers
             return Json(dict);
        }
 
-
         [HttpPost]
         [Route("api/wishlist/additem")]
-        public IHttpActionResult AddItemToWishlist([FromBody]listItems list)
+        public IHttpActionResult AddItemWishlist([FromBody]listItems list)
         {
             Userwishlistdetails userwishlistdetails = new Userwishlistdetails();
             Dictionary<string, object> dict = new Dictionary<string, object>();
@@ -533,60 +550,67 @@ namespace AhwanamAPI.Controllers
             {
                 string token = customheader.GetValues("Authorization").First();
                 var userdetails = userlogindetailsservice.Getmyprofile(token);
-                if(userdetails.Token == token)
-                { 
-                long item = wishlistservices.Getvendordetailsbyvendorid(list.vendor_id,list.wishlist_id);
-                if (item == 0)
+                if (userdetails.Token != null)
                 {
-                    var details = wishlistservices.Getwishlistdetail(list.wishlist_id);
-                    ResultsPageService resultsPageService = new ResultsPageService();
-                    category categorys = new category();
-                    vendor v = new vendor();
+                    long item = wishlistservices.Getvendordetailsbyvendorid(list.vendor_id, list.wishlist_id);
+                    if (item == 0)
+                    {
+                        var details = wishlistservices.Getwishlistdetail(list.wishlist_id);
+                        ResultsPageService resultsPageService = new ResultsPageService();
+                        category categorys = new category();
+                        vendor v = new vendor();
                         var vdata = wishlistservices.Getdetailsofvendorbyid(list.vendor_id);
                         userwishlistdetails.UserId = details.UserId;
-                    userwishlistdetails.wishlistId = list.wishlist_id;
-                    userwishlistdetails.vendorId = list.vendor_id;
+                        userwishlistdetails.wishlistId = details.WishlistdetailId;
+                        userwishlistdetails.vendorId = list.vendor_id;
                         userwishlistdetails.categoryid = vdata.Category_TypeId;
-                    userwishlistdetails.IPAddress = HttpContext.Current.Request.UserHostAddress;
-                    userwishlistdetails.WhishListedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
-                    var data = wishlistservices.Adduserwishlistitem(userwishlistdetails);
-                    if (data != null)
-                    {
-                       
-                        categorys.category_id = vdata.Category_TypeId;
-                        categorys.category_name = vdata.name;
-                        v.vendor_id = vdata.VendorId;
-                        v.category_id = vdata.Category_TypeId;
-                        v.category_name = vdata.name;
-                        v.userwishlist_id = vdata.wishlistId;
-                        v.name = vdata.BusinessName;
-                        v.city = vdata.City;
-                        v.charge_type = vdata.Type_of_price;
-                        v.collaborator_id = vdata.UserId;
-                        v.rating = vdata.Rating;
-                        v.reviews_count = vdata.ReviewsCount;
-                            price p = new price();
-                        if (vdata.name == "Venues" || vdata.name == "Caterers")
+                        userwishlistdetails.IPAddress = HttpContext.Current.Request.UserHostAddress;
+                        userwishlistdetails.WhishListedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+                        var data = wishlistservices.Adduserwishlistitem(userwishlistdetails);
+                        if (data != null)
                         {
+
+                            categorys.category_id = vdata.Category_TypeId;
+                            categorys.category_name = vdata.name;
+                            v.vendor_id = vdata.VendorId;
+                            v.category_id = vdata.Category_TypeId;
+                            v.category_name = vdata.name;
+                            v.userwishlist_id = data.wishlistId;
+                            v.name = vdata.BusinessName;
+                            v.city = vdata.City;
+                            v.charge_type = vdata.Type_of_price;
+                            v.collaborator_id = data.UserId;
+                            v.rating = vdata.Rating;
+                            v.reviews_count = vdata.ReviewsCount;
+                            price p = new price();
+                            if (vdata.ServiceType == "Function Hall")
+                            {
+                                int cost = (int)vdata.RentAmount;
+                                p.minimum_price = Convert.ToString(cost);
+                                if (cost >= 10000) { int value = cost / 1000; p.format_price = value.ToString() + 'k'; }
+                                if (cost >= 100000) { int value = cost / 100000; p.format_price = value.ToString() + 'L'; }
+                            }
+                            if (vdata.name == "Venues" || vdata.name == "Caterers")
+                            {
                                 int cost = (int)vdata.VegPrice;
                                 p.minimum_price = Convert.ToString(cost);
                                 p.format_price = Convert.ToString(cost);
                             }
-                        else
-                        {
+                            else
+                            {
                                 int cost = (int)vdata.MinPrice;
                                 p.minimum_price = Convert.ToString(cost);
                                 if (cost >= 10000) { int value = cost / 1000; p.format_price = value.ToString() + 'k'; }
                             }
-                           v.price = p;
-                         v.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + v.vendor_id + "/main.jpg"; ;
-                        v.notes = null;
-                        categorys.vendor = v;
-                        dict.Add("status", true);
-                        dict.Add("message", "Success");
-                        dict.Add("data", categorys);
-                    }
-                       else
+                            v.price = p;
+                            v.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + v.vendor_id + "/main.jpg";
+                            v.notes = null;
+                            categorys.vendor = v;
+                            dict.Add("status", true);
+                            dict.Add("message", "Success");
+                            dict.Add("data", categorys);
+                        }
+                        else
                         {
                             dict.Add("status", false);
                             dict.Add("message", "failed");
@@ -604,13 +628,109 @@ namespace AhwanamAPI.Controllers
                     dict.Add("message", "failed");
                 }
             }
-            else
-            {
-                dict.Add("status", false);
-                dict.Add("message", "failed");
-            }
             return Json(dict);
         }
+
+        //[HttpPost]
+        //[Route("api/wishlist/additem")]
+        //public IHttpActionResult AddItemToWishlist([FromBody]listItems list)
+        //{
+        //    Userwishlistdetails userwishlistdetails = new Userwishlistdetails();
+        //    Dictionary<string, object> dict = new Dictionary<string, object>();
+        //    TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+        //    WhishListService wishlistservices = new WhishListService();
+        //    var re = Request;
+        //    var customheader = re.Headers;
+        //    UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
+        //    if (customheader.Contains("Authorization"))
+        //    {
+        //        string token = customheader.GetValues("Authorization").First();
+        //        var userdetails = userlogindetailsservice.Getmyprofile(token);
+        //        if(userdetails.Token == token)
+        //        { 
+        //        long item = wishlistservices.Getvendordetailsbyvendorid(list.vendor_id,list.wishlist_id);
+        //        if (item == 0)
+        //        {
+        //            var details = wishlistservices.Getwishlistdetail(list.wishlist_id);
+        //            ResultsPageService resultsPageService = new ResultsPageService();
+        //            category categorys = new category();
+        //            vendor v = new vendor();
+        //                var vdata = wishlistservices.Getdetailsofvendorbyid(list.vendor_id);
+        //                userwishlistdetails.UserId = details.UserId;
+        //            userwishlistdetails.wishlistId = list.wishlist_id;
+        //            userwishlistdetails.vendorId = list.vendor_id;
+        //                userwishlistdetails.categoryid = vdata.Category_TypeId;
+        //            userwishlistdetails.IPAddress = HttpContext.Current.Request.UserHostAddress;
+        //            userwishlistdetails.WhishListedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+        //            var data = wishlistservices.Adduserwishlistitem(userwishlistdetails);
+        //            if (data != null)
+        //            {
+
+        //                categorys.category_id = vdata.Category_TypeId;
+        //                categorys.category_name = vdata.name;
+        //                v.vendor_id = vdata.VendorId;
+        //                v.category_id = vdata.Category_TypeId;
+        //                v.category_name = vdata.name;
+        //                v.userwishlist_id = data.wishlistId;
+        //                v.name = vdata.BusinessName;
+        //                v.city = vdata.City;
+        //                v.charge_type = vdata.Type_of_price;
+        //                v.collaborator_id = data.UserId;
+        //                v.rating = vdata.Rating;
+        //                v.reviews_count = vdata.ReviewsCount;
+        //                    price p = new price();
+        //                    if (vdata.ServiceType == "Function Hall")
+        //                    {
+        //                        int cost = (int)vdata.RentAmount;
+        //                        p.minimum_price = Convert.ToString(cost);
+        //                        if (cost >= 10000) { int value = cost / 1000; p.format_price = value.ToString() + 'k'; }
+        //                        if (cost >= 100000) { int value = cost / 100000; p.format_price = value.ToString() + 'L'; }
+        //                    }
+        //                    if (vdata.name == "Venues" || vdata.name == "Caterers")
+        //                    {
+        //                        int cost = (int)vdata.VegPrice;
+        //                        p.minimum_price = Convert.ToString(cost);
+        //                        p.format_price = Convert.ToString(cost);
+        //                    }
+        //                else
+        //                {
+        //                        int cost = (int)vdata.MinPrice;
+        //                        p.minimum_price = Convert.ToString(cost);
+        //                        if (cost >= 10000) { int value = cost / 1000; p.format_price = value.ToString() + 'k'; }
+        //                    }
+        //                   v.price = p;
+        //                 v.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + v.vendor_id + "/main.jpg";
+        //                v.notes = null;
+        //                categorys.vendor = v;
+        //                dict.Add("status", true);
+        //                dict.Add("message", "Success");
+        //                dict.Add("data", categorys);
+        //            }
+        //               else
+        //                {
+        //                    dict.Add("status", false);
+        //                    dict.Add("message", "failed");
+        //                }
+        //            }
+        //            else
+        //            {
+        //                dict.Add("status", false);
+        //                dict.Add("message", "This service already existed in wishlist");
+        //            }
+        //        }
+        //        else
+        //        {
+        //            dict.Add("status", false);
+        //            dict.Add("message", "failed");
+        //        }
+        //    }
+        //    else
+        //    {
+        //        dict.Add("status", false);
+        //        dict.Add("message", "failed");
+        //    }
+        //    return Json(dict);
+        //}
 
         [HttpPost]
         [Route("api/wishlist/removeitem")]
@@ -652,22 +772,6 @@ namespace AhwanamAPI.Controllers
                 }
             return Json(dict);
         }
-        //var details = wishlistservices.Getwishlistdetail(ids.wishlist_id);
-        // if(details!=null)
-        // {
-        //    long user_id = details.UserId;
-        // int count = wishlistservice.Removeitem(ids.vendor_id,ids.wishlist_id,user_id);
-        // if(count!=0)
-        // {
-        //     dict.Add("status", true);
-        //     dict.Add("message", "Success");
-        // }
-        //}
-        // else
-        // {
-        //     dict.Add("status", false);
-        //     dict.Add("message", "Failed");
-        // }
 
         [HttpGet]
         [Route("api/getallnotes")]
@@ -753,8 +857,7 @@ namespace AhwanamAPI.Controllers
                     usernotes.added_datetime = notedata.AddedDate;
                     if (notedata != null)
                     {
-                        // Dictionary<string, object> dict1 = new Dictionary<string, object>();
-                        //dict1.Add("results", usernotes);
+                       
                         dict.Add("status", true);
                         dict.Add("message", "Success");
                         dict.Add("data", usernotes);
@@ -897,6 +1000,7 @@ namespace AhwanamAPI.Controllers
                         if (data!=null)
                         {
                             //string url = "http://sandbox.ahwanam.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
+                            //string url = "https://sevenvows.co.in/sharedwishlist??wishlist_id=" + data.wishlistid + "&email=" + data.Email;
                             string url = "https://sandbox.sevenvows.co.in/sharedwishlist??wishlist_id=" + data.wishlistid + "&email=" + data.Email;
                             FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
                             string readFile = File.OpenText().ReadToEnd();
