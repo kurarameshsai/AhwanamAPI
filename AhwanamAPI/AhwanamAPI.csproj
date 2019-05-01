@@ -746,6 +746,7 @@
     <Content Include="mailtemplate\vcancelordeleteorder.html" />
     <Content Include="mailtemplate\vendororderconfirmation.html" />
     <Content Include="mailtemplate\vorder.html" />
+    <Content Include="mailtemplate\vowswelcome.html" />
     <Content Include="mailtemplate\welcome.html" />
     <Content Include="mailtemplate\WelcomeMessage.html" />
     <Content Include="vendorimages\BeautyService_20059_10015_1.jpg" />
