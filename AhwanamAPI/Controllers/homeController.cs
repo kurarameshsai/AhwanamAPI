@@ -155,7 +155,7 @@ namespace AhwanamAPI.Controllers
                 result.name = categories[i].name;
                 result.page_name = categories[i].display_name;
                 result.category_id = categories[i].servicType_id;
-                result.image = categories[i].image;
+                result.image = System.Configuration.ConfigurationManager.AppSettings["imagename"] + "genericimages/" +categories[i].image;
                 res.Add(result);
             }
             dict.Add("status", true);

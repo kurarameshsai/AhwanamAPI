@@ -733,7 +733,7 @@ namespace AhwanamAPI.Controllers
             var data1 = resultsPageService.Getreviews(details.VendorId);
             p.reviews_count = data1.Count().ToString();
             //p.reviews_count = details.ReviewsCount.ToString();
-            p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + details.VendorId + "/baner.jpg"; ;
+            p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + details.VendorId + "/banner.jpg";
             //location lc = new location();
             //lc.latitude = "17.385044";
             //lc.longitude = "78.486671";
