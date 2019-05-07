@@ -370,8 +370,6 @@ namespace AhwanamAPI.Controllers
                     enquiry.EnquiryDate = DateTime.Parse(contact.event_date);
                 }
             }
-
-
             enquiry.EnquiryDetails = contact.description;
             enquiry.EnquiryTitle = "Talk To Ahwanam";
             enquiry.EnquiryStatus = enquiry.Status = "Open";
@@ -389,9 +387,10 @@ namespace AhwanamAPI.Controllers
             readFile = readFile.Replace("[decription]", contact.description);
             readFile = readFile.Replace("[event]", contact.event_date);
             string txtmsg = readFile;
-            string subj = "Seven Vows User Information";
-            string targetmails = "lakshmi.p@xsilica.com,vivek@qburst.com,amit.saxena@ahwanam.com,sneha.akula9@gmail.com,nivita.priya@xsilica.com,prabodh.dasari@xsilica.com,deep.kalina@ahwanam.com";   
-                emailSendingUtility.Email_maaaahwanam(targetmails, txtmsg, subj, null);
+            string subj = "SevenVows User Information";
+            //string targetmails = "lakshmi.p@xsilica.com,vivek@qburst.com,amit.saxena@ahwanam.com,sneha.akula9@gmail.com,nivita.priya@xsilica.com,prabodh.dasari@xsilica.com,deep.kalina@ahwanam.com";   
+            string targetmails = "lakshmi.p@xsilica.com,prabodh.dasari@xsilica.com";
+            emailSendingUtility.Email_maaaahwanam(targetmails, txtmsg, subj, null);
             if (status != null)
             {
                 
@@ -425,7 +424,7 @@ namespace AhwanamAPI.Controllers
             string readFile = File.OpenText().ReadToEnd();
             readFile = readFile.Replace("[username]", Capitalise(name));
                 string txtto = email;
-                string subject = "Thank you From Seven Vows";
+                string subject = "Thank you for choosing SevenVows";
                string txtmsg = readFile;
                 HttpPostedFileBase attachment = null;
             emailSendingUtility.Wordpress_Email(txtto, txtmsg, subject, attachment);

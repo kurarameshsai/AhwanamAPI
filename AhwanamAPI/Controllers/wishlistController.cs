@@ -20,7 +20,7 @@ namespace AhwanamAPI.Controllers
     {
         WhishListService wishlistservice = new WhishListService();
         UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
-
+        ResultsPageService resultsPageService = new ResultsPageService();
 
         public class wishlist
         {
@@ -119,7 +119,7 @@ namespace AhwanamAPI.Controllers
             public int category_id { get; set; }
             public string category_name { get; set; }
             public long userwishlist_id { get; set; }
-            public long reviews_count { get; set; }
+            public string reviews_count { get; set; }
             public decimal rating { get; set; }
             public string charge_type { get; set; }
             public string city { get; set; }
@@ -162,7 +162,7 @@ namespace AhwanamAPI.Controllers
             public int category_id { get; set; }
             public string name { get; set; }
             public string category_name { get; set; }
-            public long reviews_count { get; set; }
+            public string reviews_count { get; set; }
             public decimal rating { get; set; }
             public string charge_type { get; set; }
             public string city { get; set; }
@@ -179,8 +179,9 @@ namespace AhwanamAPI.Controllers
             public string note { get; set; }
             public long contributorId { get; set; }
             public string author_name { get; set; }
-            public DateTime added_datetime { get; set; }
-            public DateTime edited_datetime { get; set; }
+            public DateTime date { get; set; }
+            //public DateTime added_datetime { get; set; }
+            //public DateTime edited_datetime { get; set; }
         }
 
         [HttpGet]
@@ -235,7 +236,8 @@ namespace AhwanamAPI.Controllers
                                         v.name = vendordata[j].BusinessName;
                                         v.city = vendordata[j].City;
                                         v.rating = vendordata[j].Rating;
-                                        v.reviews_count = vendordata[j].ReviewsCount;
+                                        var data1 = resultsPageService.Getreviews(vendordata[j].VendormasterId);
+                                        v.reviews_count = data1.Count().ToString();
                                         v.charge_type = vendordata[j].Type_of_price;
                                         price p = new price();
 
@@ -340,7 +342,9 @@ namespace AhwanamAPI.Controllers
                                     v.name = vendordata[j].BusinessName;
                                     v.city = vendordata[j].City;
                                     v.rating = vendordata[j].Rating;
-                                    v.reviews_count = vendordata[j].ReviewsCount;
+                                    //v.reviews_count = vendordata[j].ReviewsCount;
+                                    var data1 = resultsPageService.Getreviews(vendordata[j].VendormasterId);
+                                    v.reviews_count = data1.Count().ToString();
                                     v.charge_type = vendordata[j].Type_of_price;
                                     price p = new price();
                                     if (vendordata[j].ServiceType == "Function Hall")
@@ -460,7 +464,8 @@ namespace AhwanamAPI.Controllers
                                     v.name = vendordata[j].BusinessName;
                                     v.city = vendordata[j].City;
                                     v.rating = vendordata[j].Rating;
-                                    v.reviews_count = vendordata[j].ReviewsCount;
+                                    var data1 = resultsPageService.Getreviews(vendordata[j].VendormasterId);
+                                    v.reviews_count = data1.Count().ToString();
                                     v.charge_type = vendordata[j].Type_of_price;
                                     price p = new price();
                                     if (vendordata[j].ServiceType == "Function Hall")
@@ -581,7 +586,8 @@ namespace AhwanamAPI.Controllers
                             v.charge_type = vdata.Type_of_price;
                             v.collaborator_id = data.UserId;
                             v.rating = vdata.Rating;
-                            v.reviews_count = vdata.ReviewsCount;
+                            var data1 = resultsPageService.Getreviews(vdata.VendorId);
+                            v.reviews_count = data1.Count().ToString();
                             price p = new price();
                             if (vdata.ServiceType == "Function Hall")
                             {
@@ -619,7 +625,7 @@ namespace AhwanamAPI.Controllers
                     else
                     {
                         dict.Add("status", false);
-                        dict.Add("message", "This service already existed in wishlist");
+                        dict.Add("message", "This item already existed in wishlist");
                     }
                 }
                 else
@@ -759,7 +765,7 @@ namespace AhwanamAPI.Controllers
                         else
                         {
                             dict.Add("status", true);
-                            dict.Add("message", "This service is already removed");
+                            dict.Add("message", "This item is already removed");
                         }
                     }
                     else
@@ -787,7 +793,7 @@ namespace AhwanamAPI.Controllers
                 var userdetails = userlogindetailsservice.Getmyprofile(token);
                 if (userdetails.Token == token)
                 {
-                    var data = wishlistservice.Getnote(wishlist_id, vendor_id);
+                    var data = wishlistservice.Getnote(wishlist_id, vendor_id).OrderByDescending(n=>n.UpdatedDate);
                     if(data!=null)
                     {
                         List<UseNotes> usernotes = new List<UseNotes>();
@@ -800,8 +806,8 @@ namespace AhwanamAPI.Controllers
                             usernote.note = item.Notes;
                             usernote.contributorId = userdetails.UserLoginId;
                             usernote.author_name = userdetails.name;
-                            usernote.added_datetime = item.AddedDate;
-                            usernote.edited_datetime = item.UpdatedDate;
+                            //usernote.added_datetime = item.AddedDate;
+                            usernote.date = item.UpdatedDate;
                             usernotes.Add(usernote);
                         }
 
@@ -854,7 +860,7 @@ namespace AhwanamAPI.Controllers
                     usernotes.note = notedata.Notes;
                     usernotes.contributorId = userdetails.UserLoginId;
                     usernotes.author_name = userdetails.name;
-                    usernotes.added_datetime = notedata.AddedDate;
+                    usernotes.date = notedata.AddedDate;
                     if (notedata != null)
                     {
                        
@@ -906,7 +912,7 @@ namespace AhwanamAPI.Controllers
                         usernotes.contributorId = userdetails.UserLoginId;
                         usernotes.author_name = userdetails.name;
                         //usernotes.added_datetime = notedata.AddedDate;
-                        usernotes.edited_datetime = notedata.UpdatedDate;
+                        usernotes.date = notedata.UpdatedDate;
                         dict.Add("status", true);
                         dict.Add("message", "Success");
                         dict.Add("data", usernotes);
@@ -998,10 +1004,8 @@ namespace AhwanamAPI.Controllers
                     { var data = wishlistservice.AddCollabrator(collbratordata);
                         DetailsCollaborator cdetails = new DetailsCollaborator();
                         if (data!=null)
-                        {
-                            //string url = "http://sandbox.ahwanam.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
-                            //string url = "https://sevenvows.co.in/sharedwishlist??wishlist_id=" + data.wishlistid + "&email=" + data.Email;
-                            string url = "https://sandbox.sevenvows.co.in/sharedwishlist??wishlist_id=" + data.wishlistid + "&email=" + data.Email;
+                        {           
+                            string url = "https://sevenvows.co.in/sharedwishlist??wishlist_id=" + data.wishlistid + "&email=" + data.Email; 
                             FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
                             string readFile = File.OpenText().ReadToEnd();
                             readFile = readFile.Replace("[ActivationLink]", url);

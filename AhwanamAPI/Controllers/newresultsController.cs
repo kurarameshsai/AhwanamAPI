@@ -88,9 +88,13 @@ namespace AhwanamAPI.Controllers
             public string pic_url { get; set; }
             public bool is_in_wishlist { get; set; }
             //public location location { get; set; }
+            public string metatag_title { get; set; }
+            public string metatag_desicription { get; set; }
+            public string metatag_keywords { get; set; }
             public List<Amenities> amenities { get; set; }
             public List<Policies> policies { get; set; }
             public List<availableareas> availableareas { get; set; }
+          
         }
 
         public class param4
@@ -260,6 +264,22 @@ namespace AhwanamAPI.Controllers
             public int category_id { get; set; }
             //public string image { get; set; }
             public List<param5> vendors { get; set; }
+            //public List<Vendormasterdata> vendors { get; set; }
+        }
+
+        public class test
+        {
+            public long vendor_id { get; set; }
+            public string name { get; set;}
+            public int category_id { get; set; }
+            public string category_name { get; set; }
+            public string city { get; set; }
+            public int priority { get; set; }
+            public string charge_type { get; set; }
+            public string ServiceType { get; set; }
+            public decimal minimum_price { get; set; }
+            public decimal veg_price { get; set; }
+           
         }
 
         public class packages
@@ -428,8 +448,8 @@ namespace AhwanamAPI.Controllers
                     param5 p = new param5();
                     p.vendor_id = item.VendorId;
                     p.category_id = item.Category_TypeId;
-                    p.category_name = item.name;
-                    p.name = item.BusinessName;
+                    p.category_name = item.name.Trim();
+                    p.name = item.BusinessName.Trim();
                     p.rating = item.Rating;
                     p.city = item.City;
                     p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorId + "/main.jpg";
@@ -496,46 +516,93 @@ namespace AhwanamAPI.Controllers
             return Json(dict);
 
         }
+
+        [HttpGet]
+        [Route("api/allnewvendors")]
+        public IHttpActionResult Browseallnewvendors()
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            Dictionary<string, object> dict1 = new Dictionary<string, object>();
+            var categories = resultsPageService.getallcategories();
+            List<services> res = new List<services>();
+            foreach (var items in categories)
+            {
+                services result = new services();
+                result.name = items.name;
+                result.page_name = items.display_name;
+                result.category_id = items.servicType_id;
+                var data = resultsPageService.GetvendorbycategoryId(items.servicType_id).OrderByDescending(v => v.priority).Take(7).ToList();
+                //List<param5> param = new List<param5>();
+                //foreach (var item in data)
+                //{
+                //    param5 p = new param5();
+                //    p.vendor_id = item.VendorId;
+                //    p.category_id = item.Category_TypeId;
+                //    p.category_name = item.name.Trim();
+                //    p.name = item.BusinessName.Trim();
+                //    p.rating = item.Rating;
+                //    p.city = item.City;
+                //    p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorId + "/main.jpg";
+                //    var re = Request;
+                //    var customheader = re.Headers;
+                //    UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
+                //    if (customheader.Contains("Authorization"))
+                //    {
+                //        string token = customheader.GetValues("Authorization").First();
+                //        var detail = userlogindetailsservice.Getmyprofile(token);
+                //        if (detail != null)
+                //        {
+                //            var itemavailabe = wishlistservice.getwishlistitemdetail(detail.UserLoginId);
+                //            foreach (var a in itemavailabe)
+                //            {
+                //                if (a.vendorId == item.VendorId)
+                //                {
+                //                    p.is_in_wishlist = true;
+                //                }
+
+                //            }
+
+                //        }
+                //    }
+                //    else
+                //    {
+                //        p.is_in_wishlist = false;
+                //    }
+                //    p.reviews_count = resultsPageService.Getreviews(p.vendor_id).Count.ToString();
+                //    p.charge_type = item.Type_of_price;
+                //    param.Add(p);
+                //}
+                //result.vendors = param;
+                //result.vendors = data;
+                res.Add(result);
+            }
+            dict1.Add("categories", res);
+            dict.Add("status", true);
+            dict.Add("message", "Success");
+            dict.Add("data", dict1);
+            return Json(dict);
+
+        }
+
+        //[HttpGet]
+        //[Route("api/allnewvendors")]
+        //public IHttpActionResult Browseallnewvendors()
+        //{ }
+
+
+
         //[HttpGet]
         //[Route("api/allnewvendors")]
         //public IHttpActionResult Browseallnewvendors()
         //{
         //    Dictionary<string, object> dict = new Dictionary<string, object>();
         //    Dictionary<string, object> dict1 = new Dictionary<string, object>();
-        //    dict.Add("status", true);
-        //    dict.Add("message", "success");
         //    List<services> res = new List<services>();
         //    services result = new services();
+        //    result.category_id = 1;
         //    result.name = "Venues";
         //    result.page_name = "venue";
-        //    result.category_id = 1;
-        //    var data = resultsPageService.getbrowsevendors(result.category_id).ToList();
-        //    result.vendors.AddRange(data);
-        //    dict1.Add("vendors", data);
-        //    result.name = "Caterers";
-        //    result.page_name = "caterers";
-        //    result.category_id = 2;
-        //    var data1 = resultsPageService.GetvendorbycategoryId(result.category_id).ToList();
-        //    return Json(data1);
-        //}
-
-
-
-
-        //[HttpGet]
-        //[Route("api/allnewvendors")]
-        //public IHttpActionResult Browseallnewvendors()
-        //{
-        //    Dictionary<string,object> dict = new Dictionary<string,object>();
-        //    Dictionary<string, object> dict1 = new Dictionary<string, object>();
-        //    dict.Add("status",true);
-        //    dict.Add("message", "success");
-        //    List<services> res = new List<services>();
-        //    services result = new services();
-        //    result.name = "Venues";
-        //    result.page_name ="venue";
-        //    result.category_id = 1;
-        //    var data = resultsPageService.GetvendorbycategoryId(result.category_id).OrderByDescending(v => v.priority).Take(7).ToList();
+        //    var data = resultsPageService.GetvendorbycategoryId(1).OrderByDescending(v => v.priority).Take(7).ToList();
         //    List<param5> param = new List<param5>();
         //    foreach (var item in data)
         //    {
@@ -554,27 +621,29 @@ namespace AhwanamAPI.Controllers
         //        {
         //            int cost = (int)item.RentAmount;
         //            price.minimum_price = Convert.ToString(cost);
-        //            if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
-        //            if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
+        //            //if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+        //            //if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
         //        }
-        //        if (p.category_name == "Venues" || p.category_name == "Caterers")
+        //       else
         //        {
         //            var mny = item.VegPrice.ToString("N", CultureInfo.CreateSpecificCulture("en-IN")).Split('.');
         //            price.minimum_price = mny[0];
         //            price.format_price = Convert.ToString(mny[0]);
         //        }
-
         //        p.price = price;
         //        p.reviews_count = resultsPageService.Getreviews(p.vendor_id).Count.ToString();
         //        p.charge_type = item.Type_of_price;
         //        param.Add(p);
         //    }
         //    result.vendors = param;
-        //    result.name = "Caterers";
-        //    result.page_name = "venue";
-        //    result.category_id = 2;
-        //    var data = resultsPageService.GetvendorbycategoryId(result.category_id).OrderByDescending(v => v.priority).Take(7).ToList();
-        //    List<param5> param = new List<param5>();
+        //    //result.vendors = Records(result.category_id);
+        //    res.Add(result);
+        //    services result1 = new services();
+        //    result1.category_id = 2;
+        //    result1.name = "Caterers";
+        //    result1.page_name = "catering";
+        //    var data1 = resultsPageService.GetvendorbycategoryId(2).OrderByDescending(v => v.priority).Take(7).ToList();
+        //    List<param5> param2 = new List<param5>();
         //    foreach (var item in data)
         //    {
         //        param5 p = new param5();
@@ -587,33 +656,23 @@ namespace AhwanamAPI.Controllers
         //        p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorId + "/main.jpg";
         //        //prices Section
         //        prices price = new prices();
-        //        //price.Rentalprice = item.RentAmount.ToString();
-        //        if (item.ServiceType == "Function Hall")
-        //        {
-        //            int cost = (int)item.RentAmount;
-        //            price.minimum_price = Convert.ToString(cost);
-        //            if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
-        //            if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
-        //        }
-        //        if (p.category_name == "Venues" || p.category_name == "Caterers")
-        //        {
         //            var mny = item.VegPrice.ToString("N", CultureInfo.CreateSpecificCulture("en-IN")).Split('.');
         //            price.minimum_price = mny[0];
         //            price.format_price = Convert.ToString(mny[0]);
-        //        }
-
-        //        p.price = price;    
+        //        p.price = price;
         //        p.reviews_count = resultsPageService.Getreviews(p.vendor_id).Count.ToString();
         //        p.charge_type = item.Type_of_price;
-        //        param.Add(p);
+        //        param2.Add(p);
         //    }
-
-        //    result.name = "Decorators";
-        //    result.page_name = "venue";
-        //    result.category_id = 3;
-
-        //    var data = resultsPageService.GetvendorbycategoryId(result.category_id).OrderByDescending(v => v.priority).Take(7).ToList();
-        //    List<param5> param = new List<param5>();
+        //    result1.vendors = param2;
+        //    //result1.vendors = Records(result1.category_id);
+        //    res.Add(result1);
+        //    services result2 = new services();
+        //    result2.category_id = 3;
+        //    result2.name = "Decorators";
+        //    result2.page_name = "decorator";
+        //    var data2 = resultsPageService.GetvendorbycategoryId(3).OrderByDescending(v => v.priority).Take(7).ToList();
+        //    List<param5> param3 = new List<param5>();
         //    foreach (var item in data)
         //    {
         //        param5 p = new param5();
@@ -626,103 +685,276 @@ namespace AhwanamAPI.Controllers
         //        p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorId + "/main.jpg";
         //        //prices Section
         //        prices price = new prices();
-        //        //price.Rentalprice = item.RentAmount.ToString();
-        //        if (item.ServiceType == "Function Hall")
-        //        {
-        //            int cost = (int)item.RentAmount;
-        //            price.minimum_price = Convert.ToString(cost);
-        //            if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
-        //            if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
-        //        }
-        //        if (p.category_name == "Venues" || p.category_name == "Caterers")
-        //        {
-        //            var mny = item.VegPrice.ToString("N", CultureInfo.CreateSpecificCulture("en-IN")).Split('.');
-        //            price.minimum_price = mny[0];
-        //            price.format_price = Convert.ToString(mny[0]);
-        //        }
-
-        //        p.price = price;          
+        //        int cost = (int)item.MinPrice;
+        //        price.minimum_price = Convert.ToString(cost);
+        //        //if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+        //        //if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
+        //        p.price = price;
         //        p.reviews_count = resultsPageService.Getreviews(p.vendor_id).Count.ToString();
         //        p.charge_type = item.Type_of_price;
-        //        param.Add(p);
+        //        param3.Add(p);
         //    }
-
-
-
-
+        //    result2.vendors = param3;
+        //    //result2.vendors = Records(result2.category_id);
+        //    res.Add(result2);
+        //    services result3 = new services();
+        //    result3.category_id = 4;
+        //    result3.name = "Photographers";
+        //    result3.page_name = "photography";
+        //    var data3 = resultsPageService.GetvendorbycategoryId(4).OrderByDescending(v => v.priority).Take(7).ToList();
+        //    List<param5> param4 = new List<param5>();
+        //    foreach (var item in data)
+        //    {
+        //        param5 p = new param5();
+        //        p.vendor_id = item.VendorId;
+        //        p.category_id = item.Category_TypeId;
+        //        p.category_name = item.name;
+        //        p.name = item.BusinessName;
+        //        p.rating = item.Rating;
+        //        p.city = item.City;
+        //        p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorId + "/main.jpg";
+        //        //prices Section
+        //        prices price = new prices();
+        //        int cost = (int)item.MinPrice;
+        //        price.minimum_price = Convert.ToString(cost);
+        //        //if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+        //        //if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
+        //        p.price = price;
+        //        p.reviews_count = resultsPageService.Getreviews(p.vendor_id).Count.ToString();
+        //        p.charge_type = item.Type_of_price;
+        //        param4.Add(p);
+        //    }
+        //    result3.vendors = param4;
+        //    //result3.vendors = Records(result3.category_id);
+        //    res.Add(result3);
+        //    services result4 = new services();
+        //    result4.category_id = 5;
+        //    result4.name = "Pandits";
+        //    result4.page_name = "pandit";
+        //    var data4 = resultsPageService.GetvendorbycategoryId(5).OrderByDescending(v => v.priority).Take(7).ToList();
+        //    List<param5> param5 = new List<param5>();
+        //    foreach (var item in data)
+        //    {
+        //        param5 p = new param5();
+        //        p.vendor_id = item.VendorId;
+        //        p.category_id = item.Category_TypeId;
+        //        p.category_name = item.name;
+        //        p.name = item.BusinessName;
+        //        p.rating = item.Rating;
+        //        p.city = item.City;
+        //        p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorId + "/main.jpg";
+        //        //prices Section
+        //        prices price = new prices();
+        //        int cost = (int)item.MinPrice;
+        //        price.minimum_price = Convert.ToString(cost);
+        //        //if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+        //        //if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
+        //        p.price = price;
+        //        p.reviews_count = resultsPageService.Getreviews(p.vendor_id).Count.ToString();
+        //        p.charge_type = item.Type_of_price;
+        //        param5.Add(p);
+        //    }
+        //    result4.vendors = param5;
+        //    //result4.vendors = Records(result4.category_id);
+        //    res.Add(result4);
+        //    services result5 = new services();
+        //    result5.category_id = 6;
+        //    result5.name = "Mehendi Artists";
+        //    result5.page_name = "mehendi-artists";
+        //    var data5 = resultsPageService.GetvendorbycategoryId(6).OrderByDescending(v => v.priority).Take(7).ToList();
+        //    List<param5> param6 = new List<param5>();
+        //    foreach (var item in data)
+        //    {
+        //        param5 p = new param5();
+        //        p.vendor_id = item.VendorId;
+        //        p.category_id = item.Category_TypeId;
+        //        p.category_name = item.name;
+        //        p.name = item.BusinessName;
+        //        p.rating = item.Rating;
+        //        p.city = item.City;
+        //        p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorId + "/main.jpg";
+        //        //prices Section
+        //        prices price = new prices();
+        //        int cost = (int)item.MinPrice;
+        //        price.minimum_price = Convert.ToString(cost);
+        //        //if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+        //        //if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
+        //        p.price = price;
+        //        p.reviews_count = resultsPageService.Getreviews(p.vendor_id).Count.ToString();
+        //        p.charge_type = item.Type_of_price;
+        //        param6.Add(p);
+        //    }
+        //    result5.vendors = param6;
+        //    //result5.vendors = Records(result5.category_id);
+        //    res.Add(result5);
+        //    services result6 = new services();
+        //    result6.category_id = 8;
+        //    result6.name = "Makeup Artists";
+        //    result6.page_name = "makeup-artists";
+        //    var data7 = resultsPageService.GetvendorbycategoryId(8).OrderByDescending(v => v.priority).Take(7).ToList();
+        //    List<param5> param7 = new List<param5>();
+        //    foreach (var item in data)
+        //    {
+        //        param5 p = new param5();
+        //        p.vendor_id = item.VendorId;
+        //        p.category_id = item.Category_TypeId;
+        //        p.category_name = item.name;
+        //        p.name = item.BusinessName;
+        //        p.rating = item.Rating;
+        //        p.city = item.City;
+        //        p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorId + "/main.jpg";
+        //        //prices Section
+        //        prices price = new prices();
+        //        int cost = (int)item.MinPrice;
+        //        price.minimum_price = Convert.ToString(cost);
+        //        //if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+        //        //if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
+        //        p.price = price;
+        //        p.reviews_count = resultsPageService.Getreviews(p.vendor_id).Count.ToString();
+        //        p.charge_type = item.Type_of_price;
+        //        param7.Add(p);
+        //    }
+        //    result6.vendors = param7;
+        //    //result6.vendors = Records(result6.category_id);
+        //    res.Add(result6);
+        //    services result7 = new services();
+        //    result7.category_id = 9;
+        //    result7.name = "DJ";
+        //    result7.page_name = "DJ";
+        //    //result7.vendors = Records(result7.category_id);
+        //    var data8 = resultsPageService.GetvendorbycategoryId(9).OrderByDescending(v => v.priority).Take(7).ToList();
+        //    List<param5> param9 = new List<param5>();
+        //    foreach (var item in data)
+        //    {
+        //        param5 p = new param5();
+        //        p.vendor_id = item.VendorId;
+        //        p.category_id = item.Category_TypeId;
+        //        p.category_name = item.name;
+        //        p.name = item.BusinessName;
+        //        p.rating = item.Rating;
+        //        p.city = item.City;
+        //        p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorId + "/main.jpg";
+        //        //prices Section
+        //        prices price = new prices();
+        //        int cost = (int)item.MinPrice;
+        //        price.minimum_price = Convert.ToString(cost);
+        //        //if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+        //        //if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
+        //        p.price = price;
+        //        p.reviews_count = resultsPageService.Getreviews(p.vendor_id).Count.ToString();
+        //        p.charge_type = item.Type_of_price;
+        //        param9.Add(p);
+        //    }
+        //    result7.vendors = param9;
+        //    res.Add(result7);
+        //    services result8 = new services();
+        //    result8.category_id = 10;
+        //    result8.name = "Choreographers";
+        //    result8.page_name = "choreographers";
+        //    //result8.vendors = Records(result7.category_id);
+        //    var data9 = resultsPageService.GetvendorbycategoryId(10).OrderByDescending(v => v.priority).Take(7).ToList();
+        //    List<param5> param10 = new List<param5>();
+        //    foreach (var item in data)
+        //    {
+        //        param5 p = new param5();
+        //        p.vendor_id = item.VendorId;
+        //        p.category_id = item.Category_TypeId;
+        //        p.category_name = item.name;
+        //        p.name = item.BusinessName;
+        //        p.rating = item.Rating;
+        //        p.city = item.City;
+        //        p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorId + "/main.jpg";
+        //        //prices Section
+        //        prices price = new prices();
+        //        int cost = (int)item.MinPrice;
+        //        price.minimum_price = Convert.ToString(cost);
+        //        //if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+        //        //if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
+        //        p.price = price;
+        //        p.reviews_count = resultsPageService.Getreviews(p.vendor_id).Count.ToString();
+        //        p.charge_type = item.Type_of_price;
+        //        param10.Add(p);
+        //    }
+        //    result8.vendors = param10;
+        //    res.Add(result8);
+        //    dict1.Add("categories", res);
+        //    dict.Add("status", true);
+        //    dict.Add("message", "Success");
+        //    dict.Add("data", dict1);
+        //    return Json(dict);
         //}
 
-        public List<param5> Records(int id)
-        {
-            Dictionary<string, object> dict = new Dictionary<string, object>();
-            var data = resultsPageService.GetvendorbycategoryId(id).OrderByDescending(v => v.priority).Take(7).ToList();
-            List<param5> param = new List<param5>();
-            foreach (var item in data)
-            {
-                param5 p = new param5();
-                p.vendor_id = item.VendorId;
-                p.category_id = item.Category_TypeId;
-                p.category_name = item.name;
-                p.name = item.BusinessName;
-                p.rating = item.Rating;
-                p.city = item.City;
-                p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorId + "/main.jpg";
-                //prices Section
-                prices price = new prices();
-                //price.Rentalprice = item.RentAmount.ToString();
-                if (item.ServiceType == "Function Hall")
-                {
-                    int cost = (int)item.RentAmount;
-                    price.minimum_price = Convert.ToString(cost);
-                    if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
-                    if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
-                }
-                if (p.category_name == "Venues" || p.category_name == "Caterers")
-                {
-                    var mny = item.VegPrice.ToString("N", CultureInfo.CreateSpecificCulture("en-IN")).Split('.');
-                    price.minimum_price = mny[0];
-                    price.format_price = Convert.ToString(mny[0]);
-                }
-                else
-                {
-                    int cost = (int)item.MinPrice;
-                    price.minimum_price = Convert.ToString(cost);
-                    if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
-                    if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
-                }
-                p.price = price;
-                var re = Request;
-                var customheader = re.Headers;
-                UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
-                if (customheader.Contains("Authorization"))
-                {
-                    string token = customheader.GetValues("Authorization").First();
-                    var detail = userlogindetailsservice.Getmyprofile(token);
-                    if (detail != null)
-                    {
-                        var itemavailabe = wishlistservice.getwishlistitemdetail(detail.UserLoginId);
-                        foreach (var a in itemavailabe)
-                        {
-                            if (a.vendorId == item.VendorId)
-                            {
-                                p.is_in_wishlist = true;
-                            }
+        //public List<param5> Records(int id)
+        //{
+        //    Dictionary<string, object> dict = new Dictionary<string, object>();
+        //    var data = resultsPageService.GetvendorbycategoryId(id).OrderByDescending(v => v.priority).Take(7).ToList();
+        //    List<param5> param = new List<param5>();
+        //    foreach (var item in data)
+        //    {
+        //        param5 p = new param5();
+        //        p.vendor_id = item.VendorId;
+        //        p.category_id = item.Category_TypeId;
+        //        p.category_name = item.name;
+        //        p.name = item.BusinessName;
+        //        p.rating = item.Rating;
+        //        p.city = item.City;
+        //        p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorId + "/main.jpg";
+        //        //prices Section
+        //        prices price = new prices();
+        //        //price.Rentalprice = item.RentAmount.ToString();
+        //        if (item.ServiceType == "Function Hall")
+        //        {
+        //            int cost = (int)item.RentAmount;
+        //            price.minimum_price = Convert.ToString(cost);
+        //            if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+        //            if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
+        //        }
+        //        if (p.category_name == "Venues" || p.category_name == "Caterers")
+        //        {
+        //            var mny = item.VegPrice.ToString("N", CultureInfo.CreateSpecificCulture("en-IN")).Split('.');
+        //            price.minimum_price = mny[0];
+        //            price.format_price = Convert.ToString(mny[0]);
+        //        }
+        //        else
+        //        {
+        //            int cost = (int)item.MinPrice;
+        //            price.minimum_price = Convert.ToString(cost);
+        //            if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
+        //            if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
+        //        }
+        //        p.price = price;
+        //        var re = Request;
+        //        var customheader = re.Headers;
+        //        UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
+        //        if (customheader.Contains("Authorization"))
+        //        {
+        //            string token = customheader.GetValues("Authorization").First();
+        //            var detail = userlogindetailsservice.Getmyprofile(token);
+        //            if (detail != null)
+        //            {
+        //                var itemavailabe = wishlistservice.getwishlistitemdetail(detail.UserLoginId);
+        //                foreach (var a in itemavailabe)
+        //                {
+        //                    if (a.vendorId == item.VendorId)
+        //                    {
+        //                        p.is_in_wishlist = true;
+        //                    }
 
-                        }
+        //                }
 
-                    }
-                }
-                else
-                {
-                    p.is_in_wishlist = false;
-                }
-                p.reviews_count = resultsPageService.Getreviews(p.vendor_id).Count.ToString();
-                p.charge_type = item.Type_of_price;
-                param.Add(p);
-            }
-            return param;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            p.is_in_wishlist = false;
+        //        }
+        //        p.reviews_count = resultsPageService.Getreviews(p.vendor_id).Count.ToString();
+        //        p.charge_type = item.Type_of_price;
+        //        param.Add(p);
+        //    }
+        //    return param;
 
-        }
+        //}
 
         //[HttpGet]
         //[Route("api/allnewvendors")]
@@ -827,7 +1059,7 @@ namespace AhwanamAPI.Controllers
 
         [HttpGet]
         [Route("api/getall")]
-        public IHttpActionResult GetallVendordetails(int category_id, int? city = -1, int? rating = 0, int? offset = 0, int? page = 0, int? capacity = 0, int? venue_type = 0, int? space_preference = 0, int? locality = 0, int? price_per_plate_or_rental = 0, int? sortby = -1, int? budget = 0)
+        public IHttpActionResult GetallVendordetails(int category_id, int? city = -1, int? rating = 0, int? offset = 0, int? page = 0, int? capacity = 0, int? venue_type = 0, int? space_preference = 0, int? locality = 0, int? price_per_plate_or_rental = 0, int? sortby = 0, int? budget = 0)
         {
             Dictionary<string, object> dict1 = new Dictionary<string, object>();
             List<param2> param = new List<param2>();
@@ -896,7 +1128,7 @@ namespace AhwanamAPI.Controllers
                 data = data.Where(m => m.MinPrice >= decimal.Parse(budgetvalue) && m.MinPrice <= decimal.Parse(budgetvalue1)).ToList();
             }
                 
-            if (sortby != null)
+            if (sortby != null && sortby != 0)
             {
                 if (sortby == 1)
                 {  //if (sortbyvalue == "price-high-to-low")
@@ -1177,10 +1409,10 @@ namespace AhwanamAPI.Controllers
                 if(cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
                 pkg.Add(price);
             }
-            else if (p.category_name == "Pandit")
+            else if (p.category_name == "Pandits")
             {
                 packages1 price = new packages1();
-                price.name = "Pandit";
+                price.name = "Pandits";
                 int cost = (int)details.MinPrice;
                 price.price = Convert.ToString(cost);
                 if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
@@ -1231,6 +1463,9 @@ namespace AhwanamAPI.Controllers
             }
             }
             p.packages = pkg;
+            p.metatag_desicription = details.MetatagDesicription;
+            p.metatag_keywords = details.MetatagKeywords;
+            p.metatag_title = details.MetatagTitle;
             var amenitydetail= resultsPageService.GetAmenities(p.vendor_id);
             List<Amenities> amenitys = new List<Amenities>();
             foreach(var item in amenitydetail)

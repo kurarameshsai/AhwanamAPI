@@ -156,7 +156,9 @@ namespace AhwanamAPI.Controllers
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
             long data = userlogindetailsservice.GetLoginDetailsByEmail(sloginresponse.email);
+            //var data = userlogindetailsservice.Getlogindetails(sloginresponse.email);
             if (data == 0)
+            //if(data == null)
             {
                 UserLogin userlogin = new UserLogin();
                 UserDetail userdetail = new UserDetail();
@@ -210,6 +212,8 @@ namespace AhwanamAPI.Controllers
             }
             else
             {
+                string Status = "Active";
+                 int count = userlogindetailsservice.Updatestatus(sloginresponse.email, Status);
                 UserToken usertoken = new UserToken();
                 usertoken.IPAddress = HttpContext.Current.Request.UserHostAddress;
                 usertoken.Token = Guid.NewGuid().ToString();
@@ -259,7 +263,8 @@ namespace AhwanamAPI.Controllers
                 dict.Add("data", u1);
                 return Json(dict);
             }
-            var userResponce = resultsPageService.GetUserLogin(userlogin);
+            //var userResponce = resultsPageService.GetUserLogin(userlogin);
+            var userResponce = resultsPageService.GetUserLoginDetail(userlogin);
             if (userResponce != null)
             {
                 if (userResponce.Status == "InActive")
@@ -338,13 +343,12 @@ namespace AhwanamAPI.Controllers
             }
             if (responce == "sucess")
             {
-                //string url = "https://ahwanam-sandbox.herokuapp.com/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
+                string url = "https://sandbox.sevenvows.co.in/resetpassword?code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
                 //string url = "https://sevenvows.co.in/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
-                string url = "https://sandbox.sevenvows.co.in/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
-                FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/vowswelcome.html"));
+                FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/sevenvowswelcome.html"));
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);
-                readFile = readFile.Replace("[UserName]", "lakshmi");
+                readFile = readFile.Replace("[UserName]", userdetail.FirstName);
                 //readFile = readFile.Replace("[phoneno]", userdetail.UserPhone);
                 TriggerEmail(userlogin.UserName, readFile, "Account Activation", null);
                 // A Mail will be triggered
@@ -720,9 +724,8 @@ namespace AhwanamAPI.Controllers
                 userLogin.isreset = "enable";
                 userLogin.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
                     var data = userlogindetailsservice.UpdateActivationCode(userLogin);
-                    //string url= "https://ahwanam-sandbox.herokuapp.com/resetpassword?code=" + userLogin.ActivationCode + "&email=" + userLogin.UserName;
-                    //string url = "https://sevenvows.co.in/resetpassword?code=" + userLogin.resetemaillink + "&email=" + userLogin.UserName;
                     string url = "https://sandbox.sevenvows.co.in/resetpassword?code=" + userLogin.resetemaillink + "&email=" + userLogin.UserName;
+                    //string url = "https://sevenvows.co.in/resetpassword?code=" + userLogin.resetemaillink + "&email=" + userLogin.UserName;
                 FileInfo File = new FileInfo(HttpContext.Current.Server.MapPath("/mailtemplate/newforgotpassword.html"));
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);
