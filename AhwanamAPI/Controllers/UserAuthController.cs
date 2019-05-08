@@ -343,7 +343,7 @@ namespace AhwanamAPI.Controllers
             }
             if (responce == "sucess")
             {
-                string url = "https://sandbox.sevenvows.co.in/resetpassword?code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
+                string url = "https://sandbox.sevenvows.co.in/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
                 //string url = "https://sevenvows.co.in/verify?activation_code=" + userlogin.ActivationCode + "&email=" + userlogin.UserName;
                 FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/sevenvowswelcome.html"));
                 string readFile = File.OpenText().ReadToEnd();

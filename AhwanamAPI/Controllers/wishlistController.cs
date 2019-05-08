@@ -1004,8 +1004,9 @@ namespace AhwanamAPI.Controllers
                     { var data = wishlistservice.AddCollabrator(collbratordata);
                         DetailsCollaborator cdetails = new DetailsCollaborator();
                         if (data!=null)
-                        {           
-                            string url = "https://sevenvows.co.in/sharedwishlist??wishlist_id=" + data.wishlistid + "&email=" + data.Email; 
+                        {
+                            //string url = "https://sevenvows.co.in/sharedwishlist??wishlist_id=" + data.wishlistid + "&email=" + data.Email; 
+                            string url = "https://sandbox.sevenvows.co.in/sharedwishlist??wishlist_id=" + data.wishlistid + "&email=" + data.Email;
                             FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
                             string readFile = File.OpenText().ReadToEnd();
                             readFile = readFile.Replace("[ActivationLink]", url);

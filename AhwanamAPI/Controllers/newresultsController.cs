@@ -82,18 +82,15 @@ namespace AhwanamAPI.Controllers
             public string description { get; set; }
             public decimal rating { get; set; }
             public string address { get; set; }
-            //public string charge_type { get; set; }
             public string city { get; set; }
             public List<packages1> packages { get; set; }           
             public string pic_url { get; set; }
             public bool is_in_wishlist { get; set; }
-            //public location location { get; set; }
-            public string metatag_title { get; set; }
-            public string metatag_desicription { get; set; }
-            public string metatag_keywords { get; set; }
+            public metatag metatag { get; set; }
             public List<Amenities> amenities { get; set; }
             public List<Policies> policies { get; set; }
             public List<availableareas> availableareas { get; set; }
+
           
         }
 
@@ -146,6 +143,13 @@ namespace AhwanamAPI.Controllers
             public long policy_id { get; set; }
             public string policy { get; set; }
             public string policy_icon { get; set; }
+        }
+
+        public class metatag
+        {
+            public string title { get; set; }
+            public string description { get; set; }
+            public string keywords { get; set; }
         }
 
         public class header
@@ -1110,10 +1114,7 @@ namespace AhwanamAPI.Controllers
             count = data.Count();
             if (cityvalue != null || cityvalue == "empty")
                 data = data.Where(m => m.City == cityvalue).ToList();
-            if (page > 1)
-                data = data.Skip(takecount).Take((int)offset).ToList();
-            else
-                data = data.Take((int)offset).ToList();           
+                     
             if (guestsvalue != null)
                    data = data.Where(m => m.Capacity > int.Parse(guestsvalue) && m.Capacity <= int.Parse(guestvalue1)).ToList();
             if (pricevalue != null)
@@ -1146,6 +1147,7 @@ namespace AhwanamAPI.Controllers
                     data = data.OrderBy(m => m.MinPrice).ToList();
             }
 
+          
             if (data.Count > 0)
             {
                 foreach (var item in data)
@@ -1217,6 +1219,10 @@ namespace AhwanamAPI.Controllers
                     param.Add(p);
                 }          
             var records = param;
+                if (page > 1)
+                    records = records.Skip(takecount).Take((int)offset).ToList();
+                else
+                    records = records.Take((int)offset).ToList();
                 if (rating != 0)
                 records = records.Where(m => m.rating >= decimal.Parse(ratingvalue)).ToList();
             dict1.Add("results", records);
@@ -1463,9 +1469,11 @@ namespace AhwanamAPI.Controllers
             }
             }
             p.packages = pkg;
-            p.metatag_desicription = details.MetatagDesicription;
-            p.metatag_keywords = details.MetatagKeywords;
-            p.metatag_title = details.MetatagTitle;
+            metatag tag = new metatag();
+            tag.description= details.MetatagDesicription.Trim();
+            tag.keywords = details.MetatagKeywords.Trim();
+            tag.title = details.MetatagTitle.Trim();
+            p.metatag = tag;
             var amenitydetail= resultsPageService.GetAmenities(p.vendor_id);
             List<Amenities> amenitys = new List<Amenities>();
             foreach(var item in amenitydetail)
