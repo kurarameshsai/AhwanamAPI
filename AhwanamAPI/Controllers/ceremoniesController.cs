@@ -32,9 +32,18 @@ namespace AhwanamAPI.Controllers
             public price price { get; set; }
             public string pic_url { get; set; }
             public bool is_in_wishlist { get; set; }
+           
+        }
+
+        public class metatag
+        {
+            public string title { get; set; }
+            public string description { get; set; }
+            public string keywords { get; set; }
         }
         public class ceremony
         {
+            public metatag metatag { get; set; }
             public long ceremony_id { get; set; }
             public string ceremony_name { get; set; }
             public string page_name { get; set; }
@@ -170,6 +179,11 @@ namespace AhwanamAPI.Controllers
             d.page_name = detail.page_name1;
             d.description = detail.Description;
             d.cermony_image = System.Configuration.ConfigurationManager.AppSettings["imagename"] + "ceremonies_images/" + detail.ceremonyImage;
+            metatag tag = new metatag();
+            tag.title = detail.MetatagTitle.Trim();
+            tag.description = detail.MetatagDesicription.Trim();
+            tag.keywords = detail.MetatagKeywords.Trim();
+            d.metatag = tag;
             d.city = cityvalue;
             List<categories> categories = new List<categories>();
             for (int i = 0; i < details.Count; i++)

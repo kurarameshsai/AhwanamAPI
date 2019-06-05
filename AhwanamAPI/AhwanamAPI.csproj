@@ -738,9 +738,11 @@
     <Content Include="mailtemplate\mailer.html" />
     <Content Include="mailtemplate\newforgotpassword.html" />
     <Content Include="mailtemplate\newsevenvowswelcome.html" />
-    <Content Include="mailtemplate\oldsevenvowswelcome.html" />
-    <Content Include="mailtemplate\oldthankyou.html" />
     <Content Include="mailtemplate\oldvowswelcome.html" />
+    <Content Include="mailtemplate\sandboxsevenvowswelcome.html" />
+    <Content Include="mailtemplate\sandboxSocialLoginwelcome.html" />
+    <Content Include="mailtemplate\sandboxthankyou.html" />
+    <Content Include="mailtemplate\ScoialLoginUserwelcome.html" />
     <Content Include="mailtemplate\sevenvowswelcome.html" />
     <Content Include="mailtemplate\thankyou.html" />
     <Content Include="mailtemplate\newwelcome.html" />

@@ -60,6 +60,7 @@ namespace AhwanamAPI.Controllers
             public string description { get; set; }
             public string city { get; set; }
             public string origin { get; set; }
+            public string[] services { get; set; }
         }
 
         public class eventslist
@@ -290,6 +291,42 @@ namespace AhwanamAPI.Controllers
             return Json(msg);
         }
 
+        [HttpGet]
+        [Route("api/generalenquiries")]
+        public IHttpActionResult GetallEnquiries()
+        {
+            EnquiryService es = new EnquiryService();
+            var datalist = es.getallenquires().Where(a => a.Services == null).ToList();
+          
+            return Json(datalist);
+        }
+
+        [HttpGet]
+        [Route("api/Serviceenquiries")]
+        public IHttpActionResult GetserviceEnquiries()
+        {
+            EnquiryService es = new EnquiryService();
+            var datalist = es.getallenquires().Where(a=>a.Services!=null).ToList();
+            return Json(datalist);
+        }
+
+        [HttpGet]
+        [Route("api/alluserdetails")]
+        public IHttpActionResult GetUserdetailsforadmin()
+        {
+            EnquiryService es = new EnquiryService();
+            var data = es.Getuserdataforadmin();
+            return Json(data);
+        }
+
+        [HttpGet]
+        [Route("api/allwishlist")]
+        public IHttpActionResult GetUserwishlistdetailsforadmin()
+        {
+            EnquiryService es = new EnquiryService();
+            var data = es.Getwishlistdataforadmin();
+            return Json(data);
+        }
 
 
         [HttpGet]
@@ -332,7 +369,6 @@ namespace AhwanamAPI.Controllers
             {
                 return Json("Failed");
             }
-
         }
 
         public string Capitalise(string str)
@@ -360,12 +396,9 @@ namespace AhwanamAPI.Controllers
             enquiry.SenderEmailId = contact.email;
             enquiry.city = contact.city;
             enquiry.originfromurl = contact.origin;
-            //string date = contact.event_date + contact.time;
-            //DateTime d1 = Convert.ToDateTime(contact.event_date);
-            //d1.Add("time",contact.time);
            if(!string.IsNullOrEmpty(contact.event_date))
             {
-               if( CheckDate(contact.event_date)==true)
+               if( CheckDate(contact.event_date)==true )
                 {
                     enquiry.EnquiryDate = DateTime.Parse(contact.event_date);
                 }
@@ -373,9 +406,11 @@ namespace AhwanamAPI.Controllers
             enquiry.EnquiryDetails = contact.description;
             enquiry.EnquiryTitle = "Talk To Ahwanam";
             enquiry.EnquiryStatus = enquiry.Status = "Open";
+            var s= (contact.services == null) ? null : string.Join(",", contact.services);
+            enquiry.Services = s;
             enquiry.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
             var status = enquiryService.SaveallEnquiries(enquiry);
-            var msg = sendemail(contact.name, contact.email);
+            var msg = sendemail(contact.name, contact.email);      
             EmailSendingUtility emailSendingUtility = new EmailSendingUtility();
             FileInfo File = new FileInfo(HttpContext.Current.Server.MapPath("/mailtemplate/talktoahwanam.html"));
             string readFile = File.OpenText().ReadToEnd();
@@ -386,10 +421,11 @@ namespace AhwanamAPI.Controllers
             readFile = readFile.Replace("[origin]", contact.origin);
             readFile = readFile.Replace("[decription]", contact.description);
             readFile = readFile.Replace("[event]", contact.event_date);
+            readFile = readFile.Replace("[service]", enquiry.Services);
             string txtmsg = readFile;
-            string subj = "SevenVows User Information";
-            //string targetmails = "lakshmi.p@xsilica.com,vivek@qburst.com,amit.saxena@ahwanam.com,sneha.akula9@gmail.com,nivita.priya@xsilica.com,prabodh.dasari@xsilica.com,deep.kalina@ahwanam.com";   
-            string targetmails = "lakshmi.p@xsilica.com,prabodh.dasari@xsilica.com";
+            string subj = "Knots&Vows User Information";
+            string targetmails = "lakshmi.p@xsilica.com"; //sandbox
+            //string targetmails = "amit.saxena@ahwanam.com,nivita.priya@xsilica.com"; //prod
             emailSendingUtility.Email_maaaahwanam(targetmails, txtmsg, subj, null);
             if (status != null)
             {
@@ -402,13 +438,15 @@ namespace AhwanamAPI.Controllers
                 else
                 {
 
-                    dict.Add("status", true);
+                     
+                    dict.Add("status", false);
                     dict.Add("message", "Failed");
                 }
             }
+         
             else
             {
-                dict.Add("status", true);
+                dict.Add("status", false);
                 dict.Add("message", "Failed");
             }
                
@@ -420,14 +458,16 @@ namespace AhwanamAPI.Controllers
             string msg;
             try { 
             EmailSendingUtility emailSendingUtility = new EmailSendingUtility();
-            FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/thankyou.html"));
+            //FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/thankyou.html")); //for prod
+          FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/sandboxthankyou.html"));  // for sandbox        
             string readFile = File.OpenText().ReadToEnd();
             readFile = readFile.Replace("[username]", Capitalise(name));
                 string txtto = email;
-                string subject = "Thank you for choosing SevenVows";
+                string subject = "Thank you for choosing Knots&Vows";
                string txtmsg = readFile;
                 HttpPostedFileBase attachment = null;
             emailSendingUtility.Wordpress_Email(txtto, txtmsg, subject, attachment);
+                //emailSendingUtility.testEmail_maaaahwanam(txtto, txtmsg, subject, attachment);
                 msg = "suceess";
             }
             catch(Exception ex)
@@ -437,7 +477,7 @@ namespace AhwanamAPI.Controllers
             return msg;
         }
 
-        protected bool CheckDate(String date)
+       public bool CheckDate(String date)
         {
             try
             {
@@ -449,6 +489,7 @@ namespace AhwanamAPI.Controllers
                 return false;
             }
         }
+
 
     }
 }

@@ -625,7 +625,7 @@ namespace AhwanamAPI.Controllers
                     else
                     {
                         dict.Add("status", false);
-                        dict.Add("message", "This item already existed in wishlist");
+                        dict.Add("message", "This item is already added to the wishlist");
                     }
                 }
                 else
@@ -765,7 +765,7 @@ namespace AhwanamAPI.Controllers
                         else
                         {
                             dict.Add("status", true);
-                            dict.Add("message", "This item is already removed");
+                            dict.Add("message", "This item is already removed from wishlist");
                         }
                     }
                     else
@@ -1005,8 +1005,8 @@ namespace AhwanamAPI.Controllers
                         DetailsCollaborator cdetails = new DetailsCollaborator();
                         if (data!=null)
                         {
-                            //string url = "https://sevenvows.co.in/sharedwishlist??wishlist_id=" + data.wishlistid + "&email=" + data.Email; 
-                            string url = "https://sandbox.sevenvows.co.in/sharedwishlist??wishlist_id=" + data.wishlistid + "&email=" + data.Email;
+                            string url = "https://knotsandvows.co.in/sharedwishlist??wishlist_id=" + data.wishlistid + "&email=" + data.Email;
+                           //string url = "https://sandbox.knotsandvows.co.in/sharedwishlist??wishlist_id=" + data.wishlistid + "&email=" + data.Email;
                             FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
                             string readFile = File.OpenText().ReadToEnd();
                             readFile = readFile.Replace("[ActivationLink]", url);
