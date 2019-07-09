@@ -664,7 +664,7 @@ namespace AhwanamAPI.Controllers
                 userLogin.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
                     var data = userlogindetailsservice.UpdateActivationCode(userLogin);
                     string url = "https://sandbox.knotsandvows.co.in/resetpassword?code=" + userLogin.resetemaillink + "&email=" + userLogin.UserName; //sandbox
-                   //string url = "https://knotsandvows.co.in/resetpassword?code=" + userLogin.resetemaillink + "&email=" + userLogin.UserName; //prod
+                 /* string url = "https://knotsandvows.co.in/resetpassword?code=" + userLogin.resetemaillink + "&email=" + userLogin.UserName;*/ //prod
                 FileInfo File = new FileInfo(HttpContext.Current.Server.MapPath("/mailtemplate/newforgotpassword.html"));
                 string readFile = File.OpenText().ReadToEnd();
                 readFile = readFile.Replace("[ActivationLink]", url);

@@ -170,6 +170,31 @@ namespace AhwanamAPI.Controllers
             public string pic_url { get; set; }
             public  long contributor_id { get; set; }
         }
+        public class adminvendors
+        {
+            public long vendor_id { get; set; }
+            //public long vendor_serviceId { get; set; }
+            public int category_id { get; set; }
+            public string name { get; set; }
+            public string category_name { get; set; }
+            public string reviews_count { get; set; }
+            public decimal rating { get; set; }
+            public string charge_type { get; set; }
+            public string city { get; set; }
+            public price price { get; set; }
+            public string pic_url { get; set; }
+            public string wishlist_addeddate { get; set; }
+            public long contributor_id { get; set; }
+        }
+
+        public class adminwishlistitems
+        {
+            public int category_id { get; set; }
+            public string category_name { get; set; }
+            public string page_name { get; set; }
+            public List<adminvendors> adminvendors { get; set; }
+        }
+
 
         public class UseNotes
         {
@@ -183,6 +208,142 @@ namespace AhwanamAPI.Controllers
             //public DateTime added_datetime { get; set; }
             //public DateTime edited_datetime { get; set; }
         }
+
+
+        [HttpGet]
+        [Route("api/wishlist/wishlistdetails")]
+        public IHttpActionResult wishlistdetails(long wishlist_id)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            Dictionary<string, object> dict1 = new Dictionary<string, object>();
+            FilterServices filterServices = new FilterServices();
+            WhishListService wishlistservice1 = new WhishListService();
+            wishlist list = new wishlist();
+            var categories = filterServices.AllCategories();
+            List<adminwishlistitems> categorys = new List<adminwishlistitems>();
+            for (int i = 0; i < categories.Count(); i++)
+            {
+                adminwishlistitems category = new adminwishlistitems();
+                category.category_id = categories[i].servicType_id;
+                category.category_name = categories[i].name;
+                category.page_name = categories[i].display_name;
+                var vendordata = wishlistservice1.Getwishlistvendorsforadmin(wishlist_id, category.category_id);
+                if (vendordata != null)
+                {
+                    List<adminvendors> vendorslst = new List<adminvendors>();
+                    for (int j = 0; j < vendordata.Count(); j++)
+                    {
+                        adminvendors v = new adminvendors();
+                        v.vendor_id = vendordata[j].VendormasterId;
+                        v.category_id = vendordata[j].Category_TypeId;
+                        v.category_name = vendordata[j].name;
+                        v.name = vendordata[j].BusinessName;
+                        v.city = vendordata[j].City;
+                        v.rating = vendordata[j].Rating;
+                        var data1 = resultsPageService.Getreviews(vendordata[j].VendormasterId);
+                        v.reviews_count = data1.Count().ToString();
+                        v.charge_type = vendordata[j].Type_of_price;
+                        price p = new price();
+                        if (vendordata[j].ServiceType == "Function Hall")
+                        {
+                            int cost = (int)vendordata[j].RentAmount;
+                            p.minimum_price = Convert.ToString(cost);
+                            if (cost >= 10000) { int value = cost / 1000; p.format_price = value.ToString() + 'k'; }
+                            if (cost >= 100000) { int value = cost / 100000; p.format_price = value.ToString() + 'L'; }
+                        }
+                        if (vendordata[j].name == "Venues" || vendordata[j].name == "Caterers")
+                        {
+
+                            int cost = (int)vendordata[j].VegPrice;
+                            p.minimum_price = Convert.ToString(cost);
+                            p.format_price = Convert.ToString(cost);
+                        }
+                        else
+                        {
+                            int cost = (int)vendordata[j].MinPrice;
+                            p.minimum_price = Convert.ToString(cost);
+                            if (cost >= 10000) { int value = cost / 1000; p.format_price = value.ToString() + 'k'; }
+                        }
+                        v.price = p;
+                        v.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + v.vendor_id + "/main.jpg";
+                        v.contributor_id = vendordata[j].UserId;
+                        v.wishlist_addeddate = vendordata[j].ItemAddedDate.ToString("dd/MM/yyyy");
+                        vendorslst.Add(v);
+
+                    }
+                    category.adminvendors = vendorslst;
+                    
+                }
+                
+                categorys.Add(category);
+                
+
+            }
+            //dict1.Add("categories", categorys);
+            //dict.Add("status", true);
+            //dict.Add("message", "Success");
+            //dict.Add("data", dict1);
+            //return Json(dict);
+            return Json(categorys);
+        }
+
+        [HttpGet]
+        [Route("api/wishlist/userwishlistdetails")]
+        public IHttpActionResult userwishlistdetails(long wishlist_id)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            Dictionary<string, object> dict1 = new Dictionary<string, object>();
+            FilterServices filterServices = new FilterServices();
+            WhishListService wishlistservice1 = new WhishListService();
+            wishlist list = new wishlist();
+                var vendordata = wishlistservice1.Getuserwishlistvendors(wishlist_id);
+            List<vendors> vendorslst = new List<vendors>();
+            if (vendordata != null)
+                {
+                    for (int j = 0; j < vendordata.Count(); j++)
+                    {
+                        vendors v = new vendors();
+                        v.vendor_id = vendordata[j].VendormasterId;
+                        v.category_id = vendordata[j].Category_TypeId;
+                        v.category_name = vendordata[j].name;
+                        v.name = vendordata[j].BusinessName;
+                        v.city = vendordata[j].City;
+                        v.rating = vendordata[j].Rating;
+                        var data1 = resultsPageService.Getreviews(vendordata[j].VendormasterId);
+                        v.reviews_count = data1.Count().ToString();
+                        v.charge_type = vendordata[j].Type_of_price;
+                        price p = new price();
+                        if (vendordata[j].ServiceType == "Function Hall")
+                        {
+                            int cost = (int)vendordata[j].RentAmount;
+                            p.minimum_price = Convert.ToString(cost);
+                            if (cost >= 10000) { int value = cost / 1000; p.format_price = value.ToString() + 'k'; }
+                            if (cost >= 100000) { int value = cost / 100000; p.format_price = value.ToString() + 'L'; }
+                        }
+                        if (vendordata[j].name == "Venues" || vendordata[j].name == "Caterers")
+                        {
+
+                            int cost = (int)vendordata[j].VegPrice;
+                            p.minimum_price = Convert.ToString(cost);
+                            p.format_price = Convert.ToString(cost);
+                        }
+                        else
+                        {
+                            int cost = (int)vendordata[j].MinPrice;
+                            p.minimum_price = Convert.ToString(cost);
+                            if (cost >= 10000) { int value = cost / 1000; p.format_price = value.ToString() + 'k'; }
+                        }
+                        v.price = p;
+                        v.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + v.vendor_id + "/main.jpg";
+                        v.contributor_id = vendordata[j].UserId;
+                        vendorslst.Add(v);
+
+                    }
+                  
+                }
+            return Json(vendorslst);
+        }
+
 
         [HttpGet]
         [Route("api/wishlist/getmywishlist")]
@@ -1005,8 +1166,8 @@ namespace AhwanamAPI.Controllers
                         DetailsCollaborator cdetails = new DetailsCollaborator();
                         if (data!=null)
                         {
-                            string url = "https://knotsandvows.co.in/sharedwishlist??wishlist_id=" + data.wishlistid + "&email=" + data.Email;
-                           //string url = "https://sandbox.knotsandvows.co.in/sharedwishlist??wishlist_id=" + data.wishlistid + "&email=" + data.Email;
+                            //string url = "https://knotsandvows.co.in/sharedwishlist??wishlist_id=" + data.wishlistid + "&email=" + data.Email;
+                           string url = "https://sandbox.knotsandvows.co.in/sharedwishlist??wishlist_id=" + data.wishlistid + "&email=" + data.Email;
                             FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/welcome.html"));
                             string readFile = File.OpenText().ReadToEnd();
                             readFile = readFile.Replace("[ActivationLink]", url);

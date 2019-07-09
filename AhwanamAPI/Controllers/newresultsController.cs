@@ -32,7 +32,7 @@ namespace AhwanamAPI.Controllers
             public string name { get; set; }
             public string category_name { get; set; }
             public string reviews_count { get; set; }
-            public string description { get; set; }
+            //public string description { get; set; }
             public decimal rating { get; set; }
             public string charge_type { get; set; }
             public string city { get; set; }
@@ -445,32 +445,42 @@ namespace AhwanamAPI.Controllers
             return city;
         }
 
+
         [HttpGet]
-        [Route("api/newvendors")]
-        public IHttpActionResult Browseallvendors()
+        [Route("api/allvendors")]
+        public IHttpActionResult allvendors()
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
             Dictionary<string, object> dict1 = new Dictionary<string, object>();
-            var categories = resultsPageService.getallcategories(); 
+            var categories = resultsPageService.getallcategories();
+            string token = null;
+            var re = Request;
+            var customheader = re.Headers;
+            UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
+            if (customheader.Contains("Authorization"))
+            {
+                token = customheader.GetValues("Authorization").First();
+            }
+            var data = wishlistservice.getalldetailsofvendors(token).OrderByDescending(v => v.priority);
             List<services> res = new List<services>();
             foreach (var items in categories)
             {
                 services result = new services();
-                result.name = items.name; 
-                result.page_name = items.display_name; 
+                result.name = items.name;
+                result.page_name = items.display_name;
                 result.category_id = items.servicType_id;
-                var data = resultsPageService.GetvendorbycategoryId(items.servicType_id).OrderByDescending(v => v.priority).Take(7).ToList();
+                var details = data.Where(a => a.Category_TypeId == items.servicType_id).Take(7).ToList();
+                /*var data = wishlistservice.getvendorsalldetails(token, items.servicType_id).OrderByDescending(v => v.priority).Take(7).ToList();*/ //dbcall
                 List<param5> param = new List<param5>();
-                foreach (var item in data)  
+                foreach (var item in details)
                 {
                     param5 p = new param5();
-                    p.vendor_id = item.VendorId;  
-                    p.category_id = item.Category_TypeId; 
+                    p.vendor_id = item.VendorID;
+                    p.category_id = item.Category_TypeId;
                     p.category_name = item.name.Trim();
-                    p.name = item.BusinessName.Trim(); 
-                    p.rating = item.Rating; 
-                    p.city = item.City;  
-                    p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorId + "/main.jpg"; 
+                    p.name = item.BusinessName.Trim();
+                    p.city = item.City;
+                    p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorID + "/main.jpg";
                     //prices Section
                     prices price = new prices();
                     //price.Rentalprice = item.RentAmount.ToString();
@@ -481,47 +491,24 @@ namespace AhwanamAPI.Controllers
                         if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
                         if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
                     }
-                    if (p.category_name == "Venues" || p.category_name == "Caterers")  
+                    if (p.category_name == "Venues" || p.category_name == "Caterers")
                     {
                         var mny = item.VegPrice.ToString("N", CultureInfo.CreateSpecificCulture("en-IN")).Split('.');
                         price.minimum_price = mny[0];
                         price.format_price = Convert.ToString(mny[0]);
                     }
-                    else   
+                    else
                     {
                         int cost = (int)item.MinPrice;
+
                         price.minimum_price = Convert.ToString(cost);
                         if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
                         if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
                     }
                     p.price = price;
-                    var re = Request;
-                    var customheader = re.Headers;
-                    UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
-                    if (customheader.Contains("Authorization")) 
-                    {
-                        string token = customheader.GetValues("Authorization").First();
-                        var detail = userlogindetailsservice.Getmyprofile(token);
-                        //var detail = wishlistservice.Getavailablevendors(token);
-                        if (detail != null)
-                        {
-                            var itemavailabe = wishlistservice.getwishlistitemdetail(detail.UserLoginId);
-                            foreach (var a in itemavailabe)
-                            {
-                                if (a.vendorId == item.VendorId)
-                                {
-                                    p.is_in_wishlist = true;
-                                }
-
-                            }
-
-                        }
-                    }
-                    else
-                    {
-                        p.is_in_wishlist = false;
-                    }
-                    p.reviews_count = resultsPageService.Getreviews(p.vendor_id).Count.ToString();
+                    p.is_in_wishlist = Convert.ToBoolean(item.is_in_ishlist);
+                    p.rating = item.Rating;
+                    p.reviews_count = resultsPageService.Getreviews(p.vendor_id).Count.ToString(); //dbcall for reviews count
                     p.charge_type = item.Type_of_price;
                     param.Add(p);
                 }
@@ -535,13 +522,15 @@ namespace AhwanamAPI.Controllers
             return Json(dict);
         }
 
+
         [HttpGet]
-        [Route("api/allvendors")]
-        public IHttpActionResult allvendors()
+        [Route("api/vendors")]
+        public IHttpActionResult vendors()
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
             Dictionary<string, object> dict1 = new Dictionary<string, object>();
             var categories = resultsPageService.getallcategories();
+            string token=null;
             List<services> res = new List<services>();
             foreach (var items in categories)
             {
@@ -554,8 +543,9 @@ namespace AhwanamAPI.Controllers
                 UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
                 if (customheader.Contains("Authorization"))
                 {
-                    string token = customheader.GetValues("Authorization").First();
-                    var data = wishlistservice.Getallvendordetails(token, items.servicType_id).OrderByDescending(v => v.priority).Take(7).ToList();
+                    token = customheader.GetValues("Authorization").First();
+                }
+                    var data = wishlistservice.getvendorsalldetails(token, items.servicType_id).OrderByDescending(v => v.priority).Take(7).ToList(); //dbcall
                     List<param5> param = new List<param5>();
                     foreach (var item in data)
                     {
@@ -592,59 +582,12 @@ namespace AhwanamAPI.Controllers
                         }
                         p.price = price;
                         p.is_in_wishlist = Convert.ToBoolean(item.is_in_ishlist);
-                        p.reviews_count = resultsPageService.Getreviews(p.vendor_id).Count.ToString();
-                        p.charge_type = item.Type_of_price;
-                        param.Add(p);
-                    }
-                    result.vendors = param;
-                }
-                else
-                {
-                    var data = resultsPageService.GetvendorbycategoryId(items.servicType_id).OrderByDescending(v => v.priority).Take(7).ToList();
-                    List<param5> param = new List<param5>();
-                    foreach (var item in data)
-                    {
-                        param5 p = new param5();
-                        p.vendor_id = item.VendorId;
-                        p.category_id = item.Category_TypeId;
-                        p.category_name = item.name.Trim();
-                        p.name = item.BusinessName.Trim();
                         p.rating = item.Rating;
-                        p.city = item.City;
-                        p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorId + "/main.jpg";
-                        //prices Section
-                        prices price = new prices();
-                        //price.Rentalprice = item.RentAmount.ToString();
-                        if (item.ServiceType == "Function Hall")
-                        {
-                            int cost = (int)item.RentAmount;
-                            price.minimum_price = Convert.ToString(cost);
-                            if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
-                            if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
-                        }
-                        if (p.category_name == "Venues" || p.category_name == "Caterers")
-                        {
-                            var mny = item.VegPrice.ToString("N", CultureInfo.CreateSpecificCulture("en-IN")).Split('.');
-                            price.minimum_price = mny[0];
-                            price.format_price = Convert.ToString(mny[0]);
-                        }
-                        else
-                        {
-                            int cost = (int)item.MinPrice;
-                            price.minimum_price = Convert.ToString(cost);
-                            if (cost >= 10000) { int value = cost / 1000; price.format_price = value.ToString() + 'k'; }
-                            if (cost >= 100000) { int value = cost / 100000; price.format_price = value.ToString() + 'L'; }
-                        }
-                        p.price = price;
-                        p.is_in_wishlist = false;
-                        p.reviews_count = resultsPageService.Getreviews(p.vendor_id).Count.ToString();
+                        p.reviews_count = resultsPageService.Getreviews(p.vendor_id).Count.ToString(); //dbcall for reviews count
                         p.charge_type = item.Type_of_price;
                         param.Add(p);
-
                     }
                     result.vendors = param;
-                }
-               
                 res.Add(result);
             }
             dict1.Add("categories", res);
@@ -662,49 +605,57 @@ namespace AhwanamAPI.Controllers
             Dictionary<string, object> dict1 = new Dictionary<string, object>();
             List<param2> param = new List<param2>();
             int count = 0;
+            string token = null;
             string guestvalue1 = "";
             string pricevalue1 = "";
             string budgetvalue1 = "";
-            string ratingvalue = (rating != 0 && rating != null) ? getvalue((int)rating) : null;
+            string ratingvalue = (rating != 0 && rating != null) ? getvalue2((int)rating) : null;
             string cityvalue = (city != -1 && city != null) ? getcity((int)city) : null;
-            string guestsvalue = (capacity != 0 && capacity != null) ? getvalue((int)capacity) : null;
-            string spacevalue = (space_preference != 0 && space_preference != null) ? getvalue((int)space_preference) : null;
-            string vtypevalue = (venue_type != 0 && venue_type != null) ? getvalue((int)venue_type) : null;
-            string localityvalue = (locality != 0 && locality != null) ? getvalue((int)locality) : null;
-            string pricevalue = (price_per_plate_or_rental != 0 && price_per_plate_or_rental != null) ? getvalue((int)price_per_plate_or_rental) : null;
-            string budgetvalue = (budget != 0 && budget != null) ? getvalue((int)budget) : null;
+            string guestsvalue = (capacity != 0 && capacity != null) ? getvalue2((int)capacity) : null;
+            string spacevalue = (space_preference != 0 && space_preference != null) ? getvalue2((int)space_preference) : null;
+            string vtypevalue = (venue_type != 0 && venue_type != null) ? getvalue2((int)venue_type) : null;
+            string localityvalue = (locality != 0 && locality != null) ? getvalue2((int)locality) : null;
+            string pricevalue = (price_per_plate_or_rental != 0 && price_per_plate_or_rental != null) ? getvalue2((int)price_per_plate_or_rental) : null;
+            string budgetvalue = (budget != 0 && budget != null) ? getvalue2((int)budget) : null;
             page = (page == null) ? 1 : page;
             offset = (offset == null || offset == 0) ? 6 : offset;
             int takecount = 6;
             if (((int)page - 1) > 0)
                 takecount = ((int)page - 1) * (int)offset;
 
-            if (budgetvalue == "< 50000") { budgetvalue = "0"; budgetvalue1 = "50000"; }
-            else if (budgetvalue == "50000 - 200000") { budgetvalue = "50000"; budgetvalue1 = "200000"; }
-            else if (budgetvalue == "200000 - 350000") { budgetvalue = "200000"; budgetvalue1 = "350000"; }
-            else if (budgetvalue == "350000 - 450000") { budgetvalue = "350000"; budgetvalue1 = "450000"; }
-            else if (budgetvalue == "> 450000") { budgetvalue = "450000"; budgetvalue1 = "700000"; }
+            if (budgetvalue == "< 50k") { budgetvalue = "0"; budgetvalue1 = "50000"; }
+            else if (budgetvalue == "50k - 2L") { budgetvalue = "50000"; budgetvalue1 = "200000"; }
+            else if (budgetvalue == "2L - 3.5L") { budgetvalue = "200000"; budgetvalue1 = "350000"; }
+            else if (budgetvalue == "3.5L - 4.5L") { budgetvalue = "350000"; budgetvalue1 = "450000"; }
+            else if (budgetvalue == "> 4.5L") { budgetvalue = "450000"; budgetvalue1 = "700000"; }
 
-            if (pricevalue == "< 1000") { pricevalue = "0"; pricevalue1 = "1000"; }
-            else if (pricevalue == "1000-1500") { pricevalue = "1000"; pricevalue1 = "1500"; }
-            else if (pricevalue == "1500-2000") { pricevalue = "1500"; pricevalue1 = "2000"; }
-            else if (pricevalue == "2000-3000") { pricevalue = "2000"; pricevalue1 = "3000"; }
-            else if (pricevalue == "> 3000") { pricevalue = "3000"; pricevalue1 = "4000"; }
+            if (pricevalue == "< 1,000") { pricevalue = "0"; pricevalue1 = "1000"; }
+            else if (pricevalue == "1,000-1,500") { pricevalue = "1000"; pricevalue1 = "1500"; }
+            else if (pricevalue == "1,500-2,000") { pricevalue = "1500"; pricevalue1 = "2000"; }
+            else if (pricevalue == "2,000-3,000") { pricevalue = "2000"; pricevalue1 = "3000"; }
+            else if (pricevalue == "> 3,000") { pricevalue = "3000"; pricevalue1 = "4000"; }
             else if (pricevalue == "Rental") { pricevalue = "Rent"; }
 
             if (guestsvalue == "< 100") { guestsvalue = "0"; guestvalue1 = "100"; }
             else if (guestsvalue == "100-250") { guestsvalue = "100"; guestvalue1 = "250"; }
             else if (guestsvalue == "250-500") { guestsvalue = "250"; guestvalue1 = "500"; }
-            else if (guestsvalue == "500-1000") { guestsvalue = "500"; guestvalue1 = "1000"; }
-            else if (guestsvalue == "> 1000") { guestsvalue = "1000"; guestvalue1 = "2000"; }
+            else if (guestsvalue == "500-1,000") { guestsvalue = "500"; guestvalue1 = "1000"; }
+            else if (guestsvalue == "> 1,000") { guestsvalue = "1000"; guestvalue1 = "2000"; }
 
             if (ratingvalue == "Rated 2.0+") ratingvalue = "2";
             else if (ratingvalue == "Rated 3.0+") ratingvalue = "3";
             else if (ratingvalue == "Rated 4.0+") ratingvalue = "4";
             else if (ratingvalue == "Rated 5.0+") ratingvalue = "5";
 
-            var data = resultsPageService.GetvendorbycategoryId(category_id);
-            data = data.OrderByDescending(v => v.priority).ToList();
+            var re = Request;
+            var customheader = re.Headers;
+            UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
+            if (customheader.Contains("Authorization"))
+            {
+                token = customheader.GetValues("Authorization").First();
+            }
+            var data = wishlistservice.getvendorsalldetails(token, category_id).OrderByDescending(v => v.priority).ToList();
+            //var data = resultsPageService.GetvendorbycategoryId(category_id).OrderByDescending(v => v.priority).ToList();
             if (cityvalue != null || cityvalue == "empty")
                 data = data.Where(m => m.City == cityvalue).ToList();
                      
@@ -721,8 +672,6 @@ namespace AhwanamAPI.Controllers
                     }
                 }
             }
-           
-
             if (budgetvalue != null)
             {
                 data = data.Where(m => m.MinPrice >= decimal.Parse(budgetvalue) && m.MinPrice <= decimal.Parse(budgetvalue1)).ToList();
@@ -751,19 +700,18 @@ namespace AhwanamAPI.Controllers
                 foreach (var item in data)
                 {
                     param2 p = new param2();
-                    p.vendor_id = item.VendorId;
+                    p.vendor_id = item.VendorID;
                     p.category_id = item.Category_TypeId;
                     p.category_name = item.name.Trim();
                     p.name = item.BusinessName.Trim();
                     p.rating = item.Rating;
-                    var data1 = resultsPageService.Getreviews(item.VendorId);
+                    var data1 = resultsPageService.Getreviews(item.VendorID);
                     p.reviews_count = data1.Count().ToString();
-                    //p.reviews_count = item.ReviewsCount.ToString();
-                    string d = (item.Description != null) ? item.Description.Trim() : null;
-                    p.description = d;
+                    //string d = (item.Description != null) ? item.Description.Trim() : null;
+                    //p.description = d;
                     p.charge_type = item.Type_of_price;
                     p.city = item.City;
-                    p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorId + "/main.jpg";
+                    p.pic_url = System.Configuration.ConfigurationManager.AppSettings["imagename"] + item.VendorID + "/main.jpg";
                     //prices Section
                     prices price = new prices();
                     //price.Rentalprice = item.RentAmount.ToString();
@@ -789,31 +737,7 @@ namespace AhwanamAPI.Controllers
 
                     }
                     p.price = price;
-                    var re = Request;
-                    var customheader = re.Headers;
-                    UserLoginDetailsService userlogindetailsservice = new UserLoginDetailsService();
-                    if (customheader.Contains("Authorization"))
-                    {
-                        string token = customheader.GetValues("Authorization").First();
-                        var detail = userlogindetailsservice.Getmyprofile(token);
-                        if (detail != null)
-                        {
-                            var itemavailabe = wishlistservice.getwishlistitemdetail(detail.UserLoginId);
-                            foreach (var a in itemavailabe)
-                            {
-                                if (a.vendorId == item.VendorId)
-                                {
-                                    p.is_in_wishlist = true;
-                                }
-
-                            }
-
-                        }
-                    }
-                    else
-                    {
-                        p.is_in_wishlist = false;
-                    }
+                    p.is_in_wishlist = Convert.ToBoolean(item.is_in_ishlist);
                     param.Add(p);
                 }          
             var records = param;
@@ -1122,9 +1046,7 @@ namespace AhwanamAPI.Controllers
             }
             return Json(dict);
         }
-
-
-        
+  
 
         [HttpGet]
         [Route("api/availableareas")]
@@ -1268,9 +1190,7 @@ namespace AhwanamAPI.Controllers
             }
 
             return Json(dict);
-
         }
-
 
     }
 }
