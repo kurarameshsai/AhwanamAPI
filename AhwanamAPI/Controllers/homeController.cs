@@ -60,6 +60,7 @@ namespace AhwanamAPI.Controllers
             public string description { get; set; }
             public string city { get; set; }
             public string origin { get; set; }
+            public string[] services { get; set; }
         }
 
         public class eventslist
@@ -93,10 +94,46 @@ namespace AhwanamAPI.Controllers
         //    }
         //    return Json(dict);
         //}
-        
 
-        
-            [HttpGet]
+        public class comments
+        {
+            public long commentid { get; set; }
+            public string comment { get; set; }
+        }
+        public class socialcontact
+        {
+            public string name { get; set; }
+            public string email { get; set; }
+            public string phone { get; set; }
+            public string event_date { get; set; }
+            public string description { get; set; }
+            public string city { get; set; }
+            public string enquiry_Regards { get; set; }
+            public string leadsource { get; set; }
+            public string status { get; set; }
+            public string event_name { get;set; }
+            public string enquiry_date { get; set; }
+            public string campaign { get; set; }
+        }
+
+        //public class fbcontact
+        //{
+        //    public string name { get; set; }
+        //    public string email { get; set; }
+        //    public string phone { get; set; }
+        //    public string event_date { get; set; }
+        //    public string description { get; set; }
+        //    public string city { get; set; }
+        //    public string enquiry_Regards { get; set; }
+        //    public string leadsource { get; set; }
+        //    public string status { get; set; }
+        //    public string event_name { get; set; }
+        //    public string enquiry_date { get; set; }
+        //    public string campaign { get; set; }
+        //}
+
+
+        [HttpGet]
             [Route("api/message")]
          public IHttpActionResult message()
         {
@@ -282,6 +319,19 @@ namespace AhwanamAPI.Controllers
             public string page { get; set; }
         }
 
+        public class comment
+        {
+            public string admin_comment { get; set; }
+            public long enquiry_id { get; set; }
+            public long user_id { get; set; }
+        }
+
+        public class enquirystatus
+        {
+            public long enquiry_id { get; set; }
+            public string status { get; set; }
+        }
+
         [HttpGet]
         [Route("api/getmsg")]
         public IHttpActionResult get()
@@ -290,6 +340,175 @@ namespace AhwanamAPI.Controllers
             return Json(msg);
         }
 
+        [HttpGet]
+        [Route("api/GetEnquiry")]
+        public IHttpActionResult GetEnquiry(long enquiry_id)
+        {
+            EnquiryService es = new EnquiryService();
+            var data = es.getenquiry(enquiry_id);
+            return Json(data);
+
+        }
+
+        [HttpPost]
+        [Route("api/savecomment")]
+        public IHttpActionResult savecomment(comment cmnt)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            EnquiryService es = new EnquiryService();
+            TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+            Enquirycomment ecmnt = new Enquirycomment();
+            ecmnt.comment = cmnt.admin_comment;
+            ecmnt.enquiryid = cmnt.enquiry_id;
+            ecmnt.userid = 121;
+            ecmnt.commentedDate= TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+            ecmnt.UpdatedDate= TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+            var data = es.saveenquirycomment(ecmnt);
+            if(data!=null)
+            {
+                dict.Add("status", true);
+                dict.Add("message", "Success");
+                dict.Add("result", data);
+            }
+           else
+            {
+                dict.Add("status", false);
+                dict.Add("message", "failed");
+                dict.Add("result", null);
+            }
+            return Json(dict);
+
+        }
+
+        [HttpGet]
+        [Route("api/getcomments")]
+        public IHttpActionResult getcomments(long enquiry_id)
+        { 
+            EnquiryService es = new EnquiryService();
+            var data = es.Getcomment(enquiry_id).OrderByDescending(c=>c.commenId).ToList();
+            return Json(data);
+
+        }
+
+        [HttpPost]
+        [Route("api/updatecomment")]
+        public IHttpActionResult updatecomment(comments cmnt)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            EnquiryService es1 = new EnquiryService();
+            var data = es1.updatecomment(cmnt.commentid, cmnt.comment);
+            if (data == "success")
+            {
+                dict.Add("status", true);
+                dict.Add("message", "Success");
+            }
+            else
+            {
+                dict.Add("status", false);
+                dict.Add("message", "failed");
+            }
+            return Json(dict);
+
+        }
+
+        [HttpDelete]
+        [Route("api/deletecomment")]
+        public IHttpActionResult deletecomment(long commentid)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            EnquiryService es1 = new EnquiryService();
+            int data = es1.Removecomment(commentid);
+            if (data != 0)
+            {
+                dict.Add("status", true);
+                dict.Add("message", "Success");
+            }
+            else
+            {
+                dict.Add("status", false);
+                dict.Add("message", "failed");
+            }
+            return Json(dict);
+
+        }
+
+
+        [HttpPost]
+        [Route("api/updatestatus")]
+        public IHttpActionResult Updatestatus(enquirystatus es)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            EnquiryService es1 = new EnquiryService();
+            var data = es1.UpdateEnquriystatus(es.enquiry_id, es.status);
+            if(data == "success")
+            {
+                dict.Add("status", true);
+                dict.Add("message", "Success");
+            }
+            else
+            {
+                dict.Add("status", false);
+                dict.Add("message", "failed");
+            }
+
+            return Json(dict);
+
+        }
+
+
+        [HttpGet]
+        [Route("api/generalenquiries")]
+        public IHttpActionResult GetallEnquiries()
+        {
+            EnquiryService es = new EnquiryService();
+            var datalist = es.getallenquires().Where(a => a.Services == null).ToList();       
+            return Json(datalist);
+        }
+
+        [HttpGet]
+        [Route("api/Serviceenquiries")]
+        public IHttpActionResult GetserviceEnquiries()
+        {
+            EnquiryService es = new EnquiryService();
+            var datalist = es.getallenquires().Where(a=>a.Services!=null).ToList();
+            return Json(datalist);
+        }
+
+        [HttpGet]
+        [Route("api/googleleads")]
+        public IHttpActionResult Getgoogleleads()
+        {
+            EnquiryService es = new EnquiryService();
+            var datalist = es.getgoogleleads().ToList();
+            return Json(datalist);
+        }
+
+        [HttpGet]
+        [Route("api/fbleads")]
+        public IHttpActionResult Getfbleads()
+        {
+            EnquiryService es = new EnquiryService();
+            var datalist = es.getfblead().ToList();
+            return Json(datalist);
+        }
+
+        [HttpGet]
+        [Route("api/alluserdetails")]
+        public IHttpActionResult GetUserdetailsforadmin()
+        {
+            EnquiryService es = new EnquiryService();
+            var data = es.Getuserdataforadmin();
+            return Json(data);
+        }
+
+        [HttpGet]
+        [Route("api/allwishlist")]
+        public IHttpActionResult GetUserwishlistdetailsforadmin()
+        {
+            EnquiryService es = new EnquiryService();
+            var data = es.Getwishlistdataforadmin();
+            return Json(data);
+        }
 
 
         [HttpGet]
@@ -332,7 +551,6 @@ namespace AhwanamAPI.Controllers
             {
                 return Json("Failed");
             }
-
         }
 
         public string Capitalise(string str)
@@ -348,6 +566,99 @@ namespace AhwanamAPI.Controllers
             emailSendingUtility.Wordpress_Email(txtto, txtmsg, subject, attachment);
         }
 
+
+        [HttpPost]
+        [Route("api/home/googlecontact")]
+        public IHttpActionResult googlecontact([FromBody]socialcontact contact)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            EnquiryService enquiryService = new EnquiryService();
+            Googlelead gcontact = new Googlelead();
+            gcontact.Name = contact.name;
+            gcontact.email = contact.email;
+            gcontact.phoneno = contact.phone;
+            gcontact.city = contact.city;
+            gcontact.status = contact.status;
+            gcontact.leadsource = contact.leadsource;
+            gcontact.Event = contact.event_name;
+            gcontact.EnquiryRegarding = contact.enquiry_Regards;
+            gcontact.description = contact.description;
+            if(!string.IsNullOrEmpty(contact.event_date))
+            {
+                if(CheckDate(contact.event_date) == true)
+                {
+                    gcontact.EventDate = DateTime.Parse(contact.event_date);
+                }
+            }
+            if(!string.IsNullOrEmpty(contact.enquiry_date))
+            {
+                if(CheckDate(contact.enquiry_date) == true)
+                {
+                    gcontact.EnquiryDate = DateTime.Parse(contact.enquiry_date);
+                }
+            }
+            gcontact.AddedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+            gcontact.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+            var data = enquiryService.addgooglelead(gcontact);
+            if(data!=null)
+            {
+                dict.Add("status", true);
+                dict.Add("message", "Success");
+            }
+            else
+            {
+                dict.Add("status", false);
+                dict.Add("message", "Failed");
+            }
+            return Json(dict);
+        }
+
+        [HttpPost]
+        [Route("api/home/fbcontact")]
+        public IHttpActionResult fbcontact([FromBody]socialcontact contact)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            EnquiryService enquiryService = new EnquiryService();
+            Facebooklead fcontact = new Facebooklead();
+            fcontact.Name = contact.name;
+            fcontact.email = contact.email;
+            fcontact.phoneno = contact.phone;
+            fcontact.city = contact.city;
+            fcontact.status = contact.status;
+            fcontact.leadsource = contact.leadsource;
+            fcontact.Event = contact.event_name;
+            fcontact.EnquiryRegarding = contact.enquiry_Regards;
+            fcontact.description = contact.description;
+            fcontact.campaign = contact.campaign;
+            if (!string.IsNullOrEmpty(contact.event_date))
+            {
+                if (CheckDate(contact.event_date) == true)
+                {
+                    fcontact.EventDate = DateTime.Parse(contact.event_date);
+                }
+            }
+            if (!string.IsNullOrEmpty(contact.enquiry_date))
+            {
+                if (CheckDate(contact.enquiry_date) == true)
+                {
+                    fcontact.EnquiryDate = DateTime.Parse(contact.enquiry_date);
+                }
+            }
+            fcontact.AddedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+            fcontact.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+            var data = enquiryService.addfblead(fcontact);
+            if (data != null)
+            {
+                dict.Add("status", true);
+                dict.Add("message", "Success");
+            }
+            else
+            {
+                dict.Add("status", false);
+                dict.Add("message", "Failed");
+            }
+            return Json(dict);
+        }
         [HttpPost]
         [Route("api/home/savecontact")]
         public IHttpActionResult savecontact([FromBody]contact contact)
@@ -360,24 +671,21 @@ namespace AhwanamAPI.Controllers
             enquiry.SenderEmailId = contact.email;
             enquiry.city = contact.city;
             enquiry.originfromurl = contact.origin;
-            //string date = contact.event_date + contact.time;
-            //DateTime d1 = Convert.ToDateTime(contact.event_date);
-            //d1.Add("time",contact.time);
            if(!string.IsNullOrEmpty(contact.event_date))
             {
-               if( CheckDate(contact.event_date)==true)
+               if( CheckDate(contact.event_date)==true )
                 {
                     enquiry.EnquiryDate = DateTime.Parse(contact.event_date);
                 }
             }
-
-
             enquiry.EnquiryDetails = contact.description;
             enquiry.EnquiryTitle = "Talk To Ahwanam";
             enquiry.EnquiryStatus = enquiry.Status = "Open";
+            var s= (contact.services == null) ? null : string.Join(",", contact.services);
+            enquiry.Services = s;
             enquiry.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
             var status = enquiryService.SaveallEnquiries(enquiry);
-            var msg = sendemail(contact.name, contact.email);
+            var msg = sendemail(contact.name, contact.email);      
             EmailSendingUtility emailSendingUtility = new EmailSendingUtility();
             FileInfo File = new FileInfo(HttpContext.Current.Server.MapPath("/mailtemplate/talktoahwanam.html"));
             string readFile = File.OpenText().ReadToEnd();
@@ -388,10 +696,12 @@ namespace AhwanamAPI.Controllers
             readFile = readFile.Replace("[origin]", contact.origin);
             readFile = readFile.Replace("[decription]", contact.description);
             readFile = readFile.Replace("[event]", contact.event_date);
+            readFile = readFile.Replace("[service]", enquiry.Services);
             string txtmsg = readFile;
-            string subj = "Seven Vows User Information";
-            string targetmails = "lakshmi.p@xsilica.com,vivek@qburst.com,amit.saxena@ahwanam.com,sneha.akula9@gmail.com,nivita.priya@xsilica.com,prabodh.dasari@xsilica.com,deep.kalina@ahwanam.com";   
-                emailSendingUtility.Email_maaaahwanam(targetmails, txtmsg, subj, null);
+            string subj = "Knots&Vows User Information";
+            string targetmails = "lakshmi.p@xsilica.com"; //sandbox
+            //string targetmails = "nivita.priya@xsilica.com"; //prod
+            emailSendingUtility.Email_maaaahwanam(targetmails, txtmsg, subj, null);
             if (status != null)
             {
                 
@@ -401,15 +711,15 @@ namespace AhwanamAPI.Controllers
             dict.Add("message", "Success");
                 }
                 else
-                {
-
-                    dict.Add("status", true);
+                {   
+                    dict.Add("status", false);
                     dict.Add("message", "Failed");
                 }
             }
+         
             else
             {
-                dict.Add("status", true);
+                dict.Add("status", false);
                 dict.Add("message", "Failed");
             }
                
@@ -421,14 +731,16 @@ namespace AhwanamAPI.Controllers
             string msg;
             try { 
             EmailSendingUtility emailSendingUtility = new EmailSendingUtility();
-            FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/thankyou.html"));
+            //FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/thankyou.html")); //for prod
+          FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/sandboxthankyou.html"));  // for sandbox        
             string readFile = File.OpenText().ReadToEnd();
             readFile = readFile.Replace("[username]", Capitalise(name));
                 string txtto = email;
-                string subject = "Thank you From Seven Vows";
+                string subject = "Thank you for choosing Knots&Vows";
                string txtmsg = readFile;
                 HttpPostedFileBase attachment = null;
             emailSendingUtility.Wordpress_Email(txtto, txtmsg, subject, attachment);
+                //emailSendingUtility.testEmail_maaaahwanam(txtto, txtmsg, subject, attachment);
                 msg = "suceess";
             }
             catch(Exception ex)
@@ -438,7 +750,88 @@ namespace AhwanamAPI.Controllers
             return msg;
         }
 
-        protected bool CheckDate(String date)
+        [HttpPost]
+        [Route("api/home/saveadminenqry")]
+        public IHttpActionResult saveenquiryadmin([FromBody]contact contact)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            EnquiryService enquiryService = new EnquiryService();
+            Enquiry enquiry = new Enquiry();
+            enquiry.PersonName = contact.name;
+            enquiry.SenderPhone = contact.phone;
+            enquiry.SenderEmailId = contact.email;
+            enquiry.city = contact.city;
+            enquiry.originfromurl = contact.origin;
+            if (!string.IsNullOrEmpty(contact.event_date))
+            {
+                if (CheckDate(contact.event_date) == true)
+                {
+                    enquiry.EnquiryDate = DateTime.Parse(contact.event_date);
+                }
+            }
+            enquiry.EnquiryDetails = contact.description;
+            enquiry.EnquiryTitle = "Talk To Ahwanam";
+            enquiry.EnquiryStatus = enquiry.Status = "Open";
+            var s = (contact.services == null) ? null : string.Join(",", contact.services);
+            enquiry.Services = s;
+            enquiry.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+            var status = enquiryService.SaveallEnquiries(enquiry);
+            if (status != null)
+            {
+                    dict.Add("status", true);
+                    dict.Add("message", "Success");
+            }
+
+            else
+            {
+                dict.Add("status", false);
+                dict.Add("message", "Failed");
+            }
+
+            return Json(dict);
+        }
+
+        [HttpPost]
+        [Route("api/home/updateadminenqry")]
+        public IHttpActionResult updatenquiryadmin([FromBody]contact contact,long enquiery_id)
+        {
+
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            EnquiryService enquiryService = new EnquiryService();
+            Enquiry enquiry = new Enquiry();
+            enquiry.PersonName = contact.name;
+            enquiry.SenderPhone = contact.phone;
+            enquiry.SenderEmailId = contact.email;
+            enquiry.city = contact.city;
+            if (!string.IsNullOrEmpty(contact.event_date))
+            {
+                if (CheckDate(contact.event_date) == true)
+                {
+                    enquiry.EnquiryDate = DateTime.Parse(contact.event_date);
+                }
+            }
+            enquiry.EnquiryDetails = contact.description;
+            var s = (contact.services == null) ? null : string.Join(",", contact.services);
+            enquiry.Services = s;
+            enquiry.UpdatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE);
+            var status = enquiryService.updateGnrlLead(enquiry, enquiery_id);
+            if (status != null)
+            {
+                dict.Add("status", true);
+                dict.Add("message", "Success");
+            }
+
+            else
+            {
+                dict.Add("status", false);
+                dict.Add("message", "Failed");
+            }
+
+            return Json(dict);
+
+        }
+
+       public bool CheckDate(String date)
         {
             try
             {
@@ -450,6 +843,7 @@ namespace AhwanamAPI.Controllers
                 return false;
             }
         }
+
 
     }
 }
