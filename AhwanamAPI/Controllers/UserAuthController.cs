@@ -257,6 +257,32 @@ namespace AhwanamAPI.Controllers
             return dict;
         }
 
+        [HttpPost]
+        [Route("api/UserAuth/adminlogin")]
+        public IHttpActionResult adminlogin([FromBody]registerdetails details)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            UserLogin userlogin = new UserLogin();
+            userlogin.UserName = details.email;
+            userlogin.Password = details.password;
+            userlogin.UserType = "Admin";
+            var userResponse = resultsPageService.Getadminlogindetail(userlogin);
+            if(userResponse!=null)
+            {
+                dict.Add("status", true);
+                dict.Add("msg", "success");
+                dict.Add("data", userResponse);
+               
+            }
+            else
+            {
+                dict.Add("status", false);
+                dict.Add("msg", "failed");
+                dict.Add("data", userResponse);
+            }
+            return Json(dict);
+
+        }
 
         [HttpPost]
         [Route("api/UserAuth/login")]

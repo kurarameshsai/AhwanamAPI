@@ -699,8 +699,8 @@ namespace AhwanamAPI.Controllers
             readFile = readFile.Replace("[service]", enquiry.Services);
             string txtmsg = readFile;
             string subj = "Knots&Vows User Information";
-            //string targetmails = "lakshmi.p@xsilica.com"; //sandbox
-            string targetmails = "nivita.priya@xsilica.com"; //prod
+            string targetmails = "lakshmi.p@xsilica.com"; //sandbox
+            //string targetmails = "nivita.priya@xsilica.com"; //prod
             emailSendingUtility.Email_maaaahwanam(targetmails, txtmsg, subj, null);
             if (status != null)
             {
@@ -731,8 +731,8 @@ namespace AhwanamAPI.Controllers
             string msg;
             try { 
             EmailSendingUtility emailSendingUtility = new EmailSendingUtility();
-            FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/thankyou.html")); //for prod
-          //FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/sandboxthankyou.html"));  // for sandbox        
+            //FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/thankyou.html")); //for prod
+          FileInfo File = new FileInfo(System.Web.Hosting.HostingEnvironment.MapPath("/mailtemplate/sandboxthankyou.html"));  // for sandbox        
             string readFile = File.OpenText().ReadToEnd();
             readFile = readFile.Replace("[username]", Capitalise(name));
                 string txtto = email;
